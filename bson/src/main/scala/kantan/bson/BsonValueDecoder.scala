@@ -35,7 +35,6 @@ object BsonValueDecoder {
   def from[A](f: PartialFunction[BsonValue, DecodeResult[A]]): BsonValueDecoder[A] = Decoder.from { value ⇒
     if(f.isDefinedAt(value)) f(value)
     else                     Failure(DecodeError(s"unexpected BSON value: $value"))
-
   }
 }
 
@@ -107,24 +106,22 @@ trait BsonValueDecoderInstances {
   implicit val bsonPathDecoder: BsonValueDecoder[Path] =
     BsonValueDecoder[String].mapResult(s ⇒ DecodeResult(Paths.get(s.trim)))
 
+  // The following BSON types don't currently have default support because I'm not sure what to do with them:
+  // - BsonUserDefinedBinary
+  // - BsonFunction
+  // - BsonMd5
+  // - BsonBinary
+  // - BsonJavaScript
+  // - BsonJavaScriptWithScope
+  // - BsonDbPointer
+
+  // Additionally:
+  // - BsonUndefined is not supported - maybe it could be an Option?
+  // - BsonSymbol is not supported because it's deprecated.
 
   // TODO:
-  /*
-  final case class BsonMd5(value: String) extends BsonBinaryData
-  final case class BsonUserDefinedBinary(value: IndexedSeq[Byte]) extends BsonBinaryData
-  final case class BsonFunction(value: IndexedSeq[Byte]) extends BsonBinaryData
-  final case class BsonBinary(value: IndexedSeq[Byte]) extends BsonBinaryData
-  final case class BsonDocument(value: Map[String, BsonValue]) extends BsonValue
-  final case class BsonJavaScriptWithScope(value: String, scope: Map[String, BsonValue]) extends BsonValue
-  case object BsonMaxKey extends BsonValue
-  case object BsonMinKey extends BsonValue
-  case object BsonNull extends BsonValue
-  case object BsonUndefined extends BsonValue
-  final case class BsonDateTime(value: Long) extends BsonValue
-  final case class BsonDbPointer(namespace: String, id: ObjectId) extends BsonValue
-  final case class BsonDecimal128(value: Decimal128) extends BsonValue
-  final case class BsonJavaScript(value: String) extends BsonValue
-  final case class BsonSymbol(value: String) extends BsonValue
-  final case class BsonTimestamp(seconds: Int, inc: Int) extends BsonValue
-   */
+  // - BsonDocument
+  // - BsonDateTime
+  // - BsonDecimal128
+  // - BsonTimestamp
 }

@@ -16,4 +16,5 @@
 
 package kantan.bson
 
-package object ops extends ToBsonValueDecoderOps
+package object ops extends ToBsonValueDecoderOps with
+                           ToBsonValueEncoderOps

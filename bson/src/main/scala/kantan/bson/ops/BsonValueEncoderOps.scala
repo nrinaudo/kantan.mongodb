@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-package kantan.bson
+package kantan.bson.ops
 
-object codecs extends BsonValueDecoderInstances with BsonValueEncoderInstances
+import kantan.bson.{BsonValue, BsonValueEncoder}
+
+final class BsonValueEncoderOps[A: BsonValueEncoder](value: A) {
+  def asBson: BsonValue = BsonValueEncoder[A].encode(value)
+}
+
+trait ToBsonValueEncoderOps {
+  implicit def toBsonValueEncoderOps[A: BsonValueEncoder](a: A): BsonValueEncoderOps[A] = new BsonValueEncoderOps(a)
+}
+
+object bsonValueEncoder extends ToBsonValueEncoderOps
