@@ -29,10 +29,11 @@ object BsonValueCodecProvider extends CodecProvider {
     def add(c: Class[_], bsonType: BsonType, codec: CodecRegistry ⇒ Codec[_]): Unit = {
       typeBuilder  += bsonType → c
       classBuilder += c → codec
+      ()
     }
 
     add(classOf[BsonArray],               BsonType.ARRAY,                 r ⇒ new ArrayCodec(r))
-    add(classOf[BsonBinary],              BsonType.BINARY,                _ ⇒ BinaryCodec)
+    add(classOf[BsonBinaryData],          BsonType.BINARY,                _ ⇒ BinaryDataCodec)
     add(classOf[BsonBoolean],             BsonType.BOOLEAN,               _ ⇒ BooleanCodec)
     add(classOf[BsonDateTime],            BsonType.DATE_TIME,             _ ⇒ DateTimeCodec)
     add(classOf[BsonDbPointer],           BsonType.DB_POINTER,            _ ⇒ DbPointerCodec)
@@ -53,7 +54,12 @@ object BsonValueCodecProvider extends CodecProvider {
     add(classOf[BsonTimestamp],           BsonType.TIMESTAMP,             _ ⇒ TimestampCodec)
     add(BsonUndefined.getClass,           BsonType.UNDEFINED,             _ ⇒ UndefinedCodec)
 
-    classBuilder += classOf[BsonValue] → (r ⇒ new ValueCodec(r))
+    classBuilder += classOf[BsonValue]             → (r ⇒ new ValueCodec(r))
+    classBuilder += classOf[BsonBinary]            → (_ ⇒ BinaryCodec)
+    classBuilder += classOf[BsonFunction]          → (_ ⇒ FunctionCodec)
+    classBuilder += classOf[BsonUserDefinedBinary] → (_ ⇒ UserDefinedBinaryCodec)
+    classBuilder += classOf[BsonMd5]               → (_ ⇒ Md5Codec)
+    classBuilder += classOf[BsonUuid]              → (_ ⇒ UuidCodec)
 
     (typeBuilder.result(), classBuilder.result())
   }

@@ -19,15 +19,12 @@ package kantan.bson
 import org.scalacheck.{Arbitrary, Gen}
 import Arbitrary.{arbitrary => arb}
 import Gen._
+import java.security.MessageDigest
 import java.util.regex.Pattern
 import org.bson.types.{Decimal128, ObjectId}
 
 object arbitrary {
-  /*
-  final case class BsonBinary(data: Seq[Byte], binaryType: Byte) extends BsonValue
-   */
-
-  // - Terminal types --------------------------------------------------------------------------------------------------
+  // - BSON types ------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   val genObjectId: Gen[ObjectId] = for {
       ts ← posNum[Int]
@@ -44,6 +41,33 @@ object arbitrary {
       Pattern.DOTALL, Pattern.LITERAL, Pattern.UNICODE_CASE, Pattern.COMMENTS))
   } yield values.toSet.foldLeft(0)(_ | _)
 
+
+
+  // - Binary data -----------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  val genBsonBinary: Gen[BsonBinary] = for {
+    bytes ← buildableOf[IndexedSeq[Byte], Byte](arb[Byte])
+  } yield BsonBinary(bytes)
+
+  val genBsonFunction: Gen[BsonFunction] = for {
+    bytes ← buildableOf[IndexedSeq[Byte], Byte](arb[Byte])
+  } yield BsonFunction(bytes)
+
+  val genBsonUserDefinedBinary: Gen[BsonUserDefinedBinary] = for {
+      bytes ← buildableOf[IndexedSeq[Byte], Byte](arb[Byte])
+    } yield BsonUserDefinedBinary(bytes)
+
+  val genBsonUuid: Gen[BsonUuid] = uuid.map(BsonUuid.apply)
+  val genBsonMd5: Gen[BsonMd5] = for {
+    str ← arb[String]
+  } yield BsonMd5.hex(MessageDigest.getInstance("MD5").digest(str.getBytes("UTF-8")))
+  val genBsonBinaryData: Gen[BsonBinaryData] =
+    oneOf(genBsonUuid, genBsonMd5, genBsonBinary, genBsonFunction, genBsonUserDefinedBinary)
+
+
+
+  // - Terminal types --------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
   val genBsonObjectId: Gen[BsonObjectId] = genObjectId.map(BsonObjectId.apply)
   val genBsonDecimal128: Gen[BsonDecimal128] = genDecimal128.map(BsonDecimal128.apply)
   val genBsonBoolean: Gen[BsonBoolean] = arb[Boolean].map(BsonBoolean.apply)
@@ -79,7 +103,7 @@ object arbitrary {
 
   val genValueType: Gen[BsonValue] = Gen.oneOf(genBsonBoolean, genBsonDouble, genBsonInt, genBsonLong,
       genBsonString, genBsonSymbol, genBsonTimestamp, genBsonDateTime, genBsonUndefined, genBsonMaxKey, genBsonMinKey,
-      genBsonNull, genBsonObjectId, genBsonRegularExpression, genBsonDbPointer, genBsonDecimal128)
+      genBsonNull, genBsonObjectId, genBsonRegularExpression, genBsonDbPointer, genBsonDecimal128, genBsonBinaryData)
 
   val genJavascript: Gen[BsonValue] = Gen.oneOf(genBsonJavaScript, genBsonJavaScriptWithScope)
 

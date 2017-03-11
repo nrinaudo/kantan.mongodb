@@ -16,35 +16,61 @@
 
 package kantan.bson
 
+import java.util.UUID
 import java.util.regex.Pattern
 import org.bson.types.{Decimal128, ObjectId}
 
 /** Represents all possible values that can be found in a BSON document. */
 sealed abstract class BsonValue extends Product with Serializable
 
-// binary, old_binary,
-// uuid, old_uuid
-// md5
-// user_defined
 
+// - Binary data -------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+sealed abstract class BsonBinaryData extends BsonValue
+final case class BsonUuid(value: UUID) extends BsonBinaryData
+final case class BsonMd5(value: String) extends BsonBinaryData
+final case class BsonUserDefinedBinary(value: IndexedSeq[Byte]) extends BsonBinaryData
+final case class BsonFunction(value: IndexedSeq[Byte]) extends BsonBinaryData
+
+object BsonMd5 {
+  def hex(data: Array[Byte]): BsonMd5 = BsonMd5(data.map("%02x".format(_)).mkString)
+}
+
+final case class BsonBinary(value: IndexedSeq[Byte]) extends BsonBinaryData
+
+
+
+// - Nested types ------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 final case class BsonArray(value: Seq[BsonValue]) extends BsonValue
+final case class BsonDocument(value: Map[String, BsonValue]) extends BsonValue
+final case class BsonJavaScriptWithScope(value: String, scope: Map[String, BsonValue]) extends BsonValue
 
-final case class BsonBinary(data: IndexedSeq[Byte], binaryType: Byte) extends BsonValue
 
+
+// - Singleton types ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+case object BsonMaxKey extends BsonValue
+case object BsonMinKey extends BsonValue
+case object BsonNull extends BsonValue
+case object BsonUndefined extends BsonValue
+
+
+
+// - Simple values -----------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 final case class BsonBoolean(value: Boolean) extends BsonValue
 final case class BsonDateTime(value: Long) extends BsonValue
 final case class BsonDbPointer(namespace: String, id: ObjectId) extends BsonValue
 final case class BsonDecimal128(value: Decimal128) extends BsonValue
-final case class BsonDocument(value: Map[String, BsonValue]) extends BsonValue
 final case class BsonJavaScript(value: String) extends BsonValue
-final case class BsonJavaScriptWithScope(value: String, scope: Map[String, BsonValue]) extends BsonValue
-case object BsonMaxKey extends BsonValue
-case object BsonMinKey extends BsonValue
-case object BsonNull extends BsonValue
 final case class BsonDouble(value: Double) extends BsonValue
 final case class BsonInt(value: Int) extends BsonValue
 final case class BsonLong(value: Long) extends BsonValue
 final case class BsonObjectId(value: ObjectId) extends BsonValue
+final case class BsonString(value: String) extends BsonValue
+final case class BsonSymbol(value: String) extends BsonValue
+final case class BsonTimestamp(seconds: Int, inc: Int) extends BsonValue
 
 final case class BsonRegularExpression(value: Pattern) extends BsonValue {
   override def equals(obj: Any): Boolean = obj match {
@@ -54,7 +80,3 @@ final case class BsonRegularExpression(value: Pattern) extends BsonValue {
 
   override def hashCode(): Int = 31 * value.pattern().hashCode + value.flags()
 }
-final case class BsonString(value: String) extends BsonValue
-final case class BsonSymbol(value: String) extends BsonValue
-final case class BsonTimestamp(seconds: Int, inc: Int) extends BsonValue
-case object BsonUndefined extends BsonValue

@@ -16,18 +16,13 @@
 
 package kantan.bson.io
 
-import kantan.bson.BsonBinary
+import kantan.bson.BsonUuid
 import org.bson.{BsonReader, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 
-object BinaryCodec extends Codec[BsonBinary] {
-  override def decode(reader: BsonReader, decoderContext: DecoderContext): BsonBinary = {
-    val b = reader.readBinaryData()
-    BsonBinary(b.getData(), b.getType)
-  }
-
-  override def encode(writer: BsonWriter, value: BsonBinary, e: EncoderContext) =
-    writer.writeBinaryData(new org.bson.BsonBinary(value.binaryType, value.data.toArray))
-
-  override def getEncoderClass = classOf[BsonBinary]
+object UuidCodec extends Codec[BsonUuid] {
+  private val codec = new org.bson.codecs.UuidCodec()
+  override def decode(reader: BsonReader, d: DecoderContext) = BsonUuid(codec.decode(reader, d))
+  override def encode(writer: BsonWriter, value: BsonUuid, e: EncoderContext) = codec.encode(writer, value.value, e)
+  override def getEncoderClass = classOf[BsonUuid]
 }
