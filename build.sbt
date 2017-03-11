@@ -6,7 +6,15 @@ kantanProject in ThisBuild := "mongodb"
 lazy val root = Project(id = "kantan-mongodb", base = file("."))
   .settings(moduleName := "root")
   .enablePlugins(UnpublishedPlugin)
+  .settings(
+    initialCommands in console :=
+    """
+      |import kantan.bson._
+      |import kantan.bson.ops._
+    """.stripMargin
+  )
   .aggregate(bson)
+  .dependsOn(bson)
 
 
 
