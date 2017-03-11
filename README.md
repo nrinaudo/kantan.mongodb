@@ -19,4 +19,4 @@ final case class User(id: Int, name: String, age: Int)
 collection.insert(User(1, "Foobar", 45))
 ```
 
-kantan.csv is distributed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0.html).
+kantan.mongodb is distributed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0.html).
