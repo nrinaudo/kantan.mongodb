@@ -35,11 +35,9 @@ object arbitrary {
 
   val genDecimal128: Gen[Decimal128] = arb[Long].map(l ⇒ new Decimal128(l))
 
-  val genRegexOptions: Gen[Int] = for {
-    count ← choose(0, 9)
-    values ← listOf(oneOf(Pattern.UNIX_LINES, 256, Pattern.CANON_EQ, Pattern.CASE_INSENSITIVE,Pattern.MULTILINE,
-      Pattern.DOTALL, Pattern.LITERAL, Pattern.UNICODE_CASE, Pattern.COMMENTS))
-  } yield values.toSet.foldLeft(0)(_ | _)
+  val genRegexOptions: Gen[Int] = listOf(oneOf(Pattern.UNIX_LINES, 256, Pattern.CANON_EQ, Pattern.CASE_INSENSITIVE,
+    Pattern.MULTILINE, Pattern.DOTALL, Pattern.LITERAL, Pattern.UNICODE_CASE, Pattern.COMMENTS))
+    .map(_.toSet.foldLeft(0)(_ | _))
 
 
 
