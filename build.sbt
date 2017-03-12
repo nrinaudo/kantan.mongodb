@@ -25,7 +25,7 @@ lazy val bson = project
     moduleName := "kantan.bson",
     name       := "bson"
   )
-  .enablePlugins(PublishedPlugin)
+  .enablePlugins(PublishedPlugin, spray.boilerplate.BoilerplatePlugin)
   .settings(libraryDependencies ++= Seq(
     "com.nrinaudo"  %% "kantan.codecs"      % Versions.kantanCodecs,
     "org.mongodb"   %  "bson"               % Versions.mongodb,

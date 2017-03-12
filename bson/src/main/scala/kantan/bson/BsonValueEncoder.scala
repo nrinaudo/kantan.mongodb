@@ -31,6 +31,9 @@ object BsonValueEncoder {
 }
 
 trait BsonValueEncoderInstances {
+  implicit def encoderFromDocument[A: BsonDocumentEncoder]: BsonValueEncoder[A] =
+    BsonValueEncoder.from(BsonDocumentEncoder[A].encode)
+
   implicit val bsonIntEncoder: BsonValueEncoder[Int] = BsonValueEncoder.from(BsonInt.apply)
   implicit val bsonLongEncoder: BsonValueEncoder[Long] = BsonValueEncoder.from(BsonLong.apply)
   implicit val bsonDoubleEncoder: BsonValueEncoder[Double] = BsonValueEncoder.from(BsonDouble.apply)

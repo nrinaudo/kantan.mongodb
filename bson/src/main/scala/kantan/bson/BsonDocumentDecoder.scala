@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package kantan.bson.ops
+package kantan.bson
 
-import kantan.bson.{BsonValue, BsonValueEncoder}
+import kantan.codecs.Result.Success
 
-final class BsonValueEncoderOps[A: BsonValueEncoder](value: A) {
-  def encodeBson: BsonValue = BsonValueEncoder[A].encode(value)
+object BsonDocumentDecoder extends GeneratedBsonDocumentDecoders {
+  def apply[A](implicit ev: BsonDocumentDecoder[A]): BsonDocumentDecoder[A] = macro imp.summon[BsonDocumentDecoder[A]]
+
+  def from[A](f: BsonDocument ⇒ DecodeResult[A]): BsonDocumentDecoder[A] = new BsonDocumentDecoder[A] {
+    override def decode(d: BsonDocument) = f(d)
+  }
+
+  def fromSafe[A](f: BsonDocument ⇒ A): BsonDocumentDecoder[A] =
+    BsonDocumentDecoder.from(f andThen Success.apply)
 }
-
-trait ToBsonValueEncoderOps {
-  implicit def toBsonValueEncoderOps[A: BsonValueEncoder](a: A): BsonValueEncoderOps[A] = new BsonValueEncoderOps(a)
-}
-
-object bsonValueEncoder extends ToBsonValueEncoderOps

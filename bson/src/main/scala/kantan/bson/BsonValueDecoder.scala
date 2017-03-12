@@ -39,6 +39,10 @@ object BsonValueDecoder {
 }
 
 trait BsonValueDecoderInstances {
+  implicit def decoderFromDocument[A: BsonDocumentDecoder]: BsonValueDecoder[A] = BsonValueDecoder.from {
+    case a@BsonDocument(_) ⇒ BsonDocumentDecoder[A].decode(a)
+  }
+
   implicit val bsonIntDecoder: BsonValueDecoder[Int] = BsonValueDecoder.fromSafe {
     case BsonInt(i) ⇒ i
     case BsonMaxKey ⇒ Int.MaxValue

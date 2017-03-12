@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package kantan.bson.ops
+package kantan.bson
 
-import kantan.bson.{BsonValue, BsonValueEncoder}
+trait GeneratedBsonDocumentDecoders {
+  [#def decoder[[#A1: BsonValueDecoder#], B]([#n1: String#])(f: ([#A1#]) ⇒ B): BsonDocumentDecoder[B] = BsonDocumentDecoder.from { d: BsonDocument ⇒
+    for {
+      [#a1 ← BsonValueDecoder[A1].decode(d.value.getOrElse(n1, BsonNull))#
+      ]
+    } yield f([#a1#])
+  }#
 
-final class BsonValueEncoderOps[A: BsonValueEncoder](value: A) {
-  def encodeBson: BsonValue = BsonValueEncoder[A].encode(value)
+  ]
 }
-
-trait ToBsonValueEncoderOps {
-  implicit def toBsonValueEncoderOps[A: BsonValueEncoder](a: A): BsonValueEncoderOps[A] = new BsonValueEncoderOps(a)
-}
-
-object bsonValueEncoder extends ToBsonValueEncoderOps
