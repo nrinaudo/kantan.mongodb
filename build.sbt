@@ -10,11 +10,12 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
     initialCommands in console :=
     """
       |import kantan.bson._
+      |import kantan.bson.generic._
       |import kantan.bson.ops._
     """.stripMargin
   )
-  .aggregate(bson)
-  .dependsOn(bson)
+  .aggregate(bson, generic)
+  .dependsOn(bson, generic)
 
 
 
@@ -31,4 +32,17 @@ lazy val bson = project
     "org.mongodb"   %  "bson"               % Versions.mongodb,
     "org.scalatest" %% "scalatest"          % Versions.scalatest % "test",
     "com.nrinaudo"  %% "kantan.codecs-laws" % Versions.kantanCodecs % "test"
+  ))
+
+
+lazy val generic = project
+  .settings(
+    moduleName := "kantan.bson-generic",
+    name       := "generic"
+  )
+  .enablePlugins(PublishedPlugin)
+  .dependsOn(bson)
+  .settings(libraryDependencies ++= Seq(
+    "com.nrinaudo"  %% "kantan.codecs-shapeless"      % Versions.kantanCodecs,
+    "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test"
   ))
