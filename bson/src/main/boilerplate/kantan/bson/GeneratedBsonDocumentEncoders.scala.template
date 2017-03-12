@@ -30,4 +30,10 @@ trait GeneratedBsonDocumentEncoders {
     }#
 
   ]
+
+  def caseEncoder[A1: BsonValueEncoder, B](n1: String)(f: B ⇒ Option[A1]): BsonDocumentEncoder[B] =
+    encoder(n1)(f andThen (_.get))
+  [2..#def caseEncoder[[#A1: BsonValueEncoder#], B]([#n1: String#])(f: B ⇒ Option[Tuple1[[#A1#]]]): BsonDocumentEncoder[B] =
+    encoder([#n1#])(f andThen (_.get))#
+  ]
 }

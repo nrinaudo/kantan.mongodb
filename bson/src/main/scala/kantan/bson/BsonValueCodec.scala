@@ -16,4 +16,8 @@
 
 package kantan.bson
 
-object codecs extends BsonValueCodecInstances
+import kantan.codecs.CodecCompanion
+
+object BsonValueCodec extends CodecCompanion[BsonValue, DecodeError, codecs.type]
+
+trait BsonValueCodecInstances extends BsonValueEncoderInstances with BsonValueDecoderInstances
