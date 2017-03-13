@@ -16,8 +16,8 @@
 
 package kantan.bson
 
-import arbitrary._
 import java.nio.ByteBuffer
+import kantan.bson.laws.discipline.arbitrary._
 import org.bson.{BsonBinaryReader, BsonBinaryWriter}
 import org.bson.codecs.{DecoderContext, EncoderContext}
 import org.bson.io.BasicOutputBuffer

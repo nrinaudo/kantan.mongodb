@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package kantan.bson
+package kantan.bson.laws.discipline
 
 import org.scalacheck.{Arbitrary, Gen}
 import Arbitrary.{arbitrary => arb}
 import Gen._
 import java.security.MessageDigest
 import java.util.regex.Pattern
+import kantan.bson._
 import org.bson.types.{Decimal128, ObjectId}
 
 object arbitrary {
