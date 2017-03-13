@@ -14,7 +14,7 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
       |import kantan.bson.ops._
     """.stripMargin
   )
-  .aggregate(bson, generic)
+  .aggregate(bson, generic, jodaTime)
   .dependsOn(bson, generic)
 
 
@@ -45,4 +45,17 @@ lazy val generic = project
   .settings(libraryDependencies ++= Seq(
     "com.nrinaudo"  %% "kantan.codecs-shapeless"      % Versions.kantanCodecs,
     "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test"
+  ))
+
+lazy val jodaTime = Project(id = "joda-time", base = file("joda-time"))
+  .settings(
+    moduleName := "kantan.bson-joda-time",
+    name       := "joda-time"
+  )
+  .enablePlugins(PublishedPlugin)
+  .dependsOn(bson)
+  .settings(libraryDependencies ++= Seq(
+    "com.nrinaudo"  %% "kantan.codecs-joda-time"      % Versions.kantanCodecs,
+    "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test",
+    "com.nrinaudo"  %% "kantan.codecs-joda-time-laws" % Versions.kantanCodecs % "test"
   ))
