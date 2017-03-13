@@ -26,5 +26,7 @@ object NullCodec extends Codec[BsonNull.type] {
     BsonNull
   }
   override def encode(writer: BsonWriter, value: BsonNull.type, e: EncoderContext) = writer.writeNull()
+
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   override def getEncoderClass = BsonNull.getClass.asInstanceOf[Class[BsonNull.type]]
 }

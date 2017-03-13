@@ -26,5 +26,7 @@ object MaxKeyCodec extends Codec[BsonMaxKey.type] {
     BsonMaxKey
   }
   override def encode(writer: BsonWriter, value: BsonMaxKey.type, e: EncoderContext) = writer.writeMaxKey()
+
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   override def getEncoderClass = BsonMaxKey.getClass.asInstanceOf[Class[BsonMaxKey.type]]
 }

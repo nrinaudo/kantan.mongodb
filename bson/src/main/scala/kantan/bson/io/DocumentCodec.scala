@@ -20,19 +20,22 @@ import kantan.bson.{BsonDocument, BsonValue}
 import org.bson.{BsonReader, BsonType, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 import org.bson.codecs.configuration.CodecRegistry
+import scala.annotation.tailrec
+import scala.collection.mutable
 
 class DocumentCodec(val registry: CodecRegistry) extends Codec[BsonDocument] {
   override def decode(reader: BsonReader, context: DecoderContext) = {
+    @tailrec
+    def loop(builder: mutable.Builder[(String, BsonValue), Map[String, BsonValue]]): Map[String, BsonValue] =
+      if(reader.readBsonType == BsonType.END_OF_DOCUMENT) {
+        reader.readEndDocument()
+        builder.result()
+      }
+      else loop(builder += reader.readName → BsonValueCodecProvider.codecFor(registry, reader.getCurrentBsonType)
+        .decode(reader, context))
+
     reader.readStartDocument()
-
-    val builder = Map.newBuilder[String, BsonValue]
-    while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
-      builder += reader.readName → BsonValueCodecProvider.codecFor(registry, reader.getCurrentBsonType)
-        .decode(reader, context)
-    }
-
-    reader.readEndDocument()
-    BsonDocument(builder.result())
+    BsonDocument(loop(Map.newBuilder[String, BsonValue]))
   }
 
   override def encode(writer: BsonWriter, value: BsonDocument, context: EncoderContext) = {

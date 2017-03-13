@@ -16,6 +16,7 @@
 
 package kantan.bson
 
+@SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
 trait GeneratedBsonDocumentEncoders {
   def encoder[A: BsonValueEncoder, B](name: String)(f: B ⇒ A): BsonDocumentEncoder[B] =
     BsonDocumentEncoder.from(b ⇒ BsonDocument(Map(name → BsonValueEncoder[A].encode(f(b)))))

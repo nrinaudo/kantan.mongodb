@@ -33,6 +33,7 @@ object BinaryDataCodec extends Codec[BsonBinaryData] {
   override def decode(reader: BsonReader, decoderContext: DecoderContext) =
     decoderFor(reader.peekBinarySubType()).decode(reader, decoderContext)
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private def encoderFor[T](data: BsonBinaryData) = data match {
     case BsonBinary(_)            ⇒ BinaryCodec.asInstanceOf[Codec[BsonBinaryData]]
     case BsonMd5(_)               ⇒ Md5Codec.asInstanceOf[Codec[BsonBinaryData]]

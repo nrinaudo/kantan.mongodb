@@ -15,6 +15,7 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
     """.stripMargin
   )
   .aggregate(bson, generic, jodaTime)
+  .aggregateIf(java8Supported)(java8)
   .dependsOn(bson, generic)
 
 
@@ -58,4 +59,17 @@ lazy val jodaTime = Project(id = "joda-time", base = file("joda-time"))
     "com.nrinaudo"  %% "kantan.codecs-joda-time"      % Versions.kantanCodecs,
     "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test",
     "com.nrinaudo"  %% "kantan.codecs-joda-time-laws" % Versions.kantanCodecs % "test"
+  ))
+
+lazy val java8 = project
+  .settings(
+    moduleName    := "kantan.bson-java8",
+    name          := "java8"
+  )
+  .enablePlugins(PublishedPlugin)
+  .dependsOn(bson)
+  .settings(libraryDependencies ++= Seq(
+    "com.nrinaudo"  %% "kantan.codecs-java8"      % Versions.kantanCodecs,
+    "com.nrinaudo"  %% "kantan.codecs-java8-laws" % Versions.kantanCodecs % "test",
+    "org.scalatest" %% "scalatest"                % Versions.scalatest    % "test"
   ))

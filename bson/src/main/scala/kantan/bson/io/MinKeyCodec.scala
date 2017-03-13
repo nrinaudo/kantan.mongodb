@@ -26,5 +26,7 @@ object MinKeyCodec extends Codec[BsonMinKey.type] {
     BsonMinKey
   }
   override def encode(writer: BsonWriter, value: BsonMinKey.type, e: EncoderContext) = writer.writeMinKey()
+
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   override def getEncoderClass = BsonMinKey.getClass.asInstanceOf[Class[BsonMinKey.type]]
 }

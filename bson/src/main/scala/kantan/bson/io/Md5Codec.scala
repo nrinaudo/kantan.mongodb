@@ -23,6 +23,7 @@ import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 object Md5Codec extends Codec[BsonMd5] {
   override def decode(reader: BsonReader, d: DecoderContext) = BsonMd5.hex(reader.readBinaryData().getData)
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private def hexStringToByteArray(s: String): Array[Byte] = {
     val len = s.length()
     val data = new Array[Byte](len / 2)

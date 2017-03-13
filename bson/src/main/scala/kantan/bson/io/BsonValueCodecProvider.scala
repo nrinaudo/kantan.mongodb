@@ -64,13 +64,16 @@ object BsonValueCodecProvider extends CodecProvider {
     (typeBuilder.result(), classBuilder.result())
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Null"))
   override def get[T](c: Class[T], registry: CodecRegistry): Codec[T] =
     bsonClasses.get(c).map(f ⇒ f(registry)).getOrElse(null).asInstanceOf[Codec[T]]
 
   // This fails when btype is not handled. Not much else I can do, I'm afraid...
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private[io] def codecFor(registry: CodecRegistry, btype: BsonType): Codec[BsonValue] =
     registry.get(bsonTypes(btype)).asInstanceOf[Codec[BsonValue]]
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private[io] def codecFor[T](registry: CodecRegistry, cls: Class[T]): Codec[BsonValue] =
     registry.get(cls).asInstanceOf[Codec[BsonValue]]
 }

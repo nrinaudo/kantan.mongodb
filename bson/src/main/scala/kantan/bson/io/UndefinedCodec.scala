@@ -26,5 +26,7 @@ object UndefinedCodec extends Codec[BsonUndefined.type] {
     BsonUndefined
   }
   override def encode(writer: BsonWriter, value: BsonUndefined.type, e: EncoderContext) = writer.writeUndefined()
+
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   override def getEncoderClass = BsonUndefined.getClass.asInstanceOf[Class[BsonUndefined.type]]
 }

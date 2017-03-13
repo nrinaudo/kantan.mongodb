@@ -23,6 +23,5 @@ trait JodaTimeInstances {
   implicit val jodaDateTimeDecoder: BsonValueDecoder[DateTime] = BsonValueDecoder.fromSafe {
     case BsonDateTime(i) ⇒ new DateTime(i)
   }
-
-  implicit val jodaDateTimeEncoder: BsonValueEncoder[DateTime] = BsonValueEncoder.from(d ⇒ BsonDateTime(d.getMillis()))
+  implicit val jodaDateTimeEncoder: BsonValueEncoder[DateTime] = BsonValueEncoder.from(d ⇒ BsonDateTime(d.getMillis))
 }
