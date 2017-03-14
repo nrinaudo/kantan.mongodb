@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package kantan.bson.laws.discipline
+package kantan.bson
 
-import arbitrary._
-import kantan.bson._
-import kantan.bson.laws.{BsonValueCodecLaws, LegalBsonValue}
-import kantan.codecs.laws.discipline.CodecTests
-import org.scalacheck.{Arbitrary, Cogen}
+import kantan.bson.laws.discipline.BsonValueCodecTests
+import kantan.bson.laws.discipline.arbitrary._
+import org.scalatest.FunSuite
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.typelevel.discipline.scalatest.Discipline
 
-object BsonValueDecoderTests {
-  def apply[A: BsonValueCodecLaws: Arbitrary: Cogen](implicit al: Arbitrary[LegalBsonValue[A]])
-  : BsonValueCodecTests[A] = CodecTests[BsonValue, A, DecodeError, codecs.type]
+class OptionCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+  checkAll("BsonValueCodec[Option[Int]]", BsonValueCodecTests[Option[Int]].codec[String, Float])
 }

@@ -39,10 +39,6 @@ object arbitrary extends kantan.codecs.laws.discipline.ArbitraryInstances {
 
   val genDecimal128: Gen[Decimal128] = arb[Long].map(l ⇒ new Decimal128(l))
 
-  val genRegexOptions: Gen[Int] = listOf(oneOf(Pattern.UNIX_LINES, 256, Pattern.CANON_EQ, Pattern.CASE_INSENSITIVE,
-    Pattern.MULTILINE, Pattern.DOTALL, Pattern.LITERAL, Pattern.UNICODE_CASE, Pattern.COMMENTS))
-    .map(_.toSet.foldLeft(0)(_ | _))
-
 
 
   // - Binary data -----------------------------------------------------------------------------------------------------
@@ -88,10 +84,7 @@ object arbitrary extends kantan.codecs.laws.discipline.ArbitraryInstances {
   } yield BsonJavaScriptWithScope(js, scope.value)
 
   val genBsonSymbol: Gen[BsonSymbol] = arb[String].map(BsonSymbol.apply)
-  val genBsonRegularExpression: Gen[BsonRegularExpression] = for {
-    pattern ← oneOf("[a-zA-z]", "^[a-z0-9_-]{3,16}$", "^[a-z0-9_-]{6,18}$", "^#?([a-f0-9]{6}|[a-f0-9]{3})$")
-    opts    ← genRegexOptions
-  } yield BsonRegularExpression(Pattern.compile(pattern, opts))
+  val genBsonRegularExpression: Gen[BsonRegularExpression] = genPattern.map(BsonRegularExpression.apply _)
 
   val genBsonTimestamp: Gen[BsonTimestamp] = for {
     seconds ← posNum[Int]
@@ -131,14 +124,16 @@ object arbitrary extends kantan.codecs.laws.discipline.ArbitraryInstances {
 
   // - Arbitrary instances ---------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  implicit val arbDecodeError: Arbitrary[DecodeError] = Arbitrary(genException.map(DecodeError.apply _))
+  implicit val arbDecodeError: Arbitrary[DecodeError] = Arbitrary(genException.map(DecodeError.apply))
   implicit val arbBsonDocument: Arbitrary[BsonDocument] = Arbitrary(genBsonDocument(4))
   implicit val arbBsonValue: Arbitrary[BsonValue] = Arbitrary(genBsonValue(4))
+  implicit val arbObjectId: Arbitrary[ObjectId] = Arbitrary(genObjectId)
 
 
 
   // - Cogen instances -------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
+  implicit val cogenObjectId: Cogen[ObjectId] = imp[Cogen[String]].contramap(_.toString)
 
   implicit val cogenBsonDecodeError: Cogen[DecodeError] =
     Cogen((seed: Seed, err: DecodeError) ⇒ imp[Cogen[String]].perturb(seed, err.message))
@@ -147,6 +142,8 @@ object arbitrary extends kantan.codecs.laws.discipline.ArbitraryInstances {
     Cogen.it(_.toVector.sortBy(_._1).iterator)
 
   implicit val cogenBsonDocument: Cogen[BsonDocument] = cogenBsonDocumentContent.contramap(_.value)
+
+  implicit val cogenPattern: Cogen[Pattern] = imp[Cogen[(String, Int)]].contramap(p ⇒ (p.pattern(), p.flags()))
 
   implicit lazy val bsonValueCogen: Cogen[BsonValue] = Cogen((seed: Seed, a: BsonValue) ⇒ a match {
     case BsonUuid(uuid)                        ⇒ imp[Cogen[UUID]].perturb(seed, uuid)
@@ -169,10 +166,10 @@ object arbitrary extends kantan.codecs.laws.discipline.ArbitraryInstances {
     case BsonDouble(value)                     ⇒ imp[Cogen[Double]].perturb(seed, value)
     case BsonInt(value)                        ⇒ imp[Cogen[Int]].perturb(seed, value)
     case BsonLong(value)                       ⇒ imp[Cogen[Long]].perturb(seed, value)
-    case BsonObjectId(value)                   ⇒ imp[Cogen[String]].perturb(seed, value.toString)
+    case BsonObjectId(value)                   ⇒ imp[Cogen[ObjectId]].perturb(seed, value)
     case BsonString(value)                     ⇒ imp[Cogen[String]].perturb(seed, value)
     case BsonSymbol(value)                     ⇒ imp[Cogen[String]].perturb(seed, value)
     case BsonTimestamp(seconds, inc)           ⇒ imp[Cogen[(Int, Int)]].perturb(seed, (seconds, inc))
-    case BsonRegularExpression(v)              ⇒ imp[Cogen[(String, Int)]].perturb(seed, (v.pattern(), v.flags()))
+    case BsonRegularExpression(value)          ⇒ imp[Cogen[Pattern]].perturb(seed, value)
   })
 }

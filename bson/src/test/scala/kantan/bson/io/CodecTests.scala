@@ -17,11 +17,11 @@
 package kantan.bson.io
 
 import java.nio.ByteBuffer
+import kantan.bson._
 import kantan.bson.laws.discipline.arbitrary._
-import kantan.bson.{BsonDocument, BsonValue, io}
+import org.bson.{BsonBinaryReader, BsonBinaryWriter}
 import org.bson.codecs.{DecoderContext, EncoderContext}
 import org.bson.io.BasicOutputBuffer
-import org.bson.{BsonBinaryReader, BsonBinaryWriter}
 import org.scalatest.FunSuite
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 

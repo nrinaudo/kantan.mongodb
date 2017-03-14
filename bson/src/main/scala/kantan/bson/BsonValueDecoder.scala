@@ -92,6 +92,8 @@ trait BsonValueDecoderInstances {
     case value    ⇒ BsonValueDecoder[A].decode(value).map(Some.apply)
   }
 
+
+
   // - String-based decoders -------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   implicit val bsonStringDecoder: BsonValueDecoder[String] = BsonValueDecoder.fromSafe {

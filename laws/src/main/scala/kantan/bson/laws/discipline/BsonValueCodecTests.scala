@@ -23,6 +23,6 @@ import kantan.codecs.laws.discipline.CodecTests
 import org.scalacheck.{Arbitrary, Cogen}
 
 object BsonValueCodecTests {
-  def apply[A: BsonValueCodecLaws: Arbitrary: Cogen](implicit al: Arbitrary[LegalBsonValue[A]]): BsonValueCodecTests[A] =
-    CodecTests[BsonValue, A, DecodeError, codecs.type]
+  def apply[A: BsonValueCodecLaws: Arbitrary: Cogen](implicit al: Arbitrary[LegalBsonValue[A]])
+  : BsonValueCodecTests[A] = CodecTests[BsonValue, A, DecodeError, codecs.type]
 }
