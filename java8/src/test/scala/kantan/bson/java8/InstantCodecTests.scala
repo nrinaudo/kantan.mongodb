@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package kantan.bson
+package kantan.bson.java8
 
-import java.time._
+import arbitrary._
+import java.time.Instant
+import kantan.bson.laws.discipline.BsonValueCodecTests
+import org.scalatest.FunSuite
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.typelevel.discipline.scalatest.Discipline
 
-package object java8 {
-  implicit val java8InstantDecoder: BsonValueDecoder[Instant] = BsonValueDecoder.fromSafe {
-    case BsonDateTime(i) ⇒ Instant.ofEpochMilli(i)
-  }
-
-  implicit val java8InstantEncoder: BsonValueEncoder[Instant] = BsonValueEncoder.from(i ⇒ BsonDateTime(i.toEpochMilli))
+class InstantCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+  checkAll("BsonValueCodec[Instant]", BsonValueCodecTests[Instant].codec[String, Float])
 }

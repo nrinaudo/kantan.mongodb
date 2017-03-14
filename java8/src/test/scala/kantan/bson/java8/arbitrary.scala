@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package kantan.bson
+package kantan.bson.java8
 
-import java.time._
+import kantan.bson.laws.discipline.ArbitraryInstances
 
-package object java8 {
-  implicit val java8InstantDecoder: BsonValueDecoder[Instant] = BsonValueDecoder.fromSafe {
-    case BsonDateTime(i) ⇒ Instant.ofEpochMilli(i)
-  }
-
-  implicit val java8InstantEncoder: BsonValueEncoder[Instant] = BsonValueEncoder.from(i ⇒ BsonDateTime(i.toEpochMilli))
-}
+object arbitrary extends kantan.codecs.strings.java8.laws.discipline.ArbitraryInstances
+                         with ArbitraryInstances

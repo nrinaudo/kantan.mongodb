@@ -27,7 +27,9 @@ import org.scalacheck.Arbitrary.{arbitrary => arb}
 import org.scalacheck.Gen._
 import org.scalacheck.rng.Seed
 
-object arbitrary extends kantan.codecs.laws.discipline.ArbitraryInstances {
+object arbitrary extends ArbitraryInstances
+
+trait ArbitraryInstances extends kantan.codecs.laws.discipline.ArbitraryInstances {
   // - BSON types ------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   val genObjectId: Gen[ObjectId] = for {
