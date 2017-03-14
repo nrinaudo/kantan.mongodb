@@ -10,8 +10,8 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
     initialCommands in console :=
     """
       |import kantan.bson._
-      |import kantan.bson.generic._
       |import kantan.bson.ops._
+      |import kantan.bson.generic._
     """.stripMargin
   )
   .aggregate(bson, generic, jodaTime, laws)
@@ -65,8 +65,8 @@ lazy val jodaTime = Project(id = "joda-time", base = file("joda-time"))
   .dependsOn(bson, laws % "test")
   .settings(libraryDependencies ++= Seq(
     "com.nrinaudo"  %% "kantan.codecs-joda-time"      % Versions.kantanCodecs,
-    "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test",
-    "com.nrinaudo"  %% "kantan.codecs-joda-time-laws" % Versions.kantanCodecs % "test"
+    "com.nrinaudo"  %% "kantan.codecs-joda-time-laws" % Versions.kantanCodecs % "test",
+    "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test"
   ))
 
 lazy val java8 = project
