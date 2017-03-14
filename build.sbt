@@ -53,7 +53,8 @@ lazy val generic = project
   .dependsOn(bson, laws % "test")
   .settings(libraryDependencies ++= Seq(
     "com.nrinaudo"  %% "kantan.codecs-shapeless"      % Versions.kantanCodecs,
-    "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test"
+    "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test",
+    "com.nrinaudo"  %% "kantan.codecs-shapeless-laws" % Versions.kantanCodecs % "test"
   ))
 
 lazy val jodaTime = Project(id = "joda-time", base = file("joda-time"))

@@ -61,6 +61,9 @@ trait GenericInstances extends ShapelessInstances {
 
   // - Sum-type codec --------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  implicit val bsonCnilDecoder: BsonDocumentDecoder[CNil] =
+  implicit val bsonDocumentCnilDecoder: BsonDocumentDecoder[CNil] =
     cnilDecoder(c ⇒ DecodeError(s"Not a legal BSON document: $c"))
+
+  implicit val bsonValueCnilDecoder: BsonValueDecoder[CNil] =
+    cnilDecoder(c ⇒ DecodeError(s"Not a legal BSON value: $c"))
 }
