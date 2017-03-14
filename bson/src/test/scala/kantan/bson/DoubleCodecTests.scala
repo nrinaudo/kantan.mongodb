@@ -16,22 +16,12 @@
 
 package kantan.bson
 
-import java.nio.ByteBuffer
+import kantan.bson.laws.discipline.BsonValueCodecTests
 import kantan.bson.laws.discipline.arbitrary._
-import org.bson.{BsonBinaryReader, BsonBinaryWriter}
-import org.bson.codecs.{DecoderContext, EncoderContext}
-import org.bson.io.BasicOutputBuffer
 import org.scalatest.FunSuite
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.typelevel.discipline.scalatest.Discipline
 
-class CodecTests extends FunSuite with GeneratorDrivenPropertyChecks {
-  def roundTrip(doc: BsonDocument): BsonValue = {
-    val out = new BasicOutputBuffer()
-    io.bsonValueCodec.encode(new BsonBinaryWriter(out), doc, EncoderContext.builder.build)
-    io.bsonValueCodec.decode(new BsonBinaryReader(ByteBuffer.wrap(out.getInternalBuffer)), DecoderContext.builder.build)
-  }
-
-  test("Encoding and decoding BSON documents should leave them unchanged") {
-    forAll { doc: BsonDocument ⇒ assert(doc == roundTrip(doc)) }
-  }
+class DoubleCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+  checkAll("BsonValueCodec[Double]", BsonValueCodecTests[Double].codec[String, Float])
 }

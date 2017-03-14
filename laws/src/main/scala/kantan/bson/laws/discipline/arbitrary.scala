@@ -16,23 +16,26 @@
 
 package kantan.bson.laws.discipline
 
-import org.scalacheck.{Arbitrary, Gen}
-import Arbitrary.{arbitrary => arb}
-import Gen._
+import imp.imp
 import java.security.MessageDigest
+import java.util.UUID
 import java.util.regex.Pattern
 import kantan.bson._
 import org.bson.types.{Decimal128, ObjectId}
+import org.scalacheck._
+import org.scalacheck.Arbitrary.{arbitrary => arb}
+import org.scalacheck.Gen._
+import org.scalacheck.rng.Seed
 
-object arbitrary {
+object arbitrary extends kantan.codecs.laws.discipline.ArbitraryInstances {
   // - BSON types ------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   val genObjectId: Gen[ObjectId] = for {
-      ts ← posNum[Int]
-      machine ← posNum[Int]
-      process ← posNum[Short]
-      counter ← posNum[Int]
-    } yield new ObjectId(ts, machine, process, counter)
+    ts ← posNum[Int]
+    machine ← posNum[Int]
+    process ← posNum[Short]
+    counter ← posNum[Int]
+  } yield new ObjectId(ts, machine, process, counter)
 
   val genDecimal128: Gen[Decimal128] = arb[Long].map(l ⇒ new Decimal128(l))
 
@@ -53,8 +56,8 @@ object arbitrary {
   } yield BsonFunction(bytes)
 
   val genBsonUserDefinedBinary: Gen[BsonUserDefinedBinary] = for {
-      bytes ← buildableOf[IndexedSeq[Byte], Byte](arb[Byte])
-    } yield BsonUserDefinedBinary(bytes)
+    bytes ← buildableOf[IndexedSeq[Byte], Byte](arb[Byte])
+  } yield BsonUserDefinedBinary(bytes)
 
   val genBsonUuid: Gen[BsonUuid] = uuid.map(BsonUuid.apply)
   val genBsonMd5: Gen[BsonMd5] = for {
@@ -101,8 +104,8 @@ object arbitrary {
   val genBsonNull: Gen[BsonNull.type] = const(BsonNull)
 
   val genValueType: Gen[BsonValue] = Gen.oneOf(genBsonBoolean, genBsonDouble, genBsonInt, genBsonLong,
-      genBsonString, genBsonSymbol, genBsonTimestamp, genBsonDateTime, genBsonUndefined, genBsonMaxKey, genBsonMinKey,
-      genBsonNull, genBsonObjectId, genBsonRegularExpression, genBsonDbPointer, genBsonDecimal128, genBsonBinaryData)
+    genBsonString, genBsonSymbol, genBsonTimestamp, genBsonDateTime, genBsonUndefined, genBsonMaxKey, genBsonMinKey,
+    genBsonNull, genBsonObjectId, genBsonRegularExpression, genBsonDbPointer, genBsonDecimal128, genBsonBinaryData)
 
   val genJavascript: Gen[BsonValue] = Gen.oneOf(genBsonJavaScript, genBsonJavaScriptWithScope)
 
@@ -117,11 +120,59 @@ object arbitrary {
     id    ← identifier
     value ← genBsonValue(depth)
   } yield id → value).map(BsonDocument.apply)
-  implicit val arbBsonDocument: Arbitrary[BsonDocument] = Arbitrary(genBsonDocument(4))
 
   def genNestedType(depth: Int): Gen[BsonValue] = oneOf(genBsonDocument(depth), genBsonArray(depth))
 
   def genBsonValue(depth: Int): Gen[BsonValue] =
     if(depth <= 0) genValueType
     else           frequency((10, genTerminalType), (1, genNestedType(depth - 1)))
+
+
+
+  // - Arbitrary instances ---------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  implicit val arbDecodeError: Arbitrary[DecodeError] = Arbitrary(genException.map(DecodeError.apply _))
+  implicit val arbBsonDocument: Arbitrary[BsonDocument] = Arbitrary(genBsonDocument(4))
+  implicit val arbBsonValue: Arbitrary[BsonValue] = Arbitrary(genBsonValue(4))
+
+
+
+  // - Cogen instances -------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+
+  implicit val cogenBsonDecodeError: Cogen[DecodeError] =
+    Cogen((seed: Seed, err: DecodeError) ⇒ imp[Cogen[String]].perturb(seed, err.message))
+
+  implicit val cogenBsonDocumentContent: Cogen[Map[String, BsonValue]] =
+    Cogen.it(_.toVector.sortBy(_._1).iterator)
+
+  implicit val cogenBsonDocument: Cogen[BsonDocument] = cogenBsonDocumentContent.contramap(_.value)
+
+  implicit lazy val bsonValueCogen: Cogen[BsonValue] = Cogen((seed: Seed, a: BsonValue) ⇒ a match {
+    case BsonUuid(uuid)                        ⇒ imp[Cogen[UUID]].perturb(seed, uuid)
+    case BsonMd5(md5)                          ⇒ imp[Cogen[String]].perturb(seed, md5)
+    case BsonUserDefinedBinary(value)          ⇒ imp[Cogen[Seq[Byte]]].perturb(seed, value)
+    case BsonFunction(value)                   ⇒ imp[Cogen[Seq[Byte]]].perturb(seed, value)
+    case BsonBinary(value)                     ⇒ imp[Cogen[Seq[Byte]]].perturb(seed, value)
+    case BsonArray(value)                      ⇒ imp[Cogen[Seq[BsonValue]]].perturb(seed, value)
+    case BsonDocument(value)                   ⇒ cogenBsonDocumentContent.perturb(seed, value)
+    case BsonJavaScriptWithScope(value, s)     ⇒ imp[Cogen[(String, Map[String, BsonValue])]].perturb(seed, (value, s))
+    case BsonMaxKey                            ⇒ seed
+    case BsonMinKey                            ⇒ seed
+    case BsonNull                              ⇒ seed
+    case BsonUndefined                         ⇒ seed
+    case BsonBoolean(value)                    ⇒ imp[Cogen[Boolean]].perturb(seed, value)
+    case BsonDateTime(value)                   ⇒ imp[Cogen[Long]].perturb(seed, value)
+    case BsonDbPointer(namespace, id)          ⇒ imp[Cogen[(String, String)]].perturb(seed, (namespace, id.toString))
+    case BsonDecimal128(value)                 ⇒ imp[Cogen[(Long, Long)]].perturb(seed, (value.getLow, value.getHigh))
+    case BsonJavaScript(value)                 ⇒ imp[Cogen[String]].perturb(seed, value)
+    case BsonDouble(value)                     ⇒ imp[Cogen[Double]].perturb(seed, value)
+    case BsonInt(value)                        ⇒ imp[Cogen[Int]].perturb(seed, value)
+    case BsonLong(value)                       ⇒ imp[Cogen[Long]].perturb(seed, value)
+    case BsonObjectId(value)                   ⇒ imp[Cogen[String]].perturb(seed, value.toString)
+    case BsonString(value)                     ⇒ imp[Cogen[String]].perturb(seed, value)
+    case BsonSymbol(value)                     ⇒ imp[Cogen[String]].perturb(seed, value)
+    case BsonTimestamp(seconds, inc)           ⇒ imp[Cogen[(Int, Int)]].perturb(seed, (seconds, inc))
+    case BsonRegularExpression(v)              ⇒ imp[Cogen[(String, Int)]].perturb(seed, (v.pattern(), v.flags()))
+  })
 }
