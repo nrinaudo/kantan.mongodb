@@ -19,50 +19,55 @@ package kantan.bson.generic
 import kantan.bson._
 import kantan.codecs.shapeless.ShapelessInstances
 import shapeless._
-import shapeless.labelled.{field, FieldType}
+import shapeless.labelled._
 
 trait GenericInstances extends ShapelessInstances {
   // - Product-type encoding -------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   implicit val bsonHnilEncoder: BsonDocumentEncoder[HNil] = BsonDocumentEncoder.from { _ ⇒ BsonDocument(Map.empty) }
 
-  implicit def bsonHlistEncoder[K <: Symbol, H, T <: HList]
-  (implicit witness: Witness.Aux[K], hEncoder: Lazy[BsonValueEncoder[H]], tEncoder: BsonDocumentEncoder[T]):
-  BsonDocumentEncoder[FieldType[K, H] :: T] = {
+  implicit def hlistBsonDocumentEncoder[K <: Symbol, H: BsonValueEncoder, T <: HList: BsonDocumentEncoder]
+  (implicit witness: Witness.Aux[K]): BsonDocumentEncoder[FieldType[K, H] :: T] = {
     val name = witness.value.name
 
     BsonDocumentEncoder.from { hlist ⇒
-      val head = hEncoder.value.encode(hlist.head)
-      val tail = tEncoder.encode(hlist.tail)
+      val head = BsonValueEncoder[H].encode(hlist.head)
+      val tail = BsonDocumentEncoder[T].encode(hlist.tail)
       BsonDocument(tail.value + (name → head))
     }
   }
+
+  implicit def hlistBsonValueEncoder[H: BsonValueEncoder]: BsonValueEncoder[H :: HNil] =
+    BsonValueEncoder[H].contramap { case (h :: _) ⇒ h }
 
 
 
   // - Product-type decoding -------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   implicit val bsonHnilDecoder: BsonDocumentDecoder[HNil] =
-    BsonDocumentDecoder.fromSafe { _ ⇒ HNil }
+  BsonDocumentDecoder.fromSafe { _ ⇒ HNil }
 
-  implicit def bsonHlistDecoder[K <: Symbol, H, T <: HList]
-  (implicit witness: Witness.Aux[K], hDecoder: Lazy[BsonValueDecoder[H]], tDecoder: BsonDocumentDecoder[T]):
-    BsonDocumentDecoder[FieldType[K, H] :: T] = {
+  implicit def bsonHlistDecoder[K <: Symbol, H: BsonValueDecoder, T <: HList: BsonDocumentDecoder]
+  (implicit witness: Witness.Aux[K]): BsonDocumentDecoder[FieldType[K, H] :: T] = {
     val name = witness.value.name
 
     BsonDocumentDecoder.from { doc ⇒
       for {
-        head ← hDecoder.value.decode(doc.value.getOrElse(name, BsonNull))
-        tail ← tDecoder.decode(doc)
+        head ← BsonValueDecoder[H].decode(doc.value.getOrElse(name, BsonNull))
+        tail ← BsonDocumentDecoder[T].decode(doc)
       } yield field[K](head) :: tail
     }
   }
+
+  implicit def hlistBsonValueDecoder[H: BsonValueDecoder]: BsonValueDecoder[H :: HNil] =
+    BsonValueDecoder[H].map(h ⇒ h :: HNil)
+
 
 
   // - Sum-type codec --------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   implicit val bsonDocumentCnilDecoder: BsonDocumentDecoder[CNil] =
-    cnilDecoder(c ⇒ DecodeError(s"Not a legal BSON document: $c"))
+  cnilDecoder(c ⇒ DecodeError(s"Not a legal BSON document: $c"))
 
   implicit val bsonValueCnilDecoder: BsonValueDecoder[CNil] =
     cnilDecoder(c ⇒ DecodeError(s"Not a legal BSON value: $c"))

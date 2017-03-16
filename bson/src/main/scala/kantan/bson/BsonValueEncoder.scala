@@ -30,11 +30,13 @@ object BsonValueEncoder {
   def from[A](f: A ⇒ BsonValue): BsonValueEncoder[A] = Encoder.from(f)
 }
 
-trait BsonValueEncoderInstances {
+trait LowPriorityBsonValueEncoderInstances {
   /** Turns any [[BsonDocumentEncoder]] instance into a [[BsonValueEncoder]] one. */
   implicit def encoderFromDocument[A: BsonDocumentEncoder]: BsonValueEncoder[A] =
     BsonValueEncoder.from(BsonDocumentEncoder[A].encode)
+}
 
+trait BsonValueEncoderInstances extends LowPriorityBsonValueEncoderInstances {
   /** Encodes `Int` values as [[BsonInt]].
     *
     * For example:
