@@ -18,11 +18,12 @@ package kantan.bson
 
 import java.io.File
 import java.net.{URI, URL}
-import java.nio.file.{Path, Paths}
+import java.nio.file.Path
 import java.util.UUID
 import java.util.regex.Pattern
 import kantan.codecs.Decoder
 import kantan.codecs.Result.{Failure, Success}
+import kantan.codecs.strings.StringDecoder
 import org.bson.types.ObjectId
 import scala.collection.generic.CanBuildFrom
 
@@ -65,17 +66,44 @@ trait BsonValueDecoderInstances {
     case BsonObjectId(i) ⇒ i
   }
 
+  /** Decodes instances of [[BsonBoolean]] as `Boolean`.
+    *
+    * For example:
+    * {{{
+    * scala> BsonValueDecoder[Boolean].decode(BsonBoolean(true))
+    * res0: DecodeResult[Boolean] = Success(true)
+    * }}}
+    */
   implicit val bsonBooleanDecoder: BsonValueDecoder[Boolean] = BsonValueDecoder.fromSafe {
     case BsonBoolean(b) ⇒ b
   }
 
+  /** Decodes instances of [[BsonRegularExpression]] as `Pattern`.
+    *
+    * For example:
+    * {{{
+    * scala> import java.util.regex._
+    *
+    * scala> BsonValueDecoder[Pattern].decode(BsonRegularExpression(Pattern.compile("[a-zA-Z]*")))
+    * res0: DecodeResult[Pattern] = Success([a-zA-Z]*)
+    * }}}
+    */
   implicit val bsonRegularExpressionDecoder: BsonValueDecoder[Pattern] = BsonValueDecoder.fromSafe {
     case BsonRegularExpression(p) ⇒ p
   }
 
+  /** Decodes instances of [[BsonUuid]] as `UUID`.
+    *
+    * For example:
+    * {{{
+    * scala> import java.util._
+    *
+    * scala> BsonValueDecoder[UUID].decode(BsonUuid(UUID.fromString("123e4567-e89b-12d3-a456-426655440000")))
+    * res0: DecodeResult[UUID] = Success(123e4567-e89b-12d3-a456-426655440000)
+    * }}}
+    */
   implicit val bsonUuidDecoder: BsonValueDecoder[UUID] = BsonValueDecoder.from {
     case BsonUuid(uuid)  ⇒ DecodeResult.success(uuid)
-    case BsonString(str) ⇒ DecodeResult(UUID.fromString(str))
   }
 
   implicit def bsonArrayDecoder[C[_], A: BsonValueDecoder]
@@ -83,7 +111,7 @@ trait BsonValueDecoderInstances {
     case BsonArray(values) ⇒ values.foldLeft(DecodeResult(cbf.apply())) { (racc, v) ⇒ for {
       acc ← racc
       a   ← BsonValueDecoder[A].decode(v)
-     } yield acc += a
+    } yield acc += a
     }.map(_.result())
   }
 
@@ -96,21 +124,72 @@ trait BsonValueDecoderInstances {
 
   // - String-based decoders -------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
+  /** Decodes instances of [[BsonString]] as `String`.
+    *
+    * For example:
+    * {{{
+    * scala> BsonValueDecoder[String].decode(BsonString("foobar"))
+    * res0: DecodeResult[String] = Success(foobar)
+    * }}}
+    */
   implicit val bsonStringDecoder: BsonValueDecoder[String] = BsonValueDecoder.fromSafe {
     case BsonString(s) ⇒ s
   }
 
-  implicit val bsonUriDecoder: BsonValueDecoder[URI] =
-    BsonValueDecoder[String].mapResult(s ⇒ DecodeResult(new URI(s.trim)))
+  /** Creates a new [[BsonValueDecoder]] from the specified  `StringDecoder`.
+    *
+    * Note that the resulting decoder will only work on values of type [[BsonString]].
+    */
+  def fromStringDecoder[A: StringDecoder]: BsonValueDecoder[A] =
+    BsonValueDecoder[String].mapResult(s ⇒ StringDecoder[A].decode(s).leftMap(e ⇒ DecodeError(e.message)))
 
-  implicit val bsonUrlDecoder: BsonValueDecoder[URL] =
-    BsonValueDecoder[String].mapResult(s ⇒ DecodeResult(new URL(s.trim)))
+  /** Decodes instances of [[BsonString]] as `URI`.
+    *
+    * For example:
+    * {{{
+    * scala> import java.net._
+    *
+    * scala> BsonValueDecoder[URI].decode(BsonString("http://localhost"))
+    * res0: DecodeResult[URI] = Success(http://localhost)
+    * }}}
+    */
+  implicit val bsonUriDecoder: BsonValueDecoder[URI] = fromStringDecoder[URI]
 
-  implicit val bsonFileDecoder: BsonValueDecoder[File] =
-    BsonValueDecoder[String].mapResult(s ⇒ DecodeResult(new File(s.trim)))
+  /** Decodes instances of [[BsonString]] as `URL`.
+    *
+    * For example:
+    * {{{
+    * scala> import java.net._
+    *
+    * scala> BsonValueDecoder[URL].decode(BsonString("http://localhost"))
+    * res0: DecodeResult[URL] = Success(http://localhost)
+    * }}}
+    */
+  implicit val bsonUrlDecoder: BsonValueDecoder[URL] = fromStringDecoder[URL]
 
-  implicit val bsonPathDecoder: BsonValueDecoder[Path] =
-    BsonValueDecoder[String].mapResult(s ⇒ DecodeResult(Paths.get(s.trim)))
+  /** Decodes instances of [[BsonString]] as `File`.
+    *
+    * For example:
+    * {{{
+    * scala> import java.io._
+    *
+    * scala> BsonValueDecoder[File].decode(BsonString("/var/log"))
+    * res0: DecodeResult[File] = Success(/var/log)
+    * }}}
+    */
+  implicit val bsonFileDecoder: BsonValueDecoder[File] = fromStringDecoder[File]
+
+  /** Decodes instances of [[BsonString]] as `Path`.
+    *
+    * For example:
+    * {{{
+    * scala> import java.nio.file._
+    *
+    * scala> BsonValueDecoder[Path].decode(BsonString("/var/log"))
+    * res0: DecodeResult[Path] = Success(/var/log)
+    * }}}
+    */
+  implicit val bsonPathDecoder: BsonValueDecoder[Path] = fromStringDecoder[Path]
 
   // The following BSON types don't currently have default support because I'm not sure what to do with them:
   // - BsonUserDefinedBinary

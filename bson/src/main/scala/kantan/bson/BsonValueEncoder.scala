@@ -22,6 +22,7 @@ import java.nio.file.Path
 import java.util.UUID
 import java.util.regex.Pattern
 import kantan.codecs.Encoder
+import kantan.codecs.strings.StringEncoder
 import org.bson.types.ObjectId
 
 object BsonValueEncoder {
@@ -154,6 +155,9 @@ trait BsonValueEncoderInstances extends LowPriorityBsonValueEncoderInstances {
     */
   implicit val bsonStringEncoder: BsonValueEncoder[String] = BsonValueEncoder.from(BsonString.apply)
 
+  def fromStringEncoder[A: StringEncoder]: BsonValueEncoder[A] =
+    BsonValueEncoder.from(a ⇒ BsonString(StringEncoder[A].encode(a)))
+
   /** Encodes `URI` values as [[BsonString]].
     *
     * For example:
@@ -162,7 +166,7 @@ trait BsonValueEncoderInstances extends LowPriorityBsonValueEncoderInstances {
     * res0: BsonValue = BsonString(http://localhost)
     * }}}
     */
-  implicit val bsonUriEncoder: BsonValueEncoder[URI] = BsonValueEncoder[String].contramap(_.toString)
+  implicit val bsonUriEncoder: BsonValueEncoder[URI] = fromStringEncoder[URI]
 
   /** Encodes `URL` values as [[BsonString]].
     *
@@ -172,7 +176,7 @@ trait BsonValueEncoderInstances extends LowPriorityBsonValueEncoderInstances {
     * res0: BsonValue = BsonString(http://localhost)
     * }}}
     */
-  implicit val bsonUrlEncoder: BsonValueEncoder[URL] = BsonValueEncoder[String].contramap(_.toString)
+  implicit val bsonUrlEncoder: BsonValueEncoder[URL] = fromStringEncoder[URL]
 
   /** Encodes `File` values as [[BsonString]].
     *
@@ -184,7 +188,7 @@ trait BsonValueEncoderInstances extends LowPriorityBsonValueEncoderInstances {
     * res0: BsonValue = BsonString(/var/log)
     * }}}
     */
-  implicit val bsonFileEncoder: BsonValueEncoder[File] = BsonValueEncoder[String].contramap(_.toString)
+  implicit val bsonFileEncoder: BsonValueEncoder[File] = fromStringEncoder[File]
 
   /** Encodes `Path` values as [[BsonString]].
     *
@@ -196,5 +200,5 @@ trait BsonValueEncoderInstances extends LowPriorityBsonValueEncoderInstances {
     * res0: BsonValue = BsonString(/var/log)
     * }}}
     */
-  implicit val bsonPathEncoder: BsonValueEncoder[Path] = BsonValueEncoder[String].contramap(_.toString)
+  implicit val bsonPathEncoder: BsonValueEncoder[Path] = fromStringEncoder[Path]
 }
