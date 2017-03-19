@@ -20,13 +20,26 @@ import com.mongodb.client.{MongoCollection => MCollection}
 import kantan.bson._
 import scala.collection.JavaConverters._
 
-class MongoCollection private[mongodb] (private val col: MCollection[BsonDocument]) {
+class MongoCollection private[mongodb] (val underlying: MCollection[BsonDocument]) {
+  // - Count -----------------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  def count(): Long = underlying.count()
+  def count[I: BsonDocumentEncoder](filter: I): Long = underlying.count(BsonDocumentEncoder[I].encode(filter))
+
+
+
+  // - Find ------------------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
   def find[I: BsonDocumentEncoder, O: BsonDocumentDecoder](filter: I): Iterator[DecodeResult[O]] = {
-    col.find(BsonDocumentEncoder[I].encode(filter)).iterator().asScala.map(BsonDocumentDecoder[O].decode)
+    underlying.find(BsonDocumentEncoder[I].encode(filter)).iterator().asScala.map(BsonDocumentDecoder[O].decode)
   }
 
   def find[O: BsonDocumentDecoder](): Iterator[DecodeResult[O]] =
-    col.find().iterator().asScala.map(BsonDocumentDecoder[O].decode)
+    underlying.find().iterator().asScala.map(BsonDocumentDecoder[O].decode)
 
-  override def toString = s"MongoCollection(${col.getNamespace})"
+
+
+  // - Misc. -----------------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  override def toString = s"MongoCollection(${underlying.getNamespace})"
 }

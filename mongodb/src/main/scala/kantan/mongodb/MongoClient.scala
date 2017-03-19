@@ -19,15 +19,20 @@ package kantan.mongodb
 import com.mongodb.{MongoClient ⇒ MClient, MongoClientOptions, MongoClientURI, MongoCredential, ServerAddress}
 import com.mongodb.client.MongoDriverInformation
 import java.io.Closeable
+import kantan.bson.{BsonDocument, BsonDocumentDecoder}
+import kantan.mongodb.MongoClient.DatabaseInfo
 import scala.collection.JavaConverters._
 import scala.util.Try
 
 class MongoClient private (private val client: MClient) extends Closeable {
   def database(name: String): MongoDatabase = new MongoDatabase(client.getDatabase(name))
-  /*
-  def databases = ???
-  def databaseNames = ???
-  */
+
+  def databases(): Iterator[DatabaseInfo] =
+  // We're assuming that DatabaseInfo is always succesfully decoded. Probably an ok assumption to make, but still...
+    client.listDatabases(classOf[BsonDocument]).iterator().asScala.map(BsonDocumentDecoder[DatabaseInfo].unsafeDecode)
+
+  def databaseNames(): Iterator[String] = databases().map(_.name)
+
   override def close() = client.close()
 }
 
@@ -60,4 +65,15 @@ object MongoClient {
   def driverInfo: MongoDriverInformation = MongoDriverInformation.builder().driverName("kantan.mongodb")
     .driverVersion(BuildInfo.version)
     .driverPlatform("Scala " + scala.util.Properties.scalaPropOrElse("version.number", "unknown")).build()
+
+
+
+  // - Database info ---------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  final case class DatabaseInfo(name: String, sizeOnDisk: Double, empty: Boolean)
+
+  object DatabaseInfo {
+    implicit val infoDecoder: BsonDocumentDecoder[DatabaseInfo] =
+      BsonDocumentDecoder.decoder("name", "sizeOnDisk", "empty")(DatabaseInfo.apply _)
+  }
 }
