@@ -18,6 +18,10 @@ package kantan.bson
 
 import java.util.UUID
 import java.util.regex.Pattern
+import kantan.bson.io.DocumentCodec
+import org.bson.RawBsonDocument
+import org.bson.codecs.configuration.CodecRegistry
+import org.bson.conversions.Bson
 import org.bson.types.{Decimal128, ObjectId}
 
 /** Represents all possible values that can be found in a BSON document. */
@@ -43,9 +47,11 @@ final case class BsonBinary(value: IndexedSeq[Byte]) extends BsonBinaryData
 // - Nested types ------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 final case class BsonArray(value: Seq[BsonValue]) extends BsonValue
-final case class BsonDocument(value: Map[String, BsonValue]) extends BsonValue
 final case class BsonJavaScriptWithScope(value: String, scope: Map[String, BsonValue]) extends BsonValue
-
+final case class BsonDocument(value: Map[String, BsonValue]) extends BsonValue with Bson {
+  override def toBsonDocument[A](documentClass: Class[A], codecRegistry: CodecRegistry) =
+    new RawBsonDocument(this, new DocumentCodec(codecRegistry))
+}
 
 
 // - Singleton types ---------------------------------------------------------------------------------------------------

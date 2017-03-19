@@ -14,14 +14,38 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
       |import kantan.bson.generic._
     """.stripMargin
   )
-  .aggregate(bson, generic, jodaTime, laws)
+  .aggregate(mongodb, bson, generic, jodaTime, laws)
   .aggregateIf(java8Supported)(java8)
-  .dependsOn(bson, generic)
+  .dependsOn(mongodb, generic)
 
 
 
 // - bson --------------------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
+lazy val mongodb = project
+  .settings(
+    moduleName := "kantan.mongodb",
+    name       := "mongodb"
+  )
+  .enablePlugins(PublishedPlugin, BuildInfoPlugin)
+  .settings(
+    buildInfoKeys := Seq[BuildInfoKey](version, BuildInfoKey.action("commit") {git.gitHeadCommit.value}),
+    buildInfoPackage := "kantan.mongodb"
+  )
+  .dependsOn(bson)
+  .settings(libraryDependencies ++= Seq(
+    "org.mongodb"   %  "mongodb-driver" % Versions.mongodb,
+    "org.scalatest" %% "scalatest"      % Versions.scalatest % "test"
+  ))
+  .settings(
+    initialCommands in console :=
+    """
+      |import kantan.mongodb._
+      |import kantan.bson._
+    """.stripMargin
+  )
+
+
 lazy val bson = project
   .settings(
     moduleName := "kantan.bson",
