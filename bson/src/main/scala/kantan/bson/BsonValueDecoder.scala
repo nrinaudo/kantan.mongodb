@@ -39,29 +39,83 @@ object BsonValueDecoder {
   }
 }
 
-trait BsonValueDecoderInstances {
+trait LowPriorityBsonValueDecoderInstances {
   implicit def decoderFromDocument[A: BsonDocumentDecoder]: BsonValueDecoder[A] = BsonValueDecoder.from {
     case a@BsonDocument(_) ⇒ BsonDocumentDecoder[A].decode(a)
   }
+}
 
+trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
+  /** Decodes instances of [[BsonInt]], [[BsonMaxKey]] and [[BsonMinKey]] as `Int`.
+    *
+    * For example:
+    * {{{
+    * scala> BsonValueDecoder[Int].decode(BsonInt(1))
+    * res0: DecodeResult[Int] = Success(1)
+    * }}}
+    *
+    * scala> BsonValueDecoder[Int].decode(BsonMinKey)
+    * res1: DecodeResult[Int] = Success(-2147483648)
+    *
+    * scala> BsonValueDecoder[Int].decode(BsonMaxKey)
+    * res2: DecodeResult[Int] = Success(2147483647)
+    */
   implicit val bsonIntDecoder: BsonValueDecoder[Int] = BsonValueDecoder.fromSafe {
     case BsonInt(i) ⇒ i
     case BsonMaxKey ⇒ Int.MaxValue
     case BsonMinKey ⇒ Int.MinValue
   }
 
+  /** Decodes instances of [[BsonLong]], [[BsonMaxKey]] and [[BsonMinKey]] as `Long`.
+    *
+    * For example:
+    * {{{
+    * scala> BsonValueDecoder[Long].decode(BsonLong(1L))
+    * res0: DecodeResult[Long] = Success(1)
+    * }}}
+    *
+    * scala> BsonValueDecoder[Long].decode(BsonMinKey)
+    * res1: DecodeResult[Long] = Success(-9223372036854775808)
+    *
+    * scala> BsonValueDecoder[Long].decode(BsonMaxKey)
+    * res2: DecodeResult[Long] = Success(9223372036854775807)
+    */
   implicit val bsonLongDecoder: BsonValueDecoder[Long] = BsonValueDecoder.fromSafe {
     case BsonLong(l) ⇒ l
     case BsonMaxKey ⇒ Long.MaxValue
     case BsonMinKey ⇒ Long.MinValue
   }
 
+  /** Decodes instances of [[BsonDouble]], [[BsonMaxKey]] and [[BsonMinKey]] as `Double`.
+    *
+    * For example:
+    * {{{
+    * scala> BsonValueDecoder[Double].decode(BsonDouble(0.5))
+    * res0: DecodeResult[Double] = Success(0.5)
+    * }}}
+    *
+    * scala> BsonValueDecoder[Double].decode(BsonMinKey)
+    * res1: DecodeResult[Double] = Success(-1.7976931348623157E308)
+    *
+    * scala> BsonValueDecoder[Double].decode(BsonMaxKey)
+    * res2: DecodeResult[Double] = Success(1.7976931348623157E308)
+    */
   implicit val bsonDoubleDecoder: BsonValueDecoder[Double] = BsonValueDecoder.fromSafe {
     case BsonDouble(d) ⇒ d
     case BsonMaxKey ⇒ Double.MaxValue
     case BsonMinKey ⇒ Double.MinValue
   }
 
+  /** Decodes instances of [[BsonObjectId]] as `ObjectId`.
+    *
+    * For example:
+    * {{{
+    * scala> import org.bson.types._
+    *
+    * scala> BsonValueDecoder[ObjectId].decode(BsonObjectId(new ObjectId("58c64e6a54757ec4c09c525e")))
+    * res0: DecodeResult[ObjectId] = Success(58c64e6a54757ec4c09c525e)
+    * }}}
+    */
   implicit val bsonObjectIdDecoder: BsonValueDecoder[ObjectId] = BsonValueDecoder.fromSafe {
     case BsonObjectId(i) ⇒ i
   }
@@ -106,6 +160,14 @@ trait BsonValueDecoderInstances {
     case BsonUuid(uuid)  ⇒ DecodeResult.success(uuid)
   }
 
+  /** Decodes instances of `BsonArray` as `C[A]`, provided `C` as a `CanBuildFrom` and `A` a [[BsonValueDecoder]].
+    *
+    * For example:
+    * {{{
+    * scala> BsonValueDecoder[List[Int]].decode(BsonArray(Seq(BsonInt(1), BsonInt(2), BsonInt(3))))
+    * res0> DecodeResult[List[Int]] = Success(List(1, 2, 3))
+    * }}}
+    */
   implicit def bsonArrayDecoder[C[_], A: BsonValueDecoder]
   (implicit cbf: CanBuildFrom[Nothing, A, C[A]]): BsonValueDecoder[C[A]] = BsonValueDecoder.from {
     case BsonArray(values) ⇒ values.foldLeft(DecodeResult(cbf.apply())) { (racc, v) ⇒ for {
@@ -115,6 +177,18 @@ trait BsonValueDecoderInstances {
     }.map(_.result())
   }
 
+  /** Decodes instances of [[BsonNull]] as `None` and [[BsonValue]] as `Some(A)`, provided there exists a
+    * `BsonValueDecoder[A]` in implicit scope.
+    *
+    * For example:
+    * {{{
+    * scala> BsonValueDecoder[Option[Int]].decode(BsonNull)
+    * res0> DecodeResult[Option[Int]] = None
+    *
+    * scala> BsonValueDecoder[Option[Int]].decode(BsonInt(1))
+    * res0> DecodeResult[Option[Int]] = Some(1)
+    * }}}
+    */
   implicit def bsonOptionDecoder[A: BsonValueDecoder]: BsonValueDecoder[Option[A]] = BsonValueDecoder.from {
     case BsonNull ⇒ DecodeResult.success(None)
     case value    ⇒ BsonValueDecoder[A].decode(value).map(Some.apply)
