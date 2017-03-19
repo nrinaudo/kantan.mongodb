@@ -1,0 +1,38 @@
+/*
+ * Copyright 2017 Nicolas Rinaudo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package kantan.bson
+
+import kantan.bson.laws.discipline.arbitrary._
+import kantan.bson.laws.IllegalBsonDocument
+import kantan.bson.laws.discipline.BsonValueCodecTests
+import org.scalacheck.{Arbitrary, Cogen}
+import org.scalacheck.Arbitrary.{arbitrary => arb}
+import org.scalatest.FunSuite
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.typelevel.discipline.scalatest.Discipline
+
+class GeneratedBsonDocumentDecoderTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+  [#case class TestCase1([#i1: Int#])
+  implicit val arbTestCase1: Arbitrary[TestCase1] = Arbitrary(arb[Tuple1[[#Int#]]].map { case Tuple1([#i1#]) ⇒ TestCase1([#i1#]) })
+  implicit val cogenTestCase1: Cogen[TestCase1] = Cogen.cogenList[Int].contramap(f ⇒ List([#f.i1#]))
+  implicit val codec1: BsonDocumentCodec[TestCase1] = BsonDocumentCodec.caseCodec([#"i1"#])(TestCase1.apply)(TestCase1.unapply)
+  implicit val arbIllegalTestCase1: Arbitrary[IllegalBsonDocument[TestCase1]] = arbIllegalValueFromDec[BsonDocument, TestCase1, codecs.type]
+
+  checkAll("BsonValueCodec[TestCase1]", BsonValueCodecTests[TestCase1].codec[String, Float])#
+
+  ]
+}
