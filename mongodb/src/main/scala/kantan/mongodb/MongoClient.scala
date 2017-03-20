@@ -16,7 +16,7 @@
 
 package kantan.mongodb
 
-import com.mongodb.{MongoClient ⇒ MClient, MongoClientOptions, MongoClientURI, MongoCredential, ServerAddress}
+import com.mongodb.{MongoClient ⇒ MClient}
 import com.mongodb.client.MongoDriverInformation
 import java.io.Closeable
 import kantan.bson.{BsonDocument, BsonDocumentDecoder}

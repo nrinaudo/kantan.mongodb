@@ -16,9 +16,7 @@
 
 package kantan.mongodb
 
-import com.mongodb.{ReadConcern, ReadPreference, WriteConcern}
 import com.mongodb.client.{MongoDatabase => MDatabase}
-import com.mongodb.client.model.{CreateCollectionOptions, CreateViewOptions}
 import kantan.bson.{BsonDocument, BsonDocumentDecoder, BsonDocumentEncoder, DecodeResult}
 import kantan.mongodb.MongoDatabase.CollectionInfo
 import scala.collection.JavaConverters._
@@ -37,8 +35,10 @@ class MongoDatabase private[mongodb] (val underlying: MDatabase) {
     collection(name)
   }
 
+  /** Creates a new collection with the specified name. */
   def createCollection(name: String): MongoCollection = createCollection(name, None)
 
+  /** Creates a new collection with the specified name, using the specified options. */
   def createCollectionWith(name: String, options: CreateCollectionOptions): MongoCollection =
     createCollection(name, Some(options))
 
