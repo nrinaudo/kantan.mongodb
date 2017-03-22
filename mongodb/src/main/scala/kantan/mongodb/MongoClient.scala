@@ -45,7 +45,7 @@ object MongoClient {
     fromAddress(List(new ServerAddress()), List.empty, options)
 
   def fromUri(uri: String): Option[MongoClient] =
-    Try(new MongoClientURI(uri, MongoClientOptions.builder().codecRegistry(kantan.bson.io.registry)))
+    Try(new MongoClientURI(uri, com.mongodb.MongoClientOptions.builder().codecRegistry(kantan.bson.io.registry)))
       .map(u ⇒ new MongoClient(new MClient(u, driverInfo)))
       .toOption
 
@@ -59,7 +59,7 @@ object MongoClient {
   // - Internal helpers ------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   private def addRegistry(options: Option[MongoClientOptions]): MongoClientOptions =
-    options.map(MongoClientOptions.builder).getOrElse(MongoClientOptions.builder())
+    options.map(o ⇒ com.mongodb.MongoClientOptions.builder(o)).getOrElse(com.mongodb.MongoClientOptions.builder())
       .codecRegistry(kantan.bson.io.registry).build()
 
   def driverInfo: MongoDriverInformation = MongoDriverInformation.builder().driverName("kantan.mongodb")

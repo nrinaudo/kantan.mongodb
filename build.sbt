@@ -12,6 +12,7 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
       |import kantan.bson._
       |import kantan.bson.ops._
       |import kantan.bson.generic._
+      |import kantan.mongodb._
     """.stripMargin
   )
   .aggregate(mongodb, bson, generic, jodaTime, laws)

@@ -16,9 +16,8 @@
 
 package kantan.mongodb
 
-import com.mongodb.client.{MongoCollection => MCollection}
+import com.mongodb.client.{MongoCollection ⇒ MCollection}
 import kantan.bson._
-import scala.collection.JavaConverters._
 
 class MongoCollection private[mongodb] (val underlying: MCollection[BsonDocument]) {
   // - Count -----------------------------------------------------------------------------------------------------------
@@ -30,12 +29,8 @@ class MongoCollection private[mongodb] (val underlying: MCollection[BsonDocument
 
   // - Find ------------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def find[I: BsonDocumentEncoder, O: BsonDocumentDecoder](filter: I): Iterator[DecodeResult[O]] = {
-    underlying.find(BsonDocumentEncoder[I].encode(filter)).iterator().asScala.map(BsonDocumentDecoder[O].decode)
-  }
-
-  def find[O: BsonDocumentDecoder](): Iterator[DecodeResult[O]] =
-    underlying.find().iterator().asScala.map(BsonDocumentDecoder[O].decode)
+  def find[I: BsonDocumentEncoder, O: BsonDocumentDecoder](filter: I): Query[O] = Query(this, filter)
+  def find[O: BsonDocumentDecoder](): Query[O] = Query(this)
 
 
 

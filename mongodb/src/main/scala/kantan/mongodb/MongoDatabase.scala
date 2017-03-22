@@ -16,7 +16,7 @@
 
 package kantan.mongodb
 
-import com.mongodb.client.{MongoDatabase => MDatabase}
+import com.mongodb.client.{MongoDatabase ⇒ MDatabase}
 import kantan.bson.{BsonDocument, BsonDocumentDecoder, BsonDocumentEncoder, DecodeResult}
 import kantan.mongodb.MongoDatabase.CollectionInfo
 import scala.collection.JavaConverters._
@@ -79,7 +79,7 @@ class MongoDatabase private[mongodb] (val underlying: MDatabase) {
   private def runCommand[I: BsonDocumentEncoder, O: BsonDocumentDecoder]
   (command: I, pref: Option[ReadPreference]): DecodeResult[O] =
   BsonDocumentDecoder[O].decode(underlying.runCommand(BsonDocumentEncoder[I].encode(command),
-    pref.getOrElse(ReadPreference.primary()), classOf[BsonDocument]))
+    pref.getOrElse(com.mongodb.ReadPreference.primary()), classOf[BsonDocument]))
 
   def runCommand[I: BsonDocumentEncoder, O: BsonDocumentDecoder](command: I): DecodeResult[O] =
     runCommand(command, None)

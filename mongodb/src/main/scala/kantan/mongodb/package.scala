@@ -17,22 +17,15 @@
 package kantan
 
 package object mongodb {
+  type CursorType               = com.mongodb.CursorType
+  type Collation               = com.mongodb.client.model.Collation
   type MongoClientOptions      = com.mongodb.MongoClientOptions
-  val MongoClientOptions       = com.mongodb.MongoClientOptions
   type MongoClientURI          = com.mongodb.MongoClientURI
-  val MongoClientURI           = com.mongodb.MongoClientURI
   type MongoCredential         = com.mongodb.MongoCredential
-  val MongoCredential          = com.mongodb.MongoCredential
   type ServerAddress           = com.mongodb.ServerAddress
-  val ServerAddress            = com.mongodb.ServerAddress
   type ReadConcern             = com.mongodb.ReadConcern
-  val ReadConcern              = com.mongodb.ReadConcern
   type ReadPreference          = com.mongodb.ReadPreference
-  val ReadPreference           = com.mongodb.ReadPreference
   type WriteConcern            = com.mongodb.WriteConcern
-  val WriteConcern             = com.mongodb.WriteConcern
   type CreateCollectionOptions = com.mongodb.client.model.CreateCollectionOptions
-  val CreateCollectionOptions  = com.mongodb.client.model.CreateCollectionOptions
   type CreateViewOptions       = com.mongodb.client.model.CreateViewOptions
-  val CreateViewOptions        = com.mongodb.client.model.CreateViewOptions
 }
