@@ -17,6 +17,7 @@
 package kantan
 
 package object mongodb {
+  type MongoNamespace          = com.mongodb.MongoNamespace
   type DeleteResult            = com.mongodb.client.result.DeleteResult
   type CursorType              = com.mongodb.CursorType
   type Collation               = com.mongodb.client.model.Collation

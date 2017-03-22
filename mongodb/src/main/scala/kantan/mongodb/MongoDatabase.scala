@@ -30,34 +30,34 @@ class MongoDatabase private[mongodb] (val underlying: MDatabase) {
 
   // - Collection creation ---------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  private def createCollection(name: String, options: Option[CreateCollectionOptions]): MongoCollection = {
+  private def createCollection[A](name: String, options: Option[CreateCollectionOptions]): MongoCollection[A] = {
     options.fold(underlying.createCollection(name))(o ⇒ underlying.createCollection(name, o))
     collection(name)
   }
 
   /** Creates a new collection with the specified name. */
-  def createCollection(name: String): MongoCollection = createCollection(name, None)
+  def createCollection[A](name: String): MongoCollection[A] = createCollection(name, None)
 
   /** Creates a new collection with the specified name, using the specified options. */
-  def createCollectionWith(name: String, options: CreateCollectionOptions): MongoCollection =
+  def createCollectionWith[A](name: String, options: CreateCollectionOptions): MongoCollection[A] =
     createCollection(name, Some(options))
 
 
 
   // - View creation ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  private def createView[I: BsonDocumentEncoder](name: String, on: String, options: Option[CreateViewOptions],
-                                                 pipeline: Seq[I]): MongoCollection = {
+  private def createView[I: BsonDocumentEncoder, A](name: String, on: String, options: Option[CreateViewOptions],
+                                                    pipeline: Seq[I]): MongoCollection[A] = {
     val p = pipeline.map(BsonDocumentEncoder[I].encode).toList.asJava
     options.fold(underlying.createView(name, on, p))(o ⇒ underlying.createView(name, on, p, o))
     collection(name)
   }
 
-  def createView[I: BsonDocumentEncoder](name: String, on: String, pipeline: I*): MongoCollection =
+  def createView[I: BsonDocumentEncoder, A](name: String, on: String, pipeline: I*): MongoCollection[A] =
     createView(name, on, None, pipeline)
 
-  def createViewWith[I: BsonDocumentEncoder](name: String, on: String, options: CreateViewOptions,
-                                             pipeline: I*): MongoCollection =
+  def createViewWith[I: BsonDocumentEncoder, A](name: String, on: String, options: CreateViewOptions,
+                                             pipeline: I*): MongoCollection[A] =
     createView(name, on, Some(options), pipeline)
 
 
@@ -69,7 +69,7 @@ class MongoDatabase private[mongodb] (val underlying: MDatabase) {
 
   def collectionNames(): Iterator[String] = collections().map(_.name)
 
-  def collection(name: String): MongoCollection =
+  def collection[A](name: String): MongoCollection[A] =
     new MongoCollection(underlying.getCollection(name, classOf[BsonDocument]))
 
 

@@ -18,8 +18,9 @@ package kantan.mongodb
 
 import com.mongodb.client.{MongoCollection ⇒ MCollection}
 import kantan.bson._
+import scala.collection.JavaConverters._
 
-class MongoCollection private[mongodb] (val underlying: MCollection[BsonDocument]) {
+class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocument]) {
   // - Count -----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def count(): Long = underlying.count()
@@ -27,22 +28,47 @@ class MongoCollection private[mongodb] (val underlying: MCollection[BsonDocument
 
 
 
+  // - Indexes ---------------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  def createIndex[I: BsonDocumentEncoder](keys: I): String = underlying.createIndex(BsonDocumentEncoder[I].encode(keys))
+  def dropIndex[I: BsonDocumentEncoder](keys: I): Unit = underlying.dropIndex(BsonDocumentEncoder[I].encode(keys))
+  def dropIndex(name: String): Unit = underlying.dropIndex(name)
+  def dropIndexes(): Unit = underlying.dropIndexes()
+
+
+
   // - Find ------------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def find[I: BsonDocumentEncoder, O: BsonDocumentDecoder](filter: I): Query[O] = Query(this, filter)
-  def find[O: BsonDocumentDecoder](): Query[O] = Query(this)
+  def find[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): FindQuery[A] =
+    FindQuery(this, filter)
+  def find()(implicit da: BsonDocumentDecoder[A]): FindQuery[A] = FindQuery(this)
+
+  def findOneAndDelete[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): DecodeResult[A] =
+    da.decode(underlying.findOneAndDelete(BsonDocumentEncoder[F].encode(filter)))
+
+  //def findOneAndReplace
+  // def findOneAndUpdate
+
 
 
 
   // - Delete ----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def deleteMany[A: BsonDocumentEncoder](filter: A): DeleteResult =
-    underlying.deleteMany(BsonDocumentEncoder[A].encode(filter))
+  def deleteMany[F: BsonDocumentEncoder](filter: F): DeleteResult =
+    underlying.deleteMany(BsonDocumentEncoder[F].encode(filter))
 
-  def deleteOne[A: BsonDocumentEncoder](filter: A): DeleteResult =
-    underlying.deleteOne(BsonDocumentEncoder[A].encode(filter))
+  def deleteOne[F: BsonDocumentEncoder](filter: F): DeleteResult =
+    underlying.deleteOne(BsonDocumentEncoder[F].encode(filter))
 
 
+
+  // - Insert ----------------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  def insertMany(documents: A*)(implicit ea: BsonDocumentEncoder[A]): Unit =
+    underlying.insertMany(documents.map(ea.encode).toList.asJava)
+
+  def insertOne(document: A)(implicit ea: BsonDocumentEncoder[A]): Unit =
+    underlying.insertOne(ea.encode(document))
 
   // aggregate
   // bulk write
@@ -50,5 +76,23 @@ class MongoCollection private[mongodb] (val underlying: MCollection[BsonDocument
 
   // - Misc. -----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  override def toString = s"MongoCollection(${underlying.getNamespace})"
+  override def toString = s"MongoCollection($namespace)"
+
+  def drop(): Unit = underlying.drop()
+
+  def namespace: MongoNamespace = underlying.getNamespace
+  def rename(db: String, name: String): Unit = underlying.renameCollection(new MongoNamespace(db, name))
+
+  def readConcern: ReadConcern = underlying.getReadConcern
+  def writeConcern: WriteConcern = underlying.getWriteConcern
+  def readPreference: ReadPreference = underlying.getReadPreference
+
+  def withReadConcern(concern: ReadConcern): MongoCollection[A] =
+    new MongoCollection(underlying.withReadConcern(concern))
+
+  def withReadPreference(Preference: ReadPreference): MongoCollection[A] =
+    new MongoCollection(underlying.withReadPreference(Preference))
+
+  def withWriteConcern(concern: WriteConcern): MongoCollection[A] =
+    new MongoCollection(underlying.withWriteConcern(concern))
 }
