@@ -28,3 +28,7 @@ object BsonDocumentDecoder extends GeneratedBsonDocumentDecoders {
   def fromSafe[A](f: BsonDocument ⇒ A): BsonDocumentDecoder[A] =
     BsonDocumentDecoder.from(f andThen Success.apply)
 }
+
+trait BsonDocumentDecoderInstances {
+  implicit val bsonDocumentDocumentDecoder: BsonDocumentDecoder[BsonDocument] = BsonDocumentDecoder.fromSafe(identity)
+}

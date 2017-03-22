@@ -23,3 +23,7 @@ object BsonDocumentEncoder extends GeneratedBsonDocumentEncoders {
     override def encode(d: A) = f(d)
   }
 }
+
+trait BsonDocumentEncoderInstances {
+  implicit val bsonDocumentDocumentEncoder: BsonDocumentEncoder[BsonDocument] = BsonDocumentEncoder.from(identity)
+}

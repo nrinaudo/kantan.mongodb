@@ -16,4 +16,4 @@
 
 package kantan.bson
 
-object codecs extends BsonValueCodecInstances
+object codecs extends BsonValueCodecInstances with BsonDocumentCodecInstances

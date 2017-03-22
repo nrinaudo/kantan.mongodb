@@ -19,3 +19,5 @@ package kantan.bson
 import kantan.codecs.CodecCompanion
 
 object BsonDocumentCodec extends GeneratedBsonDocumentCodecs with CodecCompanion[BsonDocument, DecodeError, codecs.type]
+
+trait BsonDocumentCodecInstances extends BsonDocumentDecoderInstances with BsonDocumentEncoderInstances
