@@ -17,7 +17,8 @@
 package kantan
 
 package object mongodb {
-  type CursorType               = com.mongodb.CursorType
+  type DeleteResult            = com.mongodb.client.result.DeleteResult
+  type CursorType              = com.mongodb.CursorType
   type Collation               = com.mongodb.client.model.Collation
   type MongoClientOptions      = com.mongodb.MongoClientOptions
   type MongoClientURI          = com.mongodb.MongoClientURI

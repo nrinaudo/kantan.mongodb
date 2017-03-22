@@ -34,6 +34,20 @@ class MongoCollection private[mongodb] (val underlying: MCollection[BsonDocument
 
 
 
+  // - Delete ----------------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  def deleteMany[A: BsonDocumentEncoder](filter: A): DeleteResult =
+    underlying.deleteMany(BsonDocumentEncoder[A].encode(filter))
+
+  def deleteOne[A: BsonDocumentEncoder](filter: A): DeleteResult =
+    underlying.deleteOne(BsonDocumentEncoder[A].encode(filter))
+
+
+
+  // aggregate
+  // bulk write
+  // createIndex
+
   // - Misc. -----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   override def toString = s"MongoCollection(${underlying.getNamespace})"
