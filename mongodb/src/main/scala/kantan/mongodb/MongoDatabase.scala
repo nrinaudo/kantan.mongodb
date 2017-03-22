@@ -30,17 +30,17 @@ class MongoDatabase private[mongodb] (val underlying: MDatabase) {
 
   // - Collection creation ---------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  private def createCollection[A](name: String, options: Option[CreateCollectionOptions]): MongoCollection[A] = {
-    options.fold(underlying.createCollection(name))(o ⇒ underlying.createCollection(name, o))
+  /** Creates a new collection with the specified name. */
+  def createCollection[A](name: String): MongoCollection[A] = {
+    underlying.createCollection(name)
     collection(name)
   }
 
-  /** Creates a new collection with the specified name. */
-  def createCollection[A](name: String): MongoCollection[A] = createCollection(name, None)
-
   /** Creates a new collection with the specified name, using the specified options. */
-  def createCollectionWith[A](name: String, options: CreateCollectionOptions): MongoCollection[A] =
-    createCollection(name, Some(options))
+  def createCollectionWith[A](name: String)(options: CreateCollectionOptions): MongoCollection[A] = {
+    underlying.createCollection(name, options)
+    collection(name)
+  }
 
 
 
@@ -56,8 +56,8 @@ class MongoDatabase private[mongodb] (val underlying: MDatabase) {
   def createView[I: BsonDocumentEncoder, A](name: String, on: String, pipeline: I*): MongoCollection[A] =
     createView(name, on, None, pipeline)
 
-  def createViewWith[I: BsonDocumentEncoder, A](name: String, on: String, options: CreateViewOptions,
-                                             pipeline: I*): MongoCollection[A] =
+  def createViewWith[I: BsonDocumentEncoder, A](name: String, on: String, pipeline: I*)
+                                               (options: CreateViewOptions): MongoCollection[A] =
     createView(name, on, Some(options), pipeline)
 
 
@@ -84,7 +84,7 @@ class MongoDatabase private[mongodb] (val underlying: MDatabase) {
   def runCommand[I: BsonDocumentEncoder, O: BsonDocumentDecoder](command: I): DecodeResult[O] =
     runCommand(command, None)
 
-  def runCommandWith[I: BsonDocumentEncoder, O: BsonDocumentDecoder](command: I, p: ReadPreference): DecodeResult[O] =
+  def runCommandWith[I: BsonDocumentEncoder, O: BsonDocumentDecoder](command: I)(p: ReadPreference): DecodeResult[O] =
     runCommand(command, Some(p))
 
 

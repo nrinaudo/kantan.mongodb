@@ -17,6 +17,12 @@
 package kantan
 
 package object mongodb {
+  type RenameCollectionOptions = com.mongodb.client.model.RenameCollectionOptions
+  type InsertOneOptions        = com.mongodb.client.model.InsertOneOptions
+  type InsertManyOptions       = com.mongodb.client.model.InsertManyOptions
+  type DeleteOptions           = com.mongodb.client.model.DeleteOptions
+  type CountOptions            = com.mongodb.client.model.CountOptions
+  type IndexOptions            = com.mongodb.client.model.IndexOptions
   type MongoNamespace          = com.mongodb.MongoNamespace
   type DeleteResult            = com.mongodb.client.result.DeleteResult
   type CursorType              = com.mongodb.CursorType

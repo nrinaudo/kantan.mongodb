@@ -25,12 +25,17 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   // -------------------------------------------------------------------------------------------------------------------
   def count(): Long = underlying.count()
   def count[I: BsonDocumentEncoder](filter: I): Long = underlying.count(BsonDocumentEncoder[I].encode(filter))
+  def countWith[I: BsonDocumentEncoder](filter: I)(options: CountOptions): Long =
+    underlying.count(BsonDocumentEncoder[I].encode(filter), options)
 
 
 
   // - Indexes ---------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def createIndex[I: BsonDocumentEncoder](keys: I): String = underlying.createIndex(BsonDocumentEncoder[I].encode(keys))
+  def createIndexWith[I: BsonDocumentEncoder](keys: I)(options: IndexOptions): String =
+    underlying.createIndex(BsonDocumentEncoder[I].encode(keys), options)
+
   def dropIndex[I: BsonDocumentEncoder](keys: I): Unit = underlying.dropIndex(BsonDocumentEncoder[I].encode(keys))
   def dropIndex(name: String): Unit = underlying.dropIndex(name)
   def dropIndexes(): Unit = underlying.dropIndexes()
@@ -46,9 +51,6 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   def findOneAndDelete[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): DecodeResult[A] =
     da.decode(underlying.findOneAndDelete(BsonDocumentEncoder[F].encode(filter)))
 
-  //def findOneAndReplace
-  // def findOneAndUpdate
-
 
 
 
@@ -57,8 +59,14 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   def deleteMany[F: BsonDocumentEncoder](filter: F): DeleteResult =
     underlying.deleteMany(BsonDocumentEncoder[F].encode(filter))
 
+  def deleteManyWith[F: BsonDocumentEncoder](filter: F)(options: DeleteOptions): DeleteResult =
+      underlying.deleteMany(BsonDocumentEncoder[F].encode(filter), options)
+
   def deleteOne[F: BsonDocumentEncoder](filter: F): DeleteResult =
     underlying.deleteOne(BsonDocumentEncoder[F].encode(filter))
+
+  def deleteOneWith[F: BsonDocumentEncoder](filter: F)(options: DeleteOptions): DeleteResult =
+    underlying.deleteOne(BsonDocumentEncoder[F].encode(filter), options)
 
 
 
@@ -67,12 +75,16 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   def insertMany(documents: A*)(implicit ea: BsonDocumentEncoder[A]): Unit =
     underlying.insertMany(documents.map(ea.encode).toList.asJava)
 
+  def insertManyWith(documents: A*)(options: InsertManyOptions)(implicit ea: BsonDocumentEncoder[A]): Unit =
+    underlying.insertMany(documents.map(ea.encode).toList.asJava, options)
+
   def insertOne(document: A)(implicit ea: BsonDocumentEncoder[A]): Unit =
     underlying.insertOne(ea.encode(document))
 
-  // aggregate
-  // bulk write
-  // createIndex
+  def insertOneWith(document: A)(options: InsertOneOptions)(implicit ea: BsonDocumentEncoder[A]): Unit =
+    underlying.insertOne(ea.encode(document), options)
+
+
 
   // - Misc. -----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
@@ -82,6 +94,8 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
 
   def namespace: MongoNamespace = underlying.getNamespace
   def rename(db: String, name: String): Unit = underlying.renameCollection(new MongoNamespace(db, name))
+  def renameWith(db: String, name: String)(options: RenameCollectionOptions): Unit =
+    underlying.renameCollection(new MongoNamespace(db, name), options)
 
   def readConcern: ReadConcern = underlying.getReadConcern
   def writeConcern: WriteConcern = underlying.getWriteConcern
