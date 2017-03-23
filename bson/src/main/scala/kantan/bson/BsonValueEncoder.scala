@@ -19,7 +19,7 @@ package kantan.bson
 import java.io.File
 import java.net.{URI, URL}
 import java.nio.file.Path
-import java.util.UUID
+import java.util.{Date, UUID}
 import java.util.regex.Pattern
 import kantan.codecs.Encoder
 import kantan.codecs.strings.StringEncoder
@@ -142,6 +142,11 @@ trait BsonValueEncoderInstances extends LowPriorityBsonValueEncoderInstances {
     case Some(a) ⇒ BsonValueEncoder[A].encode(a)
     case None    ⇒ BsonNull
   }
+
+
+
+  implicit val javaUtilDateEncoder: BsonValueEncoder[Date] = BsonValueEncoder.from(i ⇒ BsonDateTime(i.getTime))
+
 
   // - String-based Encoders -------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------

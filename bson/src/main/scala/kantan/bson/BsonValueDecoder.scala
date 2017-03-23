@@ -19,7 +19,7 @@ package kantan.bson
 import java.io.File
 import java.net.{URI, URL}
 import java.nio.file.Path
-import java.util.UUID
+import java.util.{Date, UUID}
 import java.util.regex.Pattern
 import kantan.codecs.Decoder
 import kantan.codecs.Result.{Failure, Success}
@@ -194,6 +194,10 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     case value    ⇒ BsonValueDecoder[A].decode(value).map(Some.apply)
   }
 
+  implicit val javaUtilDateDecoder: BsonValueDecoder[Date] = BsonValueDecoder.fromSafe {
+    case BsonDateTime(i) ⇒ new Date(i)
+  }
+
 
 
   // - String-based decoders -------------------------------------------------------------------------------------------
@@ -280,7 +284,6 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
 
   // TODO:
   // - BsonDocument
-  // - BsonDateTime
   // - BsonDecimal128
   // - BsonTimestamp
 }
