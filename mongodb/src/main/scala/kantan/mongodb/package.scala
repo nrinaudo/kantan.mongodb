@@ -17,6 +17,7 @@
 package kantan
 
 package object mongodb {
+  type FindOneAndUpdateOptions  = com.mongodb.client.model.FindOneAndUpdateOptions
   type FindOneAndReplaceOptions = com.mongodb.client.model.FindOneAndReplaceOptions
   type RenameCollectionOptions  = com.mongodb.client.model.RenameCollectionOptions
   type InsertOneOptions         = com.mongodb.client.model.InsertOneOptions
