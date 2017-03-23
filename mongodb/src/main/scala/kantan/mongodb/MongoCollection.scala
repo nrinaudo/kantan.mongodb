@@ -20,7 +20,6 @@ import com.mongodb.client.{MongoCollection ⇒ MCollection}
 import kantan.bson._
 import scala.collection.JavaConverters._
 // TODO:
-// - distinct
 // - findOneAndReplace
 // - findOneAndUpdate
 // - mapReduce
@@ -42,6 +41,16 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   // -------------------------------------------------------------------------------------------------------------------
   def aggregate[I: BsonDocumentEncoder, O: BsonDocumentDecoder](filters: I*): AggregateQuery[O] =
     AggregateQuery.from(underlying.aggregate(filters.map(BsonDocumentEncoder[I].encode).asJava))
+
+
+
+  // - Distinct --------------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  def distinct[O: BsonValueDecoder](field: String): DistinctQuery[O] =
+    DistinctQuery.from(underlying.distinct(field, classOf[BsonValue]))
+
+  def distinct[F: BsonDocumentEncoder, O: BsonValueDecoder](field: String, filter: F): DistinctQuery[O] =
+      DistinctQuery.from(underlying.distinct(field, BsonDocumentEncoder[F].encode(filter), classOf[BsonValue]))
 
 
   // - Indexes ---------------------------------------------------------------------------------------------------------
