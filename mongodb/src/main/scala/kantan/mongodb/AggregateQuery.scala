@@ -32,8 +32,8 @@ sealed abstract class AggregateQuery[A: BsonDocumentDecoder] extends ResourceIte
 }
 
 private object AggregateQuery {
-  private[mongodb] def from[R: BsonDocumentDecoder](f: () ⇒ AggregateIterable[BsonDocument]): AggregateQuery[R] =
-    AggregateQueryImpl(None, None, None, None, None, None, f)
+  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ AggregateIterable[BsonDocument]): AggregateQuery[R] =
+    AggregateQueryImpl(None, None, None, None, None, None, () ⇒ f)
 
   private final case class AggregateQueryImpl[A: BsonDocumentDecoder](
                                                                        diskUse: Option[Boolean],

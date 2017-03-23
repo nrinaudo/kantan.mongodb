@@ -19,6 +19,14 @@ package kantan.mongodb
 import com.mongodb.client.{MongoCollection ⇒ MCollection}
 import kantan.bson._
 import scala.collection.JavaConverters._
+// TODO:
+// - distinct
+// - findOneAndReplace
+// - findOneAndUpdate
+// - mapReduce
+// - replaceOne
+// - updateMany
+// - updateOne
 
 class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocument]) {
   // - Count -----------------------------------------------------------------------------------------------------------
@@ -33,7 +41,7 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   // - Aggregate -------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def aggregate[I: BsonDocumentEncoder, O: BsonDocumentDecoder](filters: I*): AggregateQuery[O] =
-    AggregateQuery.from(() ⇒ underlying.aggregate(filters.map(BsonDocumentEncoder[I].encode).asJava))
+    AggregateQuery.from(underlying.aggregate(filters.map(BsonDocumentEncoder[I].encode).asJava))
 
 
   // - Indexes ---------------------------------------------------------------------------------------------------------
@@ -41,7 +49,7 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   def createIndex[I: BsonDocumentEncoder](keys: I): String = underlying.createIndex(BsonDocumentEncoder[I].encode(keys))
   def createIndexWith[I: BsonDocumentEncoder](keys: I)(options: IndexOptions): String =
     underlying.createIndex(BsonDocumentEncoder[I].encode(keys), options)
-
+  def indexes[O: BsonDocumentDecoder](): IndexQuery[O] = IndexQuery.from(underlying.listIndexes(classOf[BsonDocument]))
   def dropIndex[I: BsonDocumentEncoder](keys: I): Unit = underlying.dropIndex(BsonDocumentEncoder[I].encode(keys))
   def dropIndex(name: String): Unit = underlying.dropIndex(name)
   def dropIndexes(): Unit = underlying.dropIndexes()
@@ -51,9 +59,9 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   // - Find ------------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def find[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): FindQuery[A] =
-    FindQuery.from(() ⇒ underlying.find(BsonDocumentEncoder[F].encode(filter)))
+    FindQuery.from(underlying.find(BsonDocumentEncoder[F].encode(filter)))
   def find()(implicit da: BsonDocumentDecoder[A]): FindQuery[A] =
-    FindQuery.from(() ⇒ underlying.find())
+    FindQuery.from(underlying.find())
 
   def findOneAndDelete[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): DecodeResult[A] =
     da.decode(underlying.findOneAndDelete(BsonDocumentEncoder[F].encode(filter)))
