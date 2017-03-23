@@ -23,71 +23,71 @@ import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.Duration
 
-class FindQuery[A: BsonDocumentDecoder] private(private val batchSize: Option[Int],
-                                                private val collation: Option[Collation],
-                                                private val cursorType: Option[CursorType],
-                                                private val limit: Option[Int],
-                                                private val maxAwaitTime: Option[Duration],
-                                                private val maxTime: Option[Duration],
-                                                private val modifiers: Option[BsonDocument],
-                                                private val noCursorTimeout: Option[Boolean],
-                                                private val partial: Option[Boolean],
-                                                private val projection: Option[BsonDocument],
-                                                private val skip: Option[Int],
-                                                private val sort: Option[BsonDocument],
-                                                private val query: () ⇒ FindIterable[BsonDocument]
-                                               ) extends ResourceIterable[DecodeResult[A]] {
-  @SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
-  private def copy(batchSize: Option[Int] = batchSize, collation: Option[Collation] = collation,
-                   cursorType: Option[CursorType] = cursorType, limit: Option[Int] = limit,
-                   maxAwaitTime: Option[Duration] = maxAwaitTime, maxTime: Option[Duration] = maxTime,
-                   modifiers: Option[BsonDocument] = modifiers, noCursorTimeout: Option[Boolean] = noCursorTimeout,
-                   partial: Option[Boolean] = partial, projection: Option[BsonDocument] = projection,
-                   skip: Option[Int] = skip, sort: Option[BsonDocument] = sort,
-                   query: () ⇒ FindIterable[BsonDocument] = query): FindQuery[A] =
-    new FindQuery(batchSize, collation, cursorType, limit, maxAwaitTime, maxTime, modifiers, noCursorTimeout, partial,
-      projection, skip, sort, query)
+sealed abstract class FindQuery[A: BsonDocumentDecoder] extends ResourceIterable[DecodeResult[A]] {
+  def batchSize(i: Int): FindQuery[A]
+  def collation(c: Collation): FindQuery[A]
+  def cursorType(c: CursorType): FindQuery[A]
+  def limit(i: Int): FindQuery[A]
+  def maxAwaitTime(l: Long, u: TimeUnit): FindQuery[A]
+  def maxTime(l: Long, u: TimeUnit): FindQuery[A]
+  def modifiers[E: BsonDocumentEncoder](e: E): FindQuery[A]
+  def noCursorTimeout(b: Boolean): FindQuery[A]
+  def partial(b: Boolean): FindQuery[A]
+  def projection[E: BsonDocumentEncoder](e: E): FindQuery[A]
+  def skip(i: Int): FindQuery[A]
+  def sort[E: BsonDocumentEncoder](e: E): FindQuery[A]
+}
 
-  def batchSize(size: Int): FindQuery[A] = copy(batchSize = Some(size))
-  def collation(c: Collation): FindQuery[A] = copy(collation = Some(c))
-  def cursorType(c: CursorType): FindQuery[A] = copy(cursorType = Some(c))
-  def limit(l: Int): FindQuery[A] = copy(limit = Some(l))
-  def maxAwaitTime(t: Long, unit: TimeUnit): FindQuery[A] = copy(maxAwaitTime = Some(Duration(t, unit)))
-  def maxTime(t: Long, unit: TimeUnit): FindQuery[A] = copy(maxTime = Some(Duration(t, unit)))
-  def modifiers[B: BsonDocumentEncoder](m: B): FindQuery[A] = copy(modifiers = Some(BsonDocumentEncoder[B].encode(m)))
-  def noCursorTimeout(n: Boolean): FindQuery[A] = copy(noCursorTimeout = Some(n))
-  def partial(p: Boolean): FindQuery[A] = copy(partial = Some(p))
-  def projection[B: BsonDocumentEncoder](b: B): FindQuery[A] = copy(projection = Some(BsonDocumentEncoder[B].encode(b)))
-  def skip(i: Int): FindQuery[A] = copy(skip = Some(i))
-  def sort[B: BsonDocumentEncoder](b: B): FindQuery[A] = copy(sort = Some(BsonDocumentEncoder[B].encode(b)))
+private object FindQuery {
+  private[mongodb] def from[R: BsonDocumentDecoder](f: () ⇒ FindIterable[BsonDocument]): FindQuery[R] =
+    FindQueryImpl(None, None, None, None, None, None, None, None, None, None, None, None, f)
 
-  override def iterator = {
-    val iterable = query()
-    batchSize.foreach(iterable.batchSize)
-    collation.foreach(iterable.collation)
-    cursorType.foreach(iterable.cursorType)
-    limit.foreach(iterable.limit)
-    maxAwaitTime.foreach(d ⇒ iterable.maxAwaitTime(d.length, d.unit))
-    maxTime.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
-    modifiers.foreach(iterable.modifiers)
-    noCursorTimeout.foreach(iterable.noCursorTimeout)
-    partial.foreach(iterable.partial)
-    projection.foreach(iterable.projection)
-    skip.foreach(iterable.skip)
-    sort.foreach(iterable.sort)
+  private final case class FindQueryImpl[A: BsonDocumentDecoder](
+                                                                  batchSize: Option[Int],
+                                                                  collation: Option[Collation],
+                                                                  cursor: Option[CursorType],
+                                                                  lim: Option[Int],
+                                                                  awaitTime: Option[Duration],
+                                                                  time: Option[Duration],
+                                                                  mods: Option[BsonDocument],
+                                                                  noTimeout: Option[Boolean],
+                                                                  part: Option[Boolean],
+                                                                  proj: Option[BsonDocument],
+                                                                  drop: Option[Int],
+                                                                  srt: Option[BsonDocument],
+                                                                  eval: () ⇒ FindIterable[BsonDocument]
+                                                                ) extends FindQuery[A] {
+    override def batchSize(size: Int) = copy(batchSize = Some(size))
+    override def collation(c: Collation) = copy(collation = Some(c))
+    override def cursorType(c: CursorType) = copy(cursor = Some(c))
+    override def limit(l: Int) = copy(lim = Some(l))
+    override def maxAwaitTime(t: Long, unit: TimeUnit) = copy(awaitTime = Some(Duration(t, unit)))
+    override def maxTime(t: Long, unit: TimeUnit) = copy(time = Some(Duration(t, unit)))
+    override def modifiers[B: BsonDocumentEncoder](m: B) = copy(mods = Some(BsonDocumentEncoder[B].encode(m)))
+    override def noCursorTimeout(n: Boolean) = copy(noTimeout = Some(n))
+    override def partial(p: Boolean) = copy(part = Some(p))
+    override def projection[B: BsonDocumentEncoder](b: B) = copy(proj = Some(BsonDocumentEncoder[B].encode(b)))
+    override def skip(i: Int) = copy(drop = Some(i))
+    override def sort[B: BsonDocumentEncoder](b: B) = copy(srt = Some(BsonDocumentEncoder[B].encode(b)))
 
-    ResourceIterator.fromIterator(iterable.iterator().asScala.map(BsonDocumentDecoder[A].decode))
+    override def iterator = {
+      val iterable = eval()
+      batchSize.foreach(iterable.batchSize)
+      collation.foreach(iterable.collation)
+      cursor.foreach(iterable.cursorType)
+      lim.foreach(iterable.limit)
+      awaitTime.foreach(d ⇒ iterable.maxAwaitTime(d.length, d.unit))
+      time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
+      mods.foreach(iterable.modifiers)
+      noTimeout.foreach(iterable.noCursorTimeout)
+      part.foreach(iterable.partial)
+      proj.foreach(iterable.projection)
+      drop.foreach(iterable.skip)
+      srt.foreach(iterable.sort)
+
+      ResourceIterator.fromIterator(iterable.iterator().asScala.map(BsonDocumentDecoder[A].decode))
+    }
   }
 
   override def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
-}
-
-object FindQuery {
-  def apply[F: BsonDocumentEncoder, A: BsonDocumentDecoder](col: MongoCollection[A], filter: F): FindQuery[A] =
-    FindQuery.from(() ⇒ col.underlying.find(BsonDocumentEncoder[F].encode(filter)))
-
-  def apply[A: BsonDocumentDecoder](col: MongoCollection[A]): FindQuery[A] = FindQuery.from(() ⇒ col.underlying.find)
-
-  private def from[O: BsonDocumentDecoder](f: () ⇒ FindIterable[BsonDocument]): FindQuery[O] =
-    new FindQuery[O](None, None, None, None, None, None, None, None, None, None, None, None, f)
 }

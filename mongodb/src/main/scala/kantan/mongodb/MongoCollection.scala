@@ -30,6 +30,12 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
 
 
 
+  // - Aggregate -------------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  def aggregate[I: BsonDocumentEncoder, O: BsonDocumentDecoder](filters: I*): AggregateQuery[O] =
+    AggregateQuery.from(() ⇒ underlying.aggregate(filters.map(BsonDocumentEncoder[I].encode).asJava))
+
+
   // - Indexes ---------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def createIndex[I: BsonDocumentEncoder](keys: I): String = underlying.createIndex(BsonDocumentEncoder[I].encode(keys))
@@ -45,8 +51,9 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   // - Find ------------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def find[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): FindQuery[A] =
-    FindQuery(this, filter)
-  def find()(implicit da: BsonDocumentDecoder[A]): FindQuery[A] = FindQuery(this)
+    FindQuery.from(() ⇒ underlying.find(BsonDocumentEncoder[F].encode(filter)))
+  def find()(implicit da: BsonDocumentDecoder[A]): FindQuery[A] =
+    FindQuery.from(() ⇒ underlying.find())
 
   def findOneAndDelete[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): DecodeResult[A] =
     da.decode(underlying.findOneAndDelete(BsonDocumentEncoder[F].encode(filter)))
