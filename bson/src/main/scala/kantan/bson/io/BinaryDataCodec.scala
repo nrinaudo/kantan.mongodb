@@ -23,12 +23,12 @@ import BsonBinarySubType._
 
 object BinaryDataCodec extends Codec[BsonBinaryData] {
   private def decoderFor(subtype: Byte) =
-    if(subtype == BINARY.getValue || subtype == OLD_BINARY.getValue)              BinaryCodec
-    else if(subtype == UUID_LEGACY.getValue || subtype == UUID_STANDARD.getValue) UuidCodec
-    else if(subtype == MD5.getValue)                                              Md5Codec
-    else if(subtype == USER_DEFINED.getValue)                                     UserDefinedBinaryCodec
-    else if(subtype == FUNCTION.getValue)                                         FunctionCodec
-    else sys.error(s"Unsupported binary subtype: $subtype")
+    if(BsonBinaryData.isBinary(subtype))      BinaryCodec
+    else if(BsonBinaryData.isUuid(subtype))   UuidCodec
+    else if(subtype == MD5.getValue)          Md5Codec
+    else if(subtype == USER_DEFINED.getValue) UserDefinedBinaryCodec
+    else if(subtype == FUNCTION.getValue)     FunctionCodec
+    else                                      sys.error(s"Unsupported binary subtype: $subtype")
 
   override def decode(reader: BsonReader, decoderContext: DecoderContext) =
     decoderFor(reader.peekBinarySubType()).decode(reader, decoderContext)

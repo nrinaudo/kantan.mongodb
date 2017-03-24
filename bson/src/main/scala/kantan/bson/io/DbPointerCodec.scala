@@ -21,12 +21,9 @@ import org.bson.{BsonReader, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 
 object DbPointerCodec extends Codec[BsonDbPointer] {
-  override def decode(reader: BsonReader, d: DecoderContext) = {
-    val p = reader.readDBPointer
-    BsonDbPointer(p.getNamespace, p.getId)
-  }
+  override def decode(reader: BsonReader, d: DecoderContext) = BsonDbPointer.fromLegacy(reader.readDBPointer)
   override def encode(writer: BsonWriter, value: BsonDbPointer, e: EncoderContext) =
-    writer.writeDBPointer(new org.bson.BsonDbPointer(value.namespace, value.id))
+    writer.writeDBPointer(BsonDbPointer.toLegacy(value))
 
   override def getEncoderClass = classOf[BsonDbPointer]
 }
