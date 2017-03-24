@@ -19,8 +19,6 @@ package kantan.mongodb
 import com.mongodb.client.{MongoCollection ⇒ MCollection}
 import kantan.bson._
 import scala.collection.JavaConverters._
-// TODO:
-// - bulk
 
 class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocument]) {
   // - Count -----------------------------------------------------------------------------------------------------------
@@ -30,6 +28,14 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   def countWith[I: BsonDocumentEncoder](filter: I)(options: CountOptions): Long =
     underlying.count(BsonDocumentEncoder[I].encode(filter), options)
 
+
+
+  // - Bulk operations -------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  def bulkWrite(operations: BulkOperation*): BulkResult =
+    BulkResult(underlying.bulkWrite(operations.map(_.toModel).asJava))
+  def bulkWriteWith(operations: BulkOperation*)(options: BulkWriteOptions): BulkResult =
+    BulkResult(underlying.bulkWrite(operations.map(_.toModel).asJava, options))
 
 
   // - Aggregate / Map-Reduce ------------------------------------------------------------------------------------------

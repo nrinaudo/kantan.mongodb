@@ -17,6 +17,7 @@
 package kantan
 
 package object mongodb {
+  type BulkWriteOptions         = com.mongodb.client.model.BulkWriteOptions
   type UpdateOptions            = com.mongodb.client.model.UpdateOptions
   type FindOneAndUpdateOptions  = com.mongodb.client.model.FindOneAndUpdateOptions
   type FindOneAndReplaceOptions = com.mongodb.client.model.FindOneAndReplaceOptions
