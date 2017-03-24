@@ -23,8 +23,6 @@ import scala.collection.JavaConverters._
 // - bulk
 // - mapReduce
 // - replaceOne
-// - updateMany
-// - updateOne
 
 class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocument]) {
   // - Count -----------------------------------------------------------------------------------------------------------
@@ -95,6 +93,22 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
                                                                           (options: FindOneAndUpdateOptions)
                                                                           (implicit da: BsonDocumentDecoder[A])
     : DecodeResult[A] = findOneAndUpdate(filter, update, Some(options))
+
+  def updateOne[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U): UpdateResult =
+    UpdateResult(underlying.updateOne(BsonDocumentEncoder[F].encode(filter), BsonDocumentEncoder[U].encode(update)))
+
+  def updateOneWith[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)
+                                                                   (options: UpdateOptions): UpdateResult =
+    UpdateResult(underlying.updateOne(BsonDocumentEncoder[F].encode(filter), BsonDocumentEncoder[U].encode(update),
+      options))
+
+  def updateMany[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U): UpdateResult =
+      UpdateResult(underlying.updateMany(BsonDocumentEncoder[F].encode(filter), BsonDocumentEncoder[U].encode(update)))
+
+    def updateManyWith[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)
+                                                                     (options: UpdateOptions): UpdateResult =
+      UpdateResult(underlying.updateMany(BsonDocumentEncoder[F].encode(filter), BsonDocumentEncoder[U].encode(update),
+        options))
 
 
   // - Replacement -----------------------------------------------------------------------------------------------------
