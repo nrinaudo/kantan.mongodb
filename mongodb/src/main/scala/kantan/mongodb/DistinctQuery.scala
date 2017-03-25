@@ -22,21 +22,21 @@ import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.{Duration, TimeUnit}
 
-sealed abstract class DistinctQuery[A: BsonValueDecoder] extends ResourceIterable[DecodeResult[A]] {
+sealed abstract class DistinctQuery[A] extends ResourceIterable[A] {
   def batchSize(i: Int): DistinctQuery[A]
   def collation(c: Collation): DistinctQuery[A]
   def maxTime(l: Long, u: TimeUnit): DistinctQuery[A]
 }
 
 private object DistinctQuery {
-  private[mongodb] def from[R: BsonValueDecoder](f: ⇒ DistinctIterable[BsonValue]): DistinctQuery[R] =
+  private[mongodb] def from[R: BsonValueDecoder](f: ⇒ DistinctIterable[BsonValue]): DistinctQuery[DecodeResult[R]] =
     DistinctQueryImpl(None, None, None, () ⇒ f)
   private final case class DistinctQueryImpl[A: BsonValueDecoder](
                                                                    batch: Option[Int],
                                                                    col: Option[Collation],
                                                                    time: Option[Duration],
                                                                    eval: () ⇒ DistinctIterable[BsonValue]
-                                                                 ) extends DistinctQuery[A] {
+                                                                 ) extends DistinctQuery[DecodeResult[A]] {
     override def batchSize(i: Int) = copy(batch = Some(i))
     override def collation(c: Collation) = copy(col = Some(c))
     override def maxTime(l: Long, u: TimeUnit) = copy(time = Some(Duration(l, u)))

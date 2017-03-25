@@ -23,7 +23,7 @@ import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.Duration
 
-sealed abstract class FindQuery[A: BsonDocumentDecoder] extends ResourceIterable[DecodeResult[A]] {
+sealed abstract class FindQuery[A] extends ResourceIterable[A] {
   def batchSize(i: Int): FindQuery[A]
   def collation(c: Collation): FindQuery[A]
   def cursorType(c: CursorType): FindQuery[A]
@@ -39,7 +39,7 @@ sealed abstract class FindQuery[A: BsonDocumentDecoder] extends ResourceIterable
 }
 
 private object FindQuery {
-  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ FindIterable[BsonDocument]): FindQuery[R] =
+  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ FindIterable[BsonDocument]): FindQuery[DecodeResult[R]] =
     FindQueryImpl(None, None, None, None, None, None, None, None, None, None, None, None, () ⇒ f)
 
   private final case class FindQueryImpl[A: BsonDocumentDecoder](
@@ -56,7 +56,7 @@ private object FindQuery {
                                                                   drop: Option[Int],
                                                                   srt: Option[BsonDocument],
                                                                   eval: () ⇒ FindIterable[BsonDocument]
-                                                                ) extends FindQuery[A] {
+                                                                ) extends FindQuery[DecodeResult[A]] {
     override def batchSize(size: Int) = copy(batchSize = Some(size))
     override def collation(c: Collation) = copy(collation = Some(c))
     override def cursorType(c: CursorType) = copy(cursor = Some(c))

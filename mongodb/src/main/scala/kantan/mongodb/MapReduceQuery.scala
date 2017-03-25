@@ -23,7 +23,7 @@ import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.{Duration, TimeUnit}
 
-sealed abstract class MapReduceQuery[A: BsonDocumentDecoder] extends ResourceIterable[DecodeResult[A]] {
+sealed abstract class MapReduceQuery[A] extends ResourceIterable[A] {
   def action(a: MapReduceQuery.Action): MapReduceQuery[A]
   def batchSize(i: Int): MapReduceQuery[A]
   def bypassDocumentValidation(b: Boolean): MapReduceQuery[A]
@@ -44,9 +44,9 @@ sealed abstract class MapReduceQuery[A: BsonDocumentDecoder] extends ResourceIte
 }
 
 object MapReduceQuery {
-  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ MapReduceIterable[BsonDocument]): MapReduceQuery[R] =
-    MapReduceQueryImpl(None, None, None, None, None, None, None, None, None, None, None, None, None, None, false,
-      None, None, () ⇒ f)
+  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ MapReduceIterable[BsonDocument])
+  : MapReduceQuery[DecodeResult[R]] = MapReduceQueryImpl(None, None, None, None, None, None, None, None, None, None,
+    None, None, None, None, false, None, None, () ⇒ f)
   private final case class MapReduceQueryImpl[A: BsonDocumentDecoder](
                                                                        action: Option[Action],
                                                                        batch: Option[Int],
@@ -66,7 +66,7 @@ object MapReduceQuery {
                                                                        max: Option[Int],
                                                                        time: Option[Duration],
                                                                        eval: () ⇒ MapReduceIterable[BsonDocument]
-                                                                     ) extends MapReduceQuery[A] {
+                                                                     ) extends MapReduceQuery[DecodeResult[A]] {
     override def action(a: Action) = copy(action = Some(a))
     override def batchSize(i: Int) = copy(batch = Some(i))
     override def bypassDocumentValidation(b: Boolean) = copy(bypassValidation = Some(b))

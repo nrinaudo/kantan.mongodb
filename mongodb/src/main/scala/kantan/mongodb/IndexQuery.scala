@@ -22,20 +22,20 @@ import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.{Duration, TimeUnit}
 
-sealed abstract class IndexQuery[A: BsonDocumentDecoder] extends ResourceIterable[DecodeResult[A]] {
+sealed abstract class IndexQuery[A] extends ResourceIterable[A] {
   def batchSize(i: Int): IndexQuery[A]
   def maxTime(l: Long, u: TimeUnit): IndexQuery[A]
 }
 
 private object IndexQuery {
-  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ ListIndexesIterable[BsonDocument]): IndexQuery[R] =
-    IndexQueryImpl(None, None, () ⇒ f)
+  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ ListIndexesIterable[BsonDocument])
+  : IndexQuery[DecodeResult[R]] = IndexQueryImpl(None, None, () ⇒ f)
 
   private final case class IndexQueryImpl[A: BsonDocumentDecoder](
                                                                  batch: Option[Int],
                                                                  time: Option[Duration],
                                                                  eval: () ⇒ ListIndexesIterable[BsonDocument]
-                                                                 ) extends IndexQuery[A] {
+                                                                 ) extends IndexQuery[DecodeResult[A]] {
     override def batchSize(i: Int) = copy(batch = Some(i))
     override def maxTime(l: Long, u: TimeUnit) = copy(time = Some(Duration(l, u)))
     override def iterator = {

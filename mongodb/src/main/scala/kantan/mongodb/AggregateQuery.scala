@@ -22,7 +22,7 @@ import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.{Duration, TimeUnit}
 
-sealed abstract class AggregateQuery[A] extends ResourceIterable[DecodeResult[A]] {
+sealed abstract class AggregateQuery[A] extends ResourceIterable[A] {
   def allowDiskUse(b: Boolean): AggregateQuery[A]
   def batchSize(i: Int): AggregateQuery[A]
   def bypassDocumentValidation(b: Boolean): AggregateQuery[A]
@@ -32,8 +32,8 @@ sealed abstract class AggregateQuery[A] extends ResourceIterable[DecodeResult[A]
 }
 
 private object AggregateQuery {
-  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ AggregateIterable[BsonDocument]): AggregateQuery[R] =
-    AggregateQueryImpl(None, None, None, None, None, None, () ⇒ f)
+  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ AggregateIterable[BsonDocument])
+  : AggregateQuery[DecodeResult[R]] = AggregateQueryImpl(None, None, None, None, None, None, () ⇒ f)
 
   private final case class AggregateQueryImpl[A: BsonDocumentDecoder](
                                                                        diskUse: Option[Boolean],
@@ -43,7 +43,7 @@ private object AggregateQuery {
                                                                        time: Option[Duration],
                                                                        cursor: Option[Boolean],
                                                                        eval: () ⇒ AggregateIterable[BsonDocument]
-                                                                     ) extends AggregateQuery[A] {
+                                                                     ) extends AggregateQuery[DecodeResult[A]] {
     override def allowDiskUse(b: Boolean) = copy(diskUse = Some(b))
     override def batchSize(i: Int) = copy(batchSize = Some(i))
     override def bypassDocumentValidation(b: Boolean) = copy(bypassValidation = Some(b))
