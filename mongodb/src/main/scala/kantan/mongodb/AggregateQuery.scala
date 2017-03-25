@@ -22,7 +22,7 @@ import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.{Duration, TimeUnit}
 
-sealed abstract class AggregateQuery[A: BsonDocumentDecoder] extends ResourceIterable[DecodeResult[A]] {
+sealed abstract class AggregateQuery[A] extends ResourceIterable[DecodeResult[A]] {
   def allowDiskUse(b: Boolean): AggregateQuery[A]
   def batchSize(i: Int): AggregateQuery[A]
   def bypassDocumentValidation(b: Boolean): AggregateQuery[A]

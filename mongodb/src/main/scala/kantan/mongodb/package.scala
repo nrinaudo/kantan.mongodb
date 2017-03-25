@@ -16,7 +16,16 @@
 
 package kantan
 
+import kantan.codecs.Result
+
 package object mongodb {
+  type MongoResult[A] = Result[MongoError, A]
+
+
+
+  // - Mongo aliases ---------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  // TODO: write dedicated types for some / most of these?
   type BulkWriteOptions         = com.mongodb.client.model.BulkWriteOptions
   type UpdateOptions            = com.mongodb.client.model.UpdateOptions
   type FindOneAndUpdateOptions  = com.mongodb.client.model.FindOneAndUpdateOptions

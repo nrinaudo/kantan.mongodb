@@ -51,8 +51,9 @@ object MongoClient {
 
   def fromAddress(cluster: List[ServerAddress],
             creds: List[MongoCredential] = List.empty,
-            options: Option[MongoClientOptions] = None): MongoClient =
+            options: Option[MongoClientOptions] = None): MongoClient = {
     new MongoClient(new MClient(cluster.asJava, creds.asJava, addRegistry(options), driverInfo))
+  }
 
 
 
