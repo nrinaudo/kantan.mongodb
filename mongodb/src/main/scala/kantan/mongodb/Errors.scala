@@ -19,7 +19,16 @@ package kantan.mongodb
 import com.mongodb._
 import kantan.codecs.{Error, ErrorCompanion}
 
-sealed abstract class MongoError(message: String) extends Error(message)
+sealed abstract class MongoError(message: String, code: Int) extends Error(message)
+
+abstract class MongoErrorCompanion[T <: MongoError](msg: String)(f: (String, Int) ⇒ T)
+  extends ErrorCompanion[T](msg)(s ⇒ f(s, -4)) {
+  def apply(e: MongoException): T = {
+    val error = f(e.getMessage, e.getCode)
+    error.initCause(e)
+    error
+  }
+}
 
 object MongoError {
   def apply(exception: MongoException): MongoError = exception match {
@@ -36,51 +45,59 @@ object MongoError {
 
   // - Unknown errors --------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  final case class Unknown(message: String) extends MongoError(message)
-  object Unknown extends ErrorCompanion("an unknown error has occurred")(s ⇒ new Unknown(s))
+  final case class Unknown(message: String, code: Int) extends MongoError(message, code)
+  object Unknown extends MongoErrorCompanion("an unknown error has occurred")((s, c) ⇒ new Unknown(s, c))
 
 
 
   // - Timeout errors --------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  final case class ExecutionTimeout(message: String) extends MongoError(message)
-  object ExecutionTimeout extends ErrorCompanion("a timeout error has occurred")(s ⇒ new ExecutionTimeout(s))
+  final case class ExecutionTimeout(message: String, code: Int) extends MongoError(message, code)
+  object ExecutionTimeout extends MongoErrorCompanion("a timeout error has occurred")((s, c) ⇒
+    new ExecutionTimeout(s, c)
+  )
 
 
 
   // - GridFS errors ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  final case class GridFS(message: String) extends MongoError(message)
-  object GridFS extends ErrorCompanion("an unspecified GridFS error has occurred")(s ⇒ new GridFS(s))
+  final case class GridFS(message: String, code: Int) extends MongoError(message, code)
+  object GridFS extends MongoErrorCompanion("an unspecified GridFS error has occurred")((s, c) ⇒
+    new GridFS(s, c)
+  )
 
 
 
   // - Driver incompatibility ------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  final case class IncompatibleDriver(message: String) extends MongoError(message)
-  object IncompatibleDriver extends ErrorCompanion("an unspecified driver incompatibility error has occurred")(s ⇒
-    new IncompatibleDriver(s)
+  final case class IncompatibleDriver(message: String, code: Int) extends MongoError(message, code)
+  object IncompatibleDriver extends MongoErrorCompanion("an unspecified driver error has occurred")((s, c) ⇒
+    new IncompatibleDriver(s, c)
   )
 
 
 
   // - Internal errors -------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  final case class Internal(message: String) extends MongoError(message)
-  object Internal extends ErrorCompanion("an unspecified internal error has occurred")(s ⇒ new Internal(s))
+  final case class Internal(message: String, code: Int) extends MongoError(message, code)
+  object Internal extends MongoErrorCompanion("an unspecified internal error has occurred")((s, c) ⇒
+    new Internal(s, c)
+  )
 
 
 
   // - Interruption errors ---------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  final case class Interrupted(message: String) extends MongoError(message)
-  object Interrupted extends ErrorCompanion("an unspecified interruption error has occurred")(s ⇒ new Interrupted(s))
+  final case class Interrupted(message: String, code: Int) extends MongoError(message, code)
+  object Interrupted extends MongoErrorCompanion("an unspecified interruption error has occurred")((s, c) ⇒
+    new Interrupted(s, c)
+  )
 
 
 
   // - Client errors ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  sealed abstract class Client(message: String) extends MongoError(message)
+  sealed abstract class Client(message: String, code: Int) extends MongoError(message, code)
 
   object Client {
     def apply(exception: MongoClientException): MongoError.Client = exception match {
@@ -95,41 +112,43 @@ object MongoError {
 
     // - Unknown client errors -----------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Unknown(message: String) extends Client(message)
-    object Unknown extends ErrorCompanion("an unknown client error has occurred")(s ⇒ new MongoError.Client.Unknown(s))
+    final case class Unknown(message: String, code: Int) extends Client(message, code)
+    object Unknown extends MongoErrorCompanion("an unknown client error has occurred")((s, c) ⇒
+      new MongoError.Client.Unknown(s, c)
+    )
 
 
 
     // - Client configuration errors -----------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Configuration(message: String) extends Client(message)
-    object Configuration extends ErrorCompanion("an unspecified configuration error has occurred")(s ⇒
-      new MongoError.Client.Configuration(s)
+    final case class Configuration(message: String, code: Int) extends Client(message, code)
+    object Configuration extends MongoErrorCompanion("an unspecified configuration error has occurred")((s, c) ⇒
+      new MongoError.Client.Configuration(s, c)
     )
 
 
     // - Client security errors ----------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Security(message: String) extends Client(message)
-    object Security extends ErrorCompanion("an unspecified security error has occurred")(s ⇒
-      new MongoError.Client.Security(s)
+    final case class Security(message: String, code: Int) extends Client(message, code)
+    object Security extends MongoErrorCompanion("an unspecified security error has occurred")((s, c) ⇒
+      new MongoError.Client.Security(s, c)
     )
 
 
     // - Client timeout errors -----------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Timeout(message: String) extends Client(message)
-    object Timeout extends ErrorCompanion("an unspecified timeout error has occurred")(s ⇒
-      new MongoError.Client.Timeout(s)
+    final case class Timeout(message: String, code: Int) extends Client(message, code)
+    object Timeout extends MongoErrorCompanion("an unspecified timeout error has occurred")((s, c) ⇒
+      new MongoError.Client.Timeout(s, c)
     )
 
 
 
     // - Client queue full errors --------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class WaitQueueFull(message: String) extends Client(message)
-    object WaitQueueFull extends ErrorCompanion("an unspecified queue full error has occurred")(s ⇒
-      new MongoError.Client.WaitQueueFull(s)
+    final case class WaitQueueFull(message: String, code: Int) extends Client(message, code)
+    object WaitQueueFull extends MongoErrorCompanion("an unspecified queue full error has occurred")((s, c) ⇒
+      new MongoError.Client.WaitQueueFull(s, c)
     )
   }
 
@@ -137,7 +156,7 @@ object MongoError {
 
   // - Server errors ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  sealed abstract class Server(message: String) extends MongoError(message)
+  sealed abstract class Server(message: String, code: Int) extends MongoError(message, code)
 
   object Server {
     def apply(exception: MongoServerException): MongoError.Server = exception match {
@@ -158,79 +177,81 @@ object MongoError {
 
     // - Unknown server errors -----------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Unknown(message: String) extends Server(message)
-    object Unknown extends ErrorCompanion("an unknown server error has occurred")(s ⇒ new MongoError.Server.Unknown(s))
+    final case class Unknown(message: String, code: Int) extends Server(message, code)
+    object Unknown extends MongoErrorCompanion("an unknown server error has occurred")((s, c) ⇒
+      new MongoError.Server.Unknown(s, c)
+    )
 
 
 
     // - Server bulk write errors --------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class BulkWrite(message: String) extends Server(message)
-    object BulkWrite extends ErrorCompanion("an unspecified bulk write error has occurred")(s ⇒
-      new MongoError.Server.BulkWrite(s)
+    final case class BulkWrite(message: String, code: Int) extends Server(message, code)
+    object BulkWrite extends MongoErrorCompanion("an unspecified bulk write error has occurred")((s, c) ⇒
+      new MongoError.Server.BulkWrite(s, c)
     )
 
 
 
     // - Server command write errors -----------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Command(message: String) extends Server(message)
-    object Command extends ErrorCompanion("an unspecified command error has occurred")(s ⇒
-      new MongoError.Server.Command(s)
+    final case class Command(message: String, code: Int) extends Server(message, code)
+    object Command extends MongoErrorCompanion("an unspecified command error has occurred")((s, c) ⇒
+      new MongoError.Server.Command(s, c)
     )
 
 
 
     // - Server node recovery errors -----------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class NodeIsRecovering(message: String) extends Server(message)
-    object NodeIsRecovering extends ErrorCompanion("an unspecified node recovery error has occurred")(s ⇒
-      new MongoError.Server.NodeIsRecovering(s)
+    final case class NodeIsRecovering(message: String, code: Int) extends Server(message, code)
+    object NodeIsRecovering extends MongoErrorCompanion("an unspecified node recovery error has occurred")((s, c) ⇒
+      new MongoError.Server.NodeIsRecovering(s, c)
     )
 
 
 
     // - Server "not primary" errors -----------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class NotPrimary(message: String) extends Server(message)
-    object NotPrimary extends ErrorCompanion("an unspecified primary error has occurred")(s ⇒
-      new MongoError.Server.NotPrimary(s)
+    final case class NotPrimary(message: String, code: Int) extends Server(message, code)
+    object NotPrimary extends MongoErrorCompanion("an unspecified primary error has occurred")((s, c) ⇒
+      new MongoError.Server.NotPrimary(s, c)
     )
 
 
 
     // - Server query errors -------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Query(message: String) extends Server(message)
-    object Query extends ErrorCompanion("an unspecified query error has occurred")(s ⇒
-      new MongoError.Server.Query(s)
+    final case class Query(message: String, code: Int) extends Server(message, code)
+    object Query extends MongoErrorCompanion("an unspecified query error has occurred")((s, c) ⇒
+      new MongoError.Server.Query(s, c)
     )
 
 
 
     // - Cursor not found errors ---------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class CursorNotFound(message: String) extends Server(message)
-    object CursorNotFound extends ErrorCompanion("an cursor was not found")(s ⇒
-      new MongoError.Server.CursorNotFound(s)
+    final case class CursorNotFound(message: String, code: Int) extends Server(message, code)
+    object CursorNotFound extends MongoErrorCompanion("an cursor was not found")((s, c) ⇒
+      new MongoError.Server.CursorNotFound(s, c)
     )
 
 
 
     // - Write concern errors ------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class WriteConcern(message: String) extends Server(message)
-    object WriteConcern extends ErrorCompanion("an unspecified write concern error has occurred")(s ⇒
-      new MongoError.Server.WriteConcern(s)
+    final case class WriteConcern(message: String, code: Int) extends Server(message, code)
+    object WriteConcern extends MongoErrorCompanion("an unspecified write concern error has occurred")((s, c) ⇒
+      new MongoError.Server.WriteConcern(s, c)
     )
 
 
 
     // - Write errors --------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Write(message: String) extends Server(message)
-    object Write extends ErrorCompanion("an unspecified write error has occurred")(s ⇒
-      new MongoError.Server.Write(s)
+    final case class Write(message: String, code: Int) extends Server(message, code)
+    object Write extends MongoErrorCompanion("an unspecified write error has occurred")((s, c) ⇒
+      new MongoError.Server.Write(s, c)
     )
   }
 
@@ -238,14 +259,14 @@ object MongoError {
 
   // - Socket errors ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  sealed abstract class Socket(message: String) extends MongoError(message)
+  sealed abstract class Socket(message: String, code: Int) extends MongoError(message, code)
 
   object Socket {
     def apply(exception: MongoSocketException): MongoError.Socket = exception match {
-      case e: MongoSocketClosedException ⇒ MongoError.Socket.Closed(exception)
-      case e: MongoSocketOpenException   ⇒ MongoError.Socket.Open(exception)
-      case e: MongoSocketReadException   ⇒ MongoError.Socket.ReadTimeout(exception)
-      case e: MongoSocketWriteException  ⇒ MongoError.Socket.Write(exception)
+      case e: MongoSocketClosedException ⇒ MongoError.Socket.Closed(e)
+      case e: MongoSocketOpenException   ⇒ MongoError.Socket.Open(e)
+      case e: MongoSocketReadException   ⇒ MongoError.Socket.ReadTimeout(e)
+      case e: MongoSocketWriteException  ⇒ MongoError.Socket.Write(e)
       case _                             ⇒ MongoError.Socket.Unknown(exception)
     }
 
@@ -253,41 +274,43 @@ object MongoError {
 
     // - Unknown socket errors -----------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Unknown(message: String) extends Socket(message)
-    object Unknown extends ErrorCompanion("an unknown socket error has occurred")(s ⇒ new MongoError.Socket.Unknown(s))
+    final case class Unknown(message: String, code: Int) extends Socket(message, code)
+    object Unknown extends MongoErrorCompanion("an unknown socket error has occurred")((s, c) ⇒
+      new MongoError.Socket.Unknown(s, c)
+    )
 
 
     // - Socket closed errors ------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Closed(message: String) extends Socket(message)
-    object Closed extends ErrorCompanion("an unspecified socket closed error has occurred")(s ⇒
-      new MongoError.Socket.Closed(s)
+    final case class Closed(message: String, code: Int) extends Socket(message, code)
+    object Closed extends MongoErrorCompanion("an unspecified socket closed error has occurred")((s, c) ⇒
+      new MongoError.Socket.Closed(s, c)
     )
 
 
 
     // - Socket open errors --------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Open(message: String) extends Socket(message)
-    object Open extends ErrorCompanion("an unspecified socket open error has occurred")(s ⇒
-      new MongoError.Socket.Open(s)
+    final case class Open(message: String, code: Int) extends Socket(message, code)
+    object Open extends MongoErrorCompanion("an unspecified socket open error has occurred")((s, c) ⇒
+      new MongoError.Socket.Open(s, c)
     )
 
 
     // - Socket timeout errors -----------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class ReadTimeout(message: String) extends Socket(message)
-    object ReadTimeout extends ErrorCompanion("an unspecified socket read timeout error has occurred")(s ⇒
-      new MongoError.Socket.ReadTimeout(s)
+    final case class ReadTimeout(message: String, code: Int) extends Socket(message, code)
+    object ReadTimeout extends MongoErrorCompanion("an unspecified socket read timeout error has occurred")((s, c) ⇒
+      new MongoError.Socket.ReadTimeout(s, c)
     )
 
 
 
     // - Socket Write errors -------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------
-    final case class Write(message: String) extends Socket(message)
-    object Write extends ErrorCompanion("an unspecified socket write error has occurred")(s ⇒
-      new MongoError.Socket.Write(s)
+    final case class Write(message: String, code: Int) extends Socket(message, code)
+    object Write extends MongoErrorCompanion("an unspecified socket write error has occurred")((s, c) ⇒
+      new MongoError.Socket.Write(s, c)
     )
   }
 }
