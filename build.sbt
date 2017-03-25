@@ -9,73 +9,57 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
   .settings(
     initialCommands in console :=
     """
-      |import kantan.bson._
-      |import kantan.bson.ops._
-      |import kantan.bson.generic._
       |import kantan.mongodb._
+      |import kantan.mongodb.ops._
+      |import kantan.mongodb.generic._
     """.stripMargin
   )
-  .aggregate(mongodb, bson, generic, jodaTime, laws)
+  .aggregate(core, generic, jodaTime, laws)
   .aggregateIf(java8Supported)(java8)
-  .dependsOn(mongodb, generic)
+  .dependsOn(core, generic)
 
 
 
-// - bson --------------------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------
-lazy val mongodb = project
+lazy val core = project
   .settings(
     moduleName := "kantan.mongodb",
     name       := "mongodb"
   )
-  .enablePlugins(PublishedPlugin, BuildInfoPlugin)
+  .enablePlugins(PublishedPlugin, BuildInfoPlugin, spray.boilerplate.BoilerplatePlugin)
   .settings(
     buildInfoKeys := Seq[BuildInfoKey](version, BuildInfoKey.action("commit") {git.gitHeadCommit.value}),
     buildInfoPackage := "kantan.mongodb"
   )
-  .dependsOn(bson)
   .settings(libraryDependencies ++= Seq(
+    "com.nrinaudo"  %% "kantan.codecs"  % Versions.kantanCodecs,
     "org.mongodb"   %  "mongodb-driver" % Versions.mongodb,
     "org.scalatest" %% "scalatest"      % Versions.scalatest % "test"
   ))
+  .laws("laws")
   .settings(
     initialCommands in console :=
     """
       |import kantan.mongodb._
-      |import kantan.bson._
     """.stripMargin
   )
 
 
-lazy val bson = project
-  .settings(
-    moduleName := "kantan.bson",
-    name       := "bson"
-  )
-  .enablePlugins(PublishedPlugin, spray.boilerplate.BoilerplatePlugin)
-  .settings(libraryDependencies ++= Seq(
-    "com.nrinaudo"  %% "kantan.codecs"      % Versions.kantanCodecs,
-    "org.mongodb"   %  "bson"               % Versions.mongodb,
-    "org.scalatest" %% "scalatest"          % Versions.scalatest % "test"
-  ))
-  .laws("laws")
-
 lazy val laws = project
   .settings(
-    moduleName := "kantan.bson-laws",
+    moduleName := "kantan.mongodb-laws",
     name       := "laws"
   )
   .enablePlugins(PublishedPlugin)
-  .dependsOn(bson)
+  .dependsOn(core)
   .settings(libraryDependencies += "com.nrinaudo" %% "kantan.codecs-laws" % Versions.kantanCodecs)
 
 lazy val generic = project
   .settings(
-    moduleName := "kantan.bson-generic",
+    moduleName := "kantan.mongodb-generic",
     name       := "generic"
   )
   .enablePlugins(PublishedPlugin)
-  .dependsOn(bson, laws % "test")
+  .dependsOn(core, laws % "test")
   .settings(libraryDependencies ++= Seq(
     "com.nrinaudo"  %% "kantan.codecs-shapeless"      % Versions.kantanCodecs,
     "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test",
@@ -84,11 +68,11 @@ lazy val generic = project
 
 lazy val jodaTime = Project(id = "joda-time", base = file("joda-time"))
   .settings(
-    moduleName := "kantan.bson-joda-time",
+    moduleName := "kantan.mongodb-joda-time",
     name       := "joda-time"
   )
   .enablePlugins(PublishedPlugin)
-  .dependsOn(bson, laws % "test")
+  .dependsOn(core, laws % "test")
   .settings(libraryDependencies ++= Seq(
     "com.nrinaudo"  %% "kantan.codecs-joda-time"      % Versions.kantanCodecs,
     "com.nrinaudo"  %% "kantan.codecs-joda-time-laws" % Versions.kantanCodecs % "test",
@@ -97,11 +81,11 @@ lazy val jodaTime = Project(id = "joda-time", base = file("joda-time"))
 
 lazy val java8 = project
   .settings(
-    moduleName    := "kantan.bson-java8",
+    moduleName    := "kantan.mongodb-java8",
     name          := "java8"
   )
   .enablePlugins(PublishedPlugin)
-  .dependsOn(bson, laws % "test")
+  .dependsOn(core, laws % "test")
   .settings(libraryDependencies ++= Seq(
     "com.nrinaudo"  %% "kantan.codecs-java8"      % Versions.kantanCodecs,
     "com.nrinaudo"  %% "kantan.codecs-java8-laws" % Versions.kantanCodecs % "test",

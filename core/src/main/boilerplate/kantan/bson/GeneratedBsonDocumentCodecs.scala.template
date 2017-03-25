@@ -1,0 +1,32 @@
+/*
+ * Copyright 2017 Nicolas Rinaudo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package kantan.mongodb
+
+@SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
+trait GeneratedBsonDocumentCodecs {
+  def codec[A: BsonValueEncoder: BsonValueDecoder, B](name: String)(f: A ⇒ B)(g: B ⇒ A): BsonDocumentCodec[B] =
+    BsonDocumentCodec.from(BsonDocumentDecoder.decoder(name)(f), BsonDocumentEncoder.encoder(name)(g))
+  [2..#def codec[[#A1: BsonValueEncoder: BsonValueDecoder#], B]([#n1: String#])(f: ([#A1#]) ⇒ B)(g: B ⇒ Tuple1[[#A1#]]): BsonDocumentCodec[B] =
+    BsonDocumentCodec.from(BsonDocumentDecoder.decoder([#n1#])(f), BsonDocumentEncoder.encoder([#n1#])(g))#
+  ]
+
+  def caseCodec[A: BsonValueEncoder: BsonValueDecoder, B](name: String)(f: A ⇒ B)(g: B ⇒ Option[A]): BsonDocumentCodec[B] =
+    BsonDocumentCodec.from(BsonDocumentDecoder.decoder(name)(f), BsonDocumentEncoder.caseEncoder(name)(g))
+  [2..#def caseCodec[[#A1: BsonValueEncoder: BsonValueDecoder#], B]([#n1: String#])(f: ([#A1#]) ⇒ B)(g: B ⇒ Option[Tuple1[[#A1#]]]): BsonDocumentCodec[B] =
+    BsonDocumentCodec.from(BsonDocumentDecoder.decoder([#n1#])(f), BsonDocumentEncoder.caseEncoder([#n1#])(g))#
+  ]
+}
