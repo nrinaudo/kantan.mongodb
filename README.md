@@ -1,4 +1,4 @@
-# kantan.csv
+# kantan.mongodb
 
 [![Build Status](https://travis-ci.org/nrinaudo/kantan.mongodb.svg?branch=master)](https://travis-ci.org/nrinaudo/kantan.mongodb)
 [![codecov](https://codecov.io/gh/nrinaudo/kantan.mongodb/branch/master/graph/badge.svg)](https://codecov.io/gh/nrinaudo/kantan.mongodb)
