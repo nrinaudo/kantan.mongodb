@@ -20,11 +20,11 @@ import kantan.codecs.laws.discipline.{CodecTests, DecoderTests, EncoderTests}
 import kantan.mongodb._
 
 package object discipline {
-  type BsonValueDecoderTests[A] = DecoderTests[BsonValue, A, DecodeError, codecs.type]
+  type BsonValueDecoderTests[A] = DecoderTests[BsonValue, A, MongoError.Decode, codecs.type]
   type BsonValueEncoderTests[A] = EncoderTests[BsonValue, A, codecs.type]
-  type BsonValueCodecTests[A] = CodecTests[BsonValue, A, DecodeError, codecs.type]
+  type BsonValueCodecTests[A] = CodecTests[BsonValue, A, MongoError.Decode, codecs.type]
 
-  type BsonDocumentDecoderTests[A] = DecoderTests[BsonDocument, A, DecodeError, codecs.type]
+  type BsonDocumentDecoderTests[A] = DecoderTests[BsonDocument, A, MongoError.Decode, codecs.type]
   type BsonDocumentEncoderTests[A] = EncoderTests[BsonDocument, A, codecs.type]
-  type BsonDocumentCodecTests[A] = CodecTests[BsonDocument, A, DecodeError, codecs.type]
+  type BsonDocumentCodecTests[A] = CodecTests[BsonDocument, A, MongoError.Decode, codecs.type]
 }

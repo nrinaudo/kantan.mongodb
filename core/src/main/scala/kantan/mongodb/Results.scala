@@ -16,8 +16,14 @@
 
 package kantan.mongodb
 
-import kantan.codecs._
+import com.mongodb.MongoException
+import kantan.codecs.ResultCompanion
 
-sealed case class DecodeError(message: String) extends Error(message)
+object MongoResult extends ResultCompanion.WithDefault[MongoError] {
+  override protected def fromThrowable(t: Throwable) = MongoError(MongoException.fromThrowable(t))
+}
 
-object DecodeError extends ErrorCompanion[DecodeError]("an error occurred while decoding data")(s ⇒ new DecodeError(s))
+object DecodeResult extends ResultCompanion.WithDefault[MongoError.Decode] {
+  override protected def fromThrowable(t: Throwable) = MongoError.Decode(t)
+}
+

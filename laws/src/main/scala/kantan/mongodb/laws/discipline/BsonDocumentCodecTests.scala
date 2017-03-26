@@ -24,5 +24,5 @@ import org.scalacheck.{Arbitrary, Cogen}
 
 object BsonDocumentCodecTests {
   def apply[A: BsonDocumentCodecLaws: Arbitrary: Cogen](implicit al: Arbitrary[LegalBsonDocument[A]])
-  : BsonDocumentCodecTests[A] = CodecTests[BsonDocument, A, DecodeError, codecs.type]
+  : BsonDocumentCodecTests[A] = CodecTests[BsonDocument, A, MongoError.Decode, codecs.type]
 }

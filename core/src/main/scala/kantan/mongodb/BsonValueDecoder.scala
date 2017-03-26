@@ -35,7 +35,7 @@ object BsonValueDecoder {
 
   def from[A](f: PartialFunction[BsonValue, DecodeResult[A]]): BsonValueDecoder[A] = Decoder.from { value ⇒
     if(f.isDefinedAt(value)) f(value)
-    else                     Failure(DecodeError(s"unexpected BSON value: $value"))
+    else                     Failure(MongoError.Decode(s"unexpected BSON value: $value"))
   }
 }
 
@@ -219,7 +219,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * Note that the resulting decoder will only work on values of type [[BsonString]].
     */
   def fromStringDecoder[A: StringDecoder]: BsonValueDecoder[A] =
-    BsonValueDecoder[String].mapResult(s ⇒ StringDecoder[A].decode(s).leftMap(e ⇒ DecodeError(e.message)))
+    BsonValueDecoder[String].mapResult(s ⇒ StringDecoder[A].decode(s).leftMap(e ⇒ MongoError.Decode(e.message)))
 
   /** Decodes instances of [[BsonString]] as `URI`.
     *

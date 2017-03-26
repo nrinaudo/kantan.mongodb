@@ -23,6 +23,8 @@ sealed abstract class MongoError(message: String, code: Int) extends Error(messa
 
 abstract class MongoErrorCompanion[T <: MongoError](msg: String)(f: (String, Int) ⇒ T)
   extends ErrorCompanion[T](msg)(s ⇒ f(s, -4)) {
+  def apply(msg: String): T = f(msg, -4)
+
   def apply(e: MongoException): T = {
     val error = f(e.getMessage, e.getCode)
     error.initCause(e)
@@ -47,6 +49,15 @@ object MongoError {
   // -------------------------------------------------------------------------------------------------------------------
   final case class Unknown(message: String, code: Int) extends MongoError(message, code)
   object Unknown extends MongoErrorCompanion("an unknown error has occurred")((s, c) ⇒ new Unknown(s, c))
+
+
+
+  // - Decoding errors -------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  sealed case class Decode(message: String, code: Int) extends MongoError(message, -4)
+  object Decode extends MongoErrorCompanion("an error occurred while decoding data")((s, c) ⇒
+    new Decode(s, c)
+  )
 
 
 

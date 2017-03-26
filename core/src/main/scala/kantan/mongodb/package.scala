@@ -20,15 +20,15 @@ import kantan.codecs._
 
 package object mongodb {
   type MongoResult[A] = Result[MongoError, A]
-  type DecodeResult[A] = Result[DecodeError, A]
+  type DecodeResult[A] = Result[MongoError.Decode, A]
 
-  type BsonValueDecoder[A] = Decoder[BsonValue, A, DecodeError, codecs.type]
+  type BsonValueDecoder[A] = Decoder[BsonValue, A, MongoError.Decode, codecs.type]
   type BsonValueEncoder[A] = Encoder[BsonValue, A, codecs.type]
-  type BsonValueCodec[A] = Codec[BsonValue, A, DecodeError, codecs.type]
+  type BsonValueCodec[A] = Codec[BsonValue, A, MongoError.Decode, codecs.type]
 
-  type BsonDocumentDecoder[A] = Decoder[BsonDocument, A, DecodeError, codecs.type]
+  type BsonDocumentDecoder[A] = Decoder[BsonDocument, A, MongoError.Decode, codecs.type]
   type BsonDocumentEncoder[A] = Encoder[BsonDocument, A, codecs.type]
-  type BsonDocumentCodec[A] = Codec[BsonDocument, A, DecodeError, codecs.type]
+  type BsonDocumentCodec[A] = Codec[BsonDocument, A, MongoError.Decode, codecs.type]
 
 
   // - Mongo aliases ---------------------------------------------------------------------------------------------------

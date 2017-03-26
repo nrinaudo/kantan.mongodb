@@ -126,7 +126,8 @@ trait ArbitraryInstances extends kantan.codecs.laws.discipline.ArbitraryInstance
 
   // - Arbitrary instances ---------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  implicit val arbDecodeError: Arbitrary[DecodeError] = Arbitrary(genException.map(DecodeError.apply))
+  implicit val arbDecodeError: Arbitrary[MongoError.Decode] =
+    Arbitrary(genException.map(MongoError.Decode.apply))
   implicit val arbBsonDocument: Arbitrary[BsonDocument] = Arbitrary(genBsonDocument(4))
   implicit val arbBsonValue: Arbitrary[BsonValue] = Arbitrary(genBsonValue(4))
   implicit val arbObjectId: Arbitrary[ObjectId] = Arbitrary(genObjectId)
@@ -137,8 +138,8 @@ trait ArbitraryInstances extends kantan.codecs.laws.discipline.ArbitraryInstance
   // -------------------------------------------------------------------------------------------------------------------
   implicit val cogenObjectId: Cogen[ObjectId] = imp[Cogen[String]].contramap(_.toString)
 
-  implicit val cogenBsonDecodeError: Cogen[DecodeError] =
-    Cogen((seed: Seed, err: DecodeError) ⇒ imp[Cogen[String]].perturb(seed, err.message))
+  implicit val cogenBsonDecodeError: Cogen[MongoError.Decode] =
+    Cogen((seed: Seed, err: MongoError.Decode) ⇒ imp[Cogen[String]].perturb(seed, err.message))
 
   implicit val cogenBsonDocumentContent: Cogen[Map[String, BsonValue]] =
     Cogen.it(_.toVector.sortBy(_._1).iterator)

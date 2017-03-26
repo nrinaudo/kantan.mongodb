@@ -18,6 +18,6 @@ package kantan.mongodb
 
 import kantan.codecs.CodecCompanion
 
-object BsonValueCodec extends CodecCompanion[BsonValue, DecodeError, codecs.type]
+object BsonValueCodec extends CodecCompanion[BsonValue, MongoError.Decode, codecs.type]
 
 trait BsonValueCodecInstances extends BsonValueEncoderInstances with BsonValueDecoderInstances
