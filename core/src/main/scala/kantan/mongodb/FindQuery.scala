@@ -38,7 +38,7 @@ sealed abstract class FindQuery[A] extends ResourceIterable[A] {
 }
 
 private object FindQuery {
-  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ FindIterable[BsonDocument]): FindQuery[DecodeResult[R]] =
+  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ FindIterable[BsonDocument]): FindQuery[MongoResult[R]] =
     FindQueryImpl(None, None, None, None, None, None, None, None, None, None, None, None, () ⇒ f)
 
   private final case class FindQueryImpl[A: BsonDocumentDecoder](
@@ -55,7 +55,7 @@ private object FindQuery {
                                                                   drop: Option[Int],
                                                                   srt: Option[BsonDocument],
                                                                   eval: () ⇒ FindIterable[BsonDocument]
-                                                                ) extends FindQuery[DecodeResult[A]] {
+                                                                ) extends FindQuery[MongoResult[A]] {
     override def batchSize(size: Int) = copy(batchSize = Some(size))
     override def collation(c: Collation) = copy(collation = Some(c))
     override def cursorType(c: CursorType) = copy(cursor = Some(c))

@@ -28,14 +28,14 @@ sealed abstract class DistinctQuery[A] extends ResourceIterable[A] {
 }
 
 private object DistinctQuery {
-  private[mongodb] def from[R: BsonValueDecoder](f: ⇒ DistinctIterable[BsonValue]): DistinctQuery[DecodeResult[R]] =
+  private[mongodb] def from[R: BsonValueDecoder](f: ⇒ DistinctIterable[BsonValue]): DistinctQuery[MongoResult[R]] =
     DistinctQueryImpl(None, None, None, () ⇒ f)
   private final case class DistinctQueryImpl[A: BsonValueDecoder](
                                                                    batch: Option[Int],
                                                                    col: Option[Collation],
                                                                    time: Option[Duration],
                                                                    eval: () ⇒ DistinctIterable[BsonValue]
-                                                                 ) extends DistinctQuery[DecodeResult[A]] {
+                                                                 ) extends DistinctQuery[MongoResult[A]] {
     override def batchSize(i: Int) = copy(batch = Some(i))
     override def collation(c: Collation) = copy(col = Some(c))
     override def maxTime(l: Long, u: TimeUnit) = copy(time = Some(Duration(l, u)))

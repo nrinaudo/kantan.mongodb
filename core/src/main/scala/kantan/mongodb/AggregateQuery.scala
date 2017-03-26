@@ -32,7 +32,7 @@ sealed abstract class AggregateQuery[A] extends ResourceIterable[A] {
 
 private object AggregateQuery {
   private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ AggregateIterable[BsonDocument])
-  : AggregateQuery[DecodeResult[R]] = AggregateQueryImpl(None, None, None, None, None, None, () ⇒ f)
+  : AggregateQuery[MongoResult[R]] = AggregateQueryImpl(None, None, None, None, None, None, () ⇒ f)
 
   private final case class AggregateQueryImpl[A: BsonDocumentDecoder](
                                                                        diskUse: Option[Boolean],
@@ -42,7 +42,7 @@ private object AggregateQuery {
                                                                        time: Option[Duration],
                                                                        cursor: Option[Boolean],
                                                                        eval: () ⇒ AggregateIterable[BsonDocument]
-                                                                     ) extends AggregateQuery[DecodeResult[A]] {
+                                                                     ) extends AggregateQuery[MongoResult[A]] {
     override def allowDiskUse(b: Boolean) = copy(diskUse = Some(b))
     override def batchSize(i: Int) = copy(batchSize = Some(i))
     override def bypassDocumentValidation(b: Boolean) = copy(bypassValidation = Some(b))

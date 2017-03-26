@@ -44,7 +44,7 @@ sealed abstract class MapReduceQuery[A] extends ResourceIterable[A] {
 
 object MapReduceQuery {
   private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ MapReduceIterable[BsonDocument])
-  : MapReduceQuery[DecodeResult[R]] = MapReduceQueryImpl(None, None, None, None, None, None, None, None, None, None,
+  : MapReduceQuery[MongoResult[R]] = MapReduceQueryImpl(None, None, None, None, None, None, None, None, None, None,
     None, None, None, None, false, None, None, () ⇒ f)
   private final case class MapReduceQueryImpl[A: BsonDocumentDecoder](
                                                                        action: Option[Action],
@@ -65,7 +65,7 @@ object MapReduceQuery {
                                                                        max: Option[Int],
                                                                        time: Option[Duration],
                                                                        eval: () ⇒ MapReduceIterable[BsonDocument]
-                                                                     ) extends MapReduceQuery[DecodeResult[A]] {
+                                                                     ) extends MapReduceQuery[MongoResult[A]] {
     override def action(a: Action) = copy(action = Some(a))
     override def batchSize(i: Int) = copy(batch = Some(i))
     override def bypassDocumentValidation(b: Boolean) = copy(bypassValidation = Some(b))

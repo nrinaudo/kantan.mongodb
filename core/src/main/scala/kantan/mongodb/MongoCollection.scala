@@ -40,24 +40,20 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
 
   // - Aggregate / Map-Reduce ------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  // TODO: make safe
-  def aggregate[F: BsonDocumentEncoder, O: BsonDocumentDecoder](filters: F*): AggregateQuery[DecodeResult[O]] =
+  def aggregate[F: BsonDocumentEncoder, O: BsonDocumentDecoder](filters: F*): AggregateQuery[MongoResult[O]] =
     AggregateQuery.from(underlying.aggregate(filters.map(BsonDocumentEncoder[F].encode).asJava))
 
-  // TODO: make safe
-  def mapReduce[O: BsonDocumentDecoder](map: String, reduce: String): MapReduceQuery[DecodeResult[O]] =
+  def mapReduce[O: BsonDocumentDecoder](map: String, reduce: String): MapReduceQuery[MongoResult[O]] =
     MapReduceQuery.from(underlying.mapReduce(map, reduce))
 
 
 
   // - Distinct --------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  // TODO: make safe
-  def distinct[O: BsonValueDecoder](field: String): DistinctQuery[DecodeResult[O]] =
+  def distinct[O: BsonValueDecoder](field: String): DistinctQuery[MongoResult[O]] =
   DistinctQuery.from(underlying.distinct(field, classOf[BsonValue]))
 
-  // TODO: make safe
-  def distinct[F: BsonDocumentEncoder, O: BsonValueDecoder](field: String, filter: F): DistinctQuery[DecodeResult[O]] =
+  def distinct[F: BsonDocumentEncoder, O: BsonValueDecoder](field: String, filter: F): DistinctQuery[MongoResult[O]] =
     DistinctQuery.from(underlying.distinct(field, BsonDocumentEncoder[F].encode(filter), classOf[BsonValue]))
 
 
@@ -69,8 +65,7 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   def createIndexWith[I: BsonDocumentEncoder](keys: I)(options: IndexOptions): MongoResult[String] =
     MongoResult(underlying.createIndex(BsonDocumentEncoder[I].encode(keys), options))
 
-  // TODO: make safe
-  def indexes[O: BsonDocumentDecoder](): IndexQuery[DecodeResult[O]] =
+  def indexes[O: BsonDocumentDecoder](): IndexQuery[MongoResult[O]] =
     IndexQuery.from(underlying.listIndexes(classOf[BsonDocument]))
 
   def dropIndex[I: BsonDocumentEncoder](keys: I): MongoResult[Unit] =
@@ -84,23 +79,20 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
 
   // - Find ------------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  // TODO: make safe
-  def find[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): FindQuery[DecodeResult[A]] =
+  def find[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): FindQuery[MongoResult[A]] =
     FindQuery.from(underlying.find(BsonDocumentEncoder[F].encode(filter)))
 
-  // TODO: make safe
-  def find()(implicit da: BsonDocumentDecoder[A]): FindQuery[DecodeResult[A]] =
+  def find()(implicit da: BsonDocumentDecoder[A]): FindQuery[MongoResult[A]] =
     FindQuery.from(underlying.find())
 
 
 
   // - Update ----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  // TODO: make safe
   private def findOneAndUpdate[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U,
                                                                                options: Option[FindOneAndUpdateOptions])
                                                                               (implicit da: BsonDocumentDecoder[A])
-  : DecodeResult[A] =
+  : MongoResult[A] =
   da.decode(options.fold(
     underlying.findOneAndUpdate(BsonDocumentEncoder[F].encode(filter), BsonDocumentEncoder[U].encode(update))
   )(o ⇒
@@ -108,16 +100,14 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   ))
 
 
-  // TODO: make safe
   def findOneAndUpdate[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)
                                                                       (implicit da: BsonDocumentDecoder[A])
-  : DecodeResult[A] = findOneAndUpdate(filter, update, None)
+  : MongoResult[A] = findOneAndUpdate(filter, update, None)
 
-  // TODO: make safe
   def findOneAndUpdateWith[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)
                                                                           (options: FindOneAndUpdateOptions)
                                                                           (implicit da: BsonDocumentDecoder[A])
-  : DecodeResult[A] = findOneAndUpdate(filter, update, Some(options))
+  : MongoResult[A] = findOneAndUpdate(filter, update, Some(options))
 
   def updateOne[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U): MongoResult[UpdateResult] =
     MongoResult(UpdateResult(underlying.updateOne(BsonDocumentEncoder[F].encode(filter),
@@ -139,25 +129,22 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
 
   // - Replacement -----------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  // TODO: make safe
   def findOneAndReplace[F: BsonDocumentEncoder](filter: F, replacement: A, options: Option[FindOneAndReplaceOptions])
                                                (implicit da: BsonDocumentDecoder[A], ea: BsonDocumentEncoder[A])
-  : Option[DecodeResult[A]] =
+  : Option[MongoResult[A]] =
   Option(options.fold(
     underlying.findOneAndReplace(BsonDocumentEncoder[F].encode(filter), ea.encode(replacement))
   )(o ⇒
     underlying.findOneAndReplace(BsonDocumentEncoder[F].encode(filter), ea.encode(replacement), o)
   )).map(da.decode)
 
-  // TODO: make safe
   def findOneAndReplace[F: BsonDocumentEncoder](filter: F, replacement: A)
                                                (implicit da: BsonDocumentDecoder[A], ea: BsonDocumentEncoder[A])
-  : Option[DecodeResult[A]] = findOneAndReplace(filter, replacement, None)
+  : Option[MongoResult[A]] = findOneAndReplace(filter, replacement, None)
 
-  // TODO: make safe
   def findOneAndReplaceWith[F: BsonDocumentEncoder](filter: F, replacement: A)(options: FindOneAndReplaceOptions)
                                                    (implicit da: BsonDocumentDecoder[A], ea: BsonDocumentEncoder[A])
-  : Option[DecodeResult[A]] = findOneAndReplace(filter, replacement, Some(options))
+  : Option[MongoResult[A]] = findOneAndReplace(filter, replacement, Some(options))
 
   def replaceOne[F: BsonDocumentEncoder](filter: F, rep: A)(implicit ea: BsonDocumentEncoder[A])
   : MongoResult[UpdateResult] = MongoResult(UpdateResult(underlying.replaceOne(BsonDocumentEncoder[F].encode(filter),
@@ -183,8 +170,7 @@ class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocum
   def deleteOneWith[F: BsonDocumentEncoder](filter: F)(options: DeleteOptions): MongoResult[DeleteResult] =
     MongoResult(underlying.deleteOne(BsonDocumentEncoder[F].encode(filter), options))
 
-  // TODO: make safe
-  def findOneAndDelete[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): DecodeResult[A] =
+  def findOneAndDelete[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): MongoResult[A] =
     da.decode(underlying.findOneAndDelete(BsonDocumentEncoder[F].encode(filter)))
 
 

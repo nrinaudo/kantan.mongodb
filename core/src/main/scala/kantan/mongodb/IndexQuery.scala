@@ -28,13 +28,13 @@ sealed abstract class IndexQuery[A] extends ResourceIterable[A] {
 
 private object IndexQuery {
   private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ ListIndexesIterable[BsonDocument])
-  : IndexQuery[DecodeResult[R]] = IndexQueryImpl(None, None, () ⇒ f)
+  : IndexQuery[MongoResult[R]] = IndexQueryImpl(None, None, () ⇒ f)
 
   private final case class IndexQueryImpl[A: BsonDocumentDecoder](
                                                                  batch: Option[Int],
                                                                  time: Option[Duration],
                                                                  eval: () ⇒ ListIndexesIterable[BsonDocument]
-                                                                 ) extends IndexQuery[DecodeResult[A]] {
+                                                                 ) extends IndexQuery[MongoResult[A]] {
     override def batchSize(i: Int) = copy(batch = Some(i))
     override def maxTime(l: Long, u: TimeUnit) = copy(time = Some(Duration(l, u)))
     override def iterator = {
