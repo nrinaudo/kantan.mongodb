@@ -17,13 +17,14 @@
 package kantan.mongodb
 
 import com.mongodb.client.ListIndexesIterable
-import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
-import scala.collection.JavaConverters._
+import kantan.codecs.resource.ResourceIterable
 import scala.concurrent.duration.{Duration, TimeUnit}
 
 sealed abstract class IndexQuery[A] extends ResourceIterable[A] {
   def batchSize(i: Int): IndexQuery[A]
   def maxTime(l: Long, u: TimeUnit): IndexQuery[A]
+
+  override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
 }
 
 private object IndexQuery {
@@ -43,9 +44,7 @@ private object IndexQuery {
       batch.foreach(i ⇒ iterable.batchSize(i))
       time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
 
-      ResourceIterator.fromIterator(iterable.iterator().asScala.map(BsonDocumentDecoder[A].decode))
+      MongoIterator(iterable)
     }
-
-    override def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
   }
 }

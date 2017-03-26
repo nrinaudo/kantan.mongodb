@@ -18,8 +18,7 @@ package kantan.mongodb
 
 import com.mongodb.client.FindIterable
 import java.util.concurrent.TimeUnit
-import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
-import scala.collection.JavaConverters._
+import kantan.codecs.resource.ResourceIterable
 import scala.concurrent.duration.Duration
 
 sealed abstract class FindQuery[A] extends ResourceIterable[A] {
@@ -35,6 +34,8 @@ sealed abstract class FindQuery[A] extends ResourceIterable[A] {
   def projection[E: BsonDocumentEncoder](e: E): FindQuery[A]
   def skip(i: Int): FindQuery[A]
   def sort[E: BsonDocumentEncoder](e: E): FindQuery[A]
+
+  override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
 }
 
 private object FindQuery {
@@ -71,6 +72,7 @@ private object FindQuery {
 
     override def iterator = {
       val iterable = eval()
+
       batchSize.foreach(iterable.batchSize)
       collation.foreach(iterable.collation)
       cursor.foreach(iterable.cursorType)
@@ -84,9 +86,7 @@ private object FindQuery {
       drop.foreach(iterable.skip)
       srt.foreach(iterable.sort)
 
-      ResourceIterator.fromIterator(iterable.iterator().asScala.map(BsonDocumentDecoder[A].decode))
+      MongoIterator(iterable)
     }
   }
-
-  override def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
 }

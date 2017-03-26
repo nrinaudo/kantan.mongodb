@@ -17,8 +17,7 @@
 package kantan.mongodb
 
 import com.mongodb.client.AggregateIterable
-import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
-import scala.collection.JavaConverters._
+import kantan.codecs.resource.ResourceIterable
 import scala.concurrent.duration.{Duration, TimeUnit}
 
 sealed abstract class AggregateQuery[A] extends ResourceIterable[A] {
@@ -28,6 +27,8 @@ sealed abstract class AggregateQuery[A] extends ResourceIterable[A] {
   def collation(c: Collation): AggregateQuery[A]
   def maxTime(l: Long, t: TimeUnit): AggregateQuery[A]
   def useCursor(b: Boolean): AggregateQuery[A]
+
+  override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
 }
 
 private object AggregateQuery {
@@ -60,9 +61,7 @@ private object AggregateQuery {
       time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
       cursor.foreach(b ⇒ iterable.useCursor(b))
 
-      ResourceIterator.fromIterator(iterable.iterator().asScala.map(BsonDocumentDecoder[A].decode))
+      MongoIterator(iterable)
     }
-
-    override def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
   }
 }

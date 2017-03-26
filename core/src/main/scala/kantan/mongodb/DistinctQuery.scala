@@ -17,14 +17,15 @@
 package kantan.mongodb
 
 import com.mongodb.client.DistinctIterable
-import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
-import scala.collection.JavaConverters._
+import kantan.codecs.resource.ResourceIterable
 import scala.concurrent.duration.{Duration, TimeUnit}
 
 sealed abstract class DistinctQuery[A] extends ResourceIterable[A] {
   def batchSize(i: Int): DistinctQuery[A]
   def collation(c: Collation): DistinctQuery[A]
   def maxTime(l: Long, u: TimeUnit): DistinctQuery[A]
+
+  override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
 }
 
 private object DistinctQuery {
@@ -46,8 +47,7 @@ private object DistinctQuery {
       col.foreach(c ⇒ iterable.collation(c))
       time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
 
-      ResourceIterator.fromIterator(iterable.iterator().asScala.map(BsonValueDecoder[A].decode))
+      MongoIterator(iterable)
     }
-    override def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
   }
 }

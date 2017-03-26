@@ -18,8 +18,7 @@ package kantan.mongodb
 
 import com.mongodb.client.MapReduceIterable
 import com.mongodb.client.model.MapReduceAction
-import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
-import scala.collection.JavaConverters._
+import kantan.codecs.resource.ResourceIterable
 import scala.concurrent.duration.{Duration, TimeUnit}
 
 sealed abstract class MapReduceQuery[A] extends ResourceIterable[A] {
@@ -40,6 +39,7 @@ sealed abstract class MapReduceQuery[A] extends ResourceIterable[A] {
   def toCollection: MapReduceQuery[A]
   def limit(i: Int): MapReduceQuery[A]
   def maxTime(l: Long, u: TimeUnit): MapReduceQuery[A]
+  override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
 }
 
 object MapReduceQuery {
@@ -104,10 +104,8 @@ object MapReduceQuery {
       max.foreach(iterable.limit)
       time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
 
-      ResourceIterator.fromIterator(iterable.iterator().asScala.map(BsonDocumentDecoder[A].decode))
+      MongoIterator(iterable)
     }
-
-    override def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
   }
 
   sealed abstract class Action extends Product with Serializable {
