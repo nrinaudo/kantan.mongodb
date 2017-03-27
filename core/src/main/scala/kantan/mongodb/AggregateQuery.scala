@@ -18,14 +18,15 @@ package kantan.mongodb
 
 import com.mongodb.client.AggregateIterable
 import kantan.codecs.resource.ResourceIterable
-import scala.concurrent.duration.{Duration, TimeUnit}
+import kantan.mongodb.options.Collation
+import scala.concurrent.duration.Duration
 
 abstract class AggregateQuery[A] extends ResourceIterable[A] {
   def allowDiskUse(b: Boolean): AggregateQuery[A]
   def batchSize(i: Int): AggregateQuery[A]
   def bypassDocumentValidation(b: Boolean): AggregateQuery[A]
   def collation(c: Collation): AggregateQuery[A]
-  def maxTime(l: Long, t: TimeUnit): AggregateQuery[A]
+  def maxTime(duration: Duration): AggregateQuery[A]
   def useCursor(b: Boolean): AggregateQuery[A]
 
   override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
@@ -48,7 +49,7 @@ private object AggregateQuery {
     override def batchSize(i: Int) = copy(batchSize = Some(i))
     override def bypassDocumentValidation(b: Boolean) = copy(bypassValidation = Some(b))
     override def collation(c: Collation) = copy(col = Some(c))
-    override def maxTime(l: Long, t: TimeUnit) = copy(time = Some(Duration(l, t)))
+    override def maxTime(d: Duration) = copy(time = Some(d))
     override def useCursor(b: Boolean) = copy(cursor = Some(b))
 
     override def iterator = {
@@ -57,7 +58,7 @@ private object AggregateQuery {
       diskUse.foreach(b ⇒ iterable.allowDiskUse(b))
       batchSize.foreach(i ⇒ iterable.batchSize(i))
       bypassValidation.foreach(b ⇒ iterable.bypassDocumentValidation(b))
-      col.foreach(c ⇒ iterable.collation(c))
+      col.foreach(c ⇒ iterable.collation(c.legacy))
       time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
       cursor.foreach(b ⇒ iterable.useCursor(b))
 

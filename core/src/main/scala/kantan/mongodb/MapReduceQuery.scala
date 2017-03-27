@@ -19,7 +19,8 @@ package kantan.mongodb
 import com.mongodb.client.MapReduceIterable
 import com.mongodb.client.model.MapReduceAction
 import kantan.codecs.resource.ResourceIterable
-import scala.concurrent.duration.{Duration, TimeUnit}
+import kantan.mongodb.options.Collation
+import scala.concurrent.duration.Duration
 
 abstract class MapReduceQuery[A] extends ResourceIterable[A] {
   def action(a: MapReduceQuery.Action): MapReduceQuery[A]
@@ -38,7 +39,7 @@ abstract class MapReduceQuery[A] extends ResourceIterable[A] {
   def verbose(b: Boolean): MapReduceQuery[A]
   def toCollection: MapReduceQuery[A]
   def limit(i: Int): MapReduceQuery[A]
-  def maxTime(l: Long, u: TimeUnit): MapReduceQuery[A]
+  def maxTime(duration: Duration): MapReduceQuery[A]
   override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
 }
 
@@ -82,7 +83,7 @@ object MapReduceQuery {
     override def verbose(b: Boolean) = copy(verb = Some(b))
     override def toCollection = copy(toCol = true)
     override def limit(i: Int) = copy(max = Some(i))
-    override def maxTime(l: Long, u: TimeUnit) = copy(time = Some(Duration(l, u)))
+    override def maxTime(d: Duration) = copy(time = Some(d))
     override def iterator = {
       val iterable = eval()
 
@@ -98,7 +99,7 @@ object MapReduceQuery {
       scp.foreach(iterable.scope)
       shrd.foreach(iterable.sharded)
       srt.foreach(iterable.sort)
-      col.foreach(iterable.collation)
+      col.foreach(c ⇒ iterable.collation(c.legacy))
       verb.foreach(iterable.verbose)
       if(toCol) iterable.toCollection()
       max.foreach(iterable.limit)

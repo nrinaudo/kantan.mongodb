@@ -18,6 +18,7 @@ package kantan.mongodb
 
 import com.mongodb.client.{MongoDatabase ⇒ MDatabase}
 import kantan.mongodb.MongoDatabase.CollectionInfo
+import kantan.mongodb.options._
 import scala.collection.JavaConverters._
 
 class MongoDatabase private[mongodb] (private val underlying: MDatabase) {
@@ -30,14 +31,11 @@ class MongoDatabase private[mongodb] (private val underlying: MDatabase) {
   // - Collection creation ---------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   /** Creates a new collection with the specified name. */
-  def createCollection[A](name: String): MongoCollection[A] = {
-    underlying.createCollection(name)
-    collection(name)
-  }
+  def createCollection[A](name: String): MongoCollection[A] = createCollectionWith(name)(CreateCollectionOpts.default)
 
   /** Creates a new collection with the specified name, using the specified options. */
-  def createCollectionWith[A](name: String)(options: CreateCollectionOptions): MongoCollection[A] = {
-    underlying.createCollection(name, options)
+  def createCollectionWith[A](name: String)(options: CreateCollectionOpts): MongoCollection[A] = {
+    underlying.createCollection(name, options.legacy)
     collection(name)
   }
 
@@ -45,19 +43,15 @@ class MongoDatabase private[mongodb] (private val underlying: MDatabase) {
 
   // - View creation ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  private def createView[I: BsonDocumentEncoder, A](name: String, on: String, options: Option[CreateViewOptions],
-                                                    pipeline: Seq[I]): MongoCollection[A] = {
-    val p = pipeline.map(BsonDocumentEncoder[I].encode).toList.asJava
-    options.fold(underlying.createView(name, on, p))(o ⇒ underlying.createView(name, on, p, o))
-    collection(name)
-  }
-
   def createView[I: BsonDocumentEncoder, A](name: String, on: String, pipeline: I*): MongoCollection[A] =
-    createView(name, on, None, pipeline)
+    createViewWith(name, on, pipeline:_*)(CreateViewOpts.default)
 
   def createViewWith[I: BsonDocumentEncoder, A](name: String, on: String, pipeline: I*)
-                                               (options: CreateViewOptions): MongoCollection[A] =
-    createView(name, on, Some(options), pipeline)
+                                               (options: CreateViewOpts): MongoCollection[A] = {
+    val p = pipeline.map(BsonDocumentEncoder[I].encode).toList.asJava
+    underlying.createView(name, on, p, options.legacy)
+    collection(name)
+  }
 
 
 

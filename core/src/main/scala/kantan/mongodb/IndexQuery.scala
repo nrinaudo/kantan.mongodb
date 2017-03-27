@@ -18,11 +18,11 @@ package kantan.mongodb
 
 import com.mongodb.client.ListIndexesIterable
 import kantan.codecs.resource.ResourceIterable
-import scala.concurrent.duration.{Duration, TimeUnit}
+import scala.concurrent.duration.Duration
 
 abstract class IndexQuery[A] extends ResourceIterable[A] {
   def batchSize(i: Int): IndexQuery[A]
-  def maxTime(l: Long, u: TimeUnit): IndexQuery[A]
+  def maxTime(duration: Duration): IndexQuery[A]
 
   override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
 }
@@ -37,7 +37,7 @@ private object IndexQuery {
                                                                  eval: () ⇒ ListIndexesIterable[BsonDocument]
                                                                  ) extends IndexQuery[MongoResult[A]] {
     override def batchSize(i: Int) = copy(batch = Some(i))
-    override def maxTime(l: Long, u: TimeUnit) = copy(time = Some(Duration(l, u)))
+    override def maxTime(d: Duration) = copy(time = Some(d))
     override def iterator = {
       val iterable = eval()
 

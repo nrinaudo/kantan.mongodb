@@ -17,8 +17,8 @@
 package kantan.mongodb
 
 import com.mongodb.client.FindIterable
-import java.util.concurrent.TimeUnit
 import kantan.codecs.resource.ResourceIterable
+import kantan.mongodb.options.Collation
 import scala.concurrent.duration.Duration
 
 abstract class FindQuery[A] extends ResourceIterable[A] {
@@ -26,8 +26,8 @@ abstract class FindQuery[A] extends ResourceIterable[A] {
   def collation(c: Collation): FindQuery[A]
   def cursorType(c: CursorType): FindQuery[A]
   def limit(i: Int): FindQuery[A]
-  def maxAwaitTime(l: Long, u: TimeUnit): FindQuery[A]
-  def maxTime(l: Long, u: TimeUnit): FindQuery[A]
+  def maxAwaitTime(duration: Duration): FindQuery[A]
+  def maxTime(duration: Duration): FindQuery[A]
   def modifiers[E: BsonDocumentEncoder](e: E): FindQuery[A]
   def noCursorTimeout(b: Boolean): FindQuery[A]
   def partial(b: Boolean): FindQuery[A]
@@ -61,8 +61,8 @@ private object FindQuery {
     override def collation(c: Collation) = copy(collation = Some(c))
     override def cursorType(c: CursorType) = copy(cursor = Some(c))
     override def limit(l: Int) = copy(lim = Some(l))
-    override def maxAwaitTime(t: Long, unit: TimeUnit) = copy(awaitTime = Some(Duration(t, unit)))
-    override def maxTime(t: Long, unit: TimeUnit) = copy(time = Some(Duration(t, unit)))
+    override def maxAwaitTime(d: Duration) = copy(awaitTime = Some(d))
+    override def maxTime(d: Duration) = copy(time = Some(d))
     override def modifiers[B: BsonDocumentEncoder](m: B) = copy(mods = Some(BsonDocumentEncoder[B].encode(m)))
     override def noCursorTimeout(n: Boolean) = copy(noTimeout = Some(n))
     override def partial(p: Boolean) = copy(part = Some(p))
@@ -74,7 +74,7 @@ private object FindQuery {
       val iterable = eval()
 
       batchSize.foreach(iterable.batchSize)
-      collation.foreach(iterable.collation)
+      collation.foreach(c ⇒ iterable.collation(c.legacy))
       cursor.foreach(iterable.cursorType)
       lim.foreach(iterable.limit)
       awaitTime.foreach(d ⇒ iterable.maxAwaitTime(d.length, d.unit))
