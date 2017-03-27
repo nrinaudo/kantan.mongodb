@@ -21,7 +21,7 @@ import com.mongodb.client.model.MapReduceAction
 import kantan.codecs.resource.ResourceIterable
 import scala.concurrent.duration.{Duration, TimeUnit}
 
-sealed abstract class MapReduceQuery[A] extends ResourceIterable[A] {
+abstract class MapReduceQuery[A] extends ResourceIterable[A] {
   def action(a: MapReduceQuery.Action): MapReduceQuery[A]
   def batchSize(i: Int): MapReduceQuery[A]
   def bypassDocumentValidation(b: Boolean): MapReduceQuery[A]

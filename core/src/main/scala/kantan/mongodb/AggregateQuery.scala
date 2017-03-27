@@ -20,7 +20,7 @@ import com.mongodb.client.AggregateIterable
 import kantan.codecs.resource.ResourceIterable
 import scala.concurrent.duration.{Duration, TimeUnit}
 
-sealed abstract class AggregateQuery[A] extends ResourceIterable[A] {
+abstract class AggregateQuery[A] extends ResourceIterable[A] {
   def allowDiskUse(b: Boolean): AggregateQuery[A]
   def batchSize(i: Int): AggregateQuery[A]
   def bypassDocumentValidation(b: Boolean): AggregateQuery[A]

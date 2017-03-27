@@ -20,7 +20,7 @@ import com.mongodb.client.ListIndexesIterable
 import kantan.codecs.resource.ResourceIterable
 import scala.concurrent.duration.{Duration, TimeUnit}
 
-sealed abstract class IndexQuery[A] extends ResourceIterable[A] {
+abstract class IndexQuery[A] extends ResourceIterable[A] {
   def batchSize(i: Int): IndexQuery[A]
   def maxTime(l: Long, u: TimeUnit): IndexQuery[A]
 

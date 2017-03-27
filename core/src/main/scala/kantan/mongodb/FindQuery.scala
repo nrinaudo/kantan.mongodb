@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 import kantan.codecs.resource.ResourceIterable
 import scala.concurrent.duration.Duration
 
-sealed abstract class FindQuery[A] extends ResourceIterable[A] {
+abstract class FindQuery[A] extends ResourceIterable[A] {
   def batchSize(i: Int): FindQuery[A]
   def collation(c: Collation): FindQuery[A]
   def cursorType(c: CursorType): FindQuery[A]

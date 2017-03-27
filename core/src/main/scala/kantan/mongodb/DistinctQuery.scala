@@ -20,7 +20,7 @@ import com.mongodb.client.DistinctIterable
 import kantan.codecs.resource.ResourceIterable
 import scala.concurrent.duration.{Duration, TimeUnit}
 
-sealed abstract class DistinctQuery[A] extends ResourceIterable[A] {
+abstract class DistinctQuery[A] extends ResourceIterable[A] {
   def batchSize(i: Int): DistinctQuery[A]
   def collation(c: Collation): DistinctQuery[A]
   def maxTime(l: Long, u: TimeUnit): DistinctQuery[A]
