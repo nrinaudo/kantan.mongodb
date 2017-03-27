@@ -20,7 +20,7 @@ import com.mongodb.client.{MongoDatabase ⇒ MDatabase}
 import kantan.mongodb.MongoDatabase.CollectionInfo
 import scala.collection.JavaConverters._
 
-class MongoDatabase private[mongodb] (val underlying: MDatabase) {
+class MongoDatabase private[mongodb] (private val underlying: MDatabase) {
   def name: String = underlying.getName
   override def toString = s"MongoDatabase($name)"
   def drop(): Unit = underlying.drop()

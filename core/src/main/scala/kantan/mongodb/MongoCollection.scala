@@ -19,7 +19,7 @@ package kantan.mongodb
 import com.mongodb.client.{MongoCollection ⇒ MCollection}
 import scala.collection.JavaConverters._
 
-class MongoCollection[A] private[mongodb] (val underlying: MCollection[BsonDocument]) {
+class MongoCollection[A] private[mongodb] (private val underlying: MCollection[BsonDocument]) {
   // - Count -----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def count(): MongoResult[Long] = MongoResult(underlying.count())
