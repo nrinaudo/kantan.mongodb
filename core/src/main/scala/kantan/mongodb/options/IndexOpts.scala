@@ -56,7 +56,7 @@ final case class IndexOpts(collation: Collation, expiresAfter: Option[Duration],
         langOverride.foreach(opts.languageOverride)
         weights.foreach(opts.weights)
       case IndexOpts.GeoHaystack(bucketSize) ⇒ opts.bucketSize(bucketSize)
-      case IndexOpts.TwoDimensions(bits, min, max) ⇒ opts.bits(bits.toInt).min(min).max(max)
+      case IndexOpts.TwoDimensions(bits, min, max) ⇒ opts.bits(bits).min(min).max(max)
       case IndexOpts.TwoDimensionsSphere(version) ⇒ opts.sphereVersion(version)
     }
 
@@ -88,8 +88,8 @@ object IndexOpts {
     def bucketSize(d: Double): GeoHaystack = copy(bucketSize = d)
   }
 
-  final case class TwoDimensions(bits: Byte, min: Double, max: Double) extends SpecialisedOpts {
-    def bits(b: Byte): TwoDimensions = copy(bits = b)
+  final case class TwoDimensions(bits: Int, min: Double, max: Double) extends SpecialisedOpts {
+    def bits(b: Int): TwoDimensions = copy(bits = b)
     def min(m: Double): TwoDimensions = copy(min = m)
     def max(m: Double): TwoDimensions = copy(max = m)
   }
