@@ -36,7 +36,6 @@ package object mongodb {
   // TODO: write dedicated types for some / most of these?
   type MongoClientOptions       = com.mongodb.MongoClientOptions
 
-  type MongoNamespace           = com.mongodb.MongoNamespace
   type DeleteResult             = com.mongodb.client.result.DeleteResult
   type CursorType               = com.mongodb.CursorType
   type MongoClientURI           = com.mongodb.MongoClientURI

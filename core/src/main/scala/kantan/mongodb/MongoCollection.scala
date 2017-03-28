@@ -183,12 +183,12 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
 
   def drop(): Unit = underlying.drop()
 
-  def namespace: MongoNamespace = underlying.getNamespace
+  def namespace: MongoNamespace = MongoNamespace.fromLegacy(underlying.getNamespace)
 
-  def rename(db: String, name: String): MongoResult[Unit] = renameWith(db, name)(RenameCollectionOpts.default)
+  def rename(namespace: MongoNamespace): MongoResult[Unit] = renameWith(namespace)(RenameCollectionOpts.default)
 
-  def renameWith(db: String, name: String)(options: RenameCollectionOpts): MongoResult[Unit] =
-    MongoResult(underlying.renameCollection(new MongoNamespace(db, name), options.legacy))
+  def renameWith(namespace: MongoNamespace)(options: RenameCollectionOpts): MongoResult[Unit] =
+    MongoResult(underlying.renameCollection(namespace.legacy, options.legacy))
 
   def readConcern: ReadConcern = underlying.getReadConcern
   def writeConcern: WriteConcern = underlying.getWriteConcern
