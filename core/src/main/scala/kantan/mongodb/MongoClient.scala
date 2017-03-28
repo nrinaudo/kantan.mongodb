@@ -41,7 +41,7 @@ object MongoClient {
   // -------------------------------------------------------------------------------------------------------------------
   def local(creds: List[MongoCredential] = List.empty,
             options: Option[MongoClientOptions] = None): MongoClient =
-    fromAddress(List(new ServerAddress()), List.empty, options)
+    fromAddress(List(ServerAddress.default), List.empty, options)
 
   def fromUri(uri: String): Option[MongoClient] =
     Try(new MongoClientURI(uri, com.mongodb.MongoClientOptions.builder().codecRegistry(kantan.mongodb.io.registry)))
@@ -51,7 +51,7 @@ object MongoClient {
   def fromAddress(cluster: List[ServerAddress],
             creds: List[MongoCredential] = List.empty,
             options: Option[MongoClientOptions] = None): MongoClient = {
-    new MongoClient(new MClient(cluster.asJava, creds.asJava, addRegistry(options), driverInfo))
+    new MongoClient(new MClient(cluster.map(_.legacy).asJava, creds.asJava, addRegistry(options), driverInfo))
   }
 
 

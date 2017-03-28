@@ -33,11 +33,10 @@ package object mongodb {
 
   // - Mongo aliases ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  // TODO: write dedicated types for some / most of these?
+  // TODO: write dedicated types for these. They are kind of non-critical at this stage and rather a lot of work,
+  // but need to be sorted out eventually.
   type MongoClientOptions       = com.mongodb.MongoClientOptions
-
   type MongoClientURI           = com.mongodb.MongoClientURI
   type MongoCredential          = com.mongodb.MongoCredential
-  type ServerAddress            = com.mongodb.ServerAddress
   type ReadPreference           = com.mongodb.ReadPreference
 }
