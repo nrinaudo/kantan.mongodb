@@ -143,13 +143,13 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
     deleteManyWith(filter)(DeleteOpts.default)
 
   def deleteManyWith[F: BsonDocumentEncoder](filter: F)(options: DeleteOpts): MongoResult[DeleteResult] =
-    MongoResult(underlying.deleteMany(BsonDocumentEncoder[F].encode(filter), options.legacy))
+    MongoResult(DeleteResult.fromLegacy(underlying.deleteMany(BsonDocumentEncoder[F].encode(filter), options.legacy)))
 
   def deleteOne[F: BsonDocumentEncoder](filter: F): MongoResult[DeleteResult] =
     deleteOneWith(filter)(DeleteOpts.default)
 
   def deleteOneWith[F: BsonDocumentEncoder](filter: F)(options: DeleteOpts): MongoResult[DeleteResult] =
-    MongoResult(underlying.deleteOne(BsonDocumentEncoder[F].encode(filter), options.legacy))
+    MongoResult(DeleteResult.fromLegacy(underlying.deleteOne(BsonDocumentEncoder[F].encode(filter), options.legacy)))
 
   def findOneAndDelete[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): MongoResult[A] =
     findOneAndDeleteWith(filter)(FindOneAndDeleteOpts.default)
@@ -190,16 +190,16 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
   def renameWith(namespace: MongoNamespace)(options: RenameCollectionOpts): MongoResult[Unit] =
     MongoResult(underlying.renameCollection(namespace.legacy, options.legacy))
 
-  def readConcern: ReadConcern = underlying.getReadConcern
-  def writeConcern: WriteConcern = underlying.getWriteConcern
+  def readConcern: ReadConcern = ReadConcern.fromLegacy(underlying.getReadConcern)
+  def writeConcern: WriteConcern = WriteConcern.fromLegacy(underlying.getWriteConcern)
   def readPreference: ReadPreference = underlying.getReadPreference
 
   def withReadConcern(concern: ReadConcern): MongoCollection[A] =
-    new MongoCollection(underlying.withReadConcern(concern))
+    new MongoCollection(underlying.withReadConcern(concern.legacy))
 
   def withReadPreference(Preference: ReadPreference): MongoCollection[A] =
     new MongoCollection(underlying.withReadPreference(Preference))
 
   def withWriteConcern(concern: WriteConcern): MongoCollection[A] =
-    new MongoCollection(underlying.withWriteConcern(concern))
+    new MongoCollection(underlying.withWriteConcern(concern.legacy))
 }

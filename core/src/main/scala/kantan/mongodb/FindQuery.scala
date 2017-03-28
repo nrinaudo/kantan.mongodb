@@ -24,7 +24,7 @@ import scala.concurrent.duration.Duration
 abstract class FindQuery[A] extends ResourceIterable[A] {
   def batchSize(i: Int): FindQuery[A]
   def collation(c: Collation): FindQuery[A]
-  def cursorType(c: CursorType): FindQuery[A]
+  def cursorType(c: FindQuery.CursorType): FindQuery[A]
   def limit(i: Int): FindQuery[A]
   def maxAwaitTime(duration: Duration): FindQuery[A]
   def maxTime(duration: Duration): FindQuery[A]
@@ -39,6 +39,14 @@ abstract class FindQuery[A] extends ResourceIterable[A] {
 }
 
 private object FindQuery {
+  sealed abstract class CursorType(private[mongodb] val legacy: com.mongodb.CursorType)
+    extends Product with Serializable
+  object CursorType {
+    case object NonTailable extends CursorType(com.mongodb.CursorType.NonTailable)
+    case object Tailable extends CursorType(com.mongodb.CursorType.Tailable)
+    case object TailableAwait extends CursorType(com.mongodb.CursorType.TailableAwait)
+  }
+
   private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ FindIterable[BsonDocument]): FindQuery[MongoResult[R]] =
     FindQueryImpl(None, None, None, None, None, None, None, None, None, None, None, None, () ⇒ f)
 
@@ -75,7 +83,7 @@ private object FindQuery {
 
       batchSize.foreach(iterable.batchSize)
       collation.foreach(c ⇒ iterable.collation(c.legacy))
-      cursor.foreach(iterable.cursorType)
+      cursor.foreach(c ⇒ iterable.cursorType(c.legacy))
       lim.foreach(iterable.limit)
       awaitTime.foreach(d ⇒ iterable.maxAwaitTime(d.length, d.unit))
       time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))

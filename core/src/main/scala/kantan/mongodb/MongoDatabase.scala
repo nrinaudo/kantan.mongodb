@@ -84,12 +84,14 @@ class MongoDatabase private[mongodb] (private val underlying: MDatabase) {
 
   // - Configuration ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def readConcern: ReadConcern = underlying.getReadConcern
+  def readConcern: ReadConcern = ReadConcern.fromLegacy(underlying.getReadConcern)
   def readPreference: ReadPreference = underlying.getReadPreference
-  def writeConcern: WriteConcern = underlying.getWriteConcern
-  def withReadConcern(concern: ReadConcern): MongoDatabase = new MongoDatabase(underlying.withReadConcern(concern))
+  def writeConcern: WriteConcern = WriteConcern.fromLegacy(underlying.getWriteConcern)
+  def withReadConcern(concern: ReadConcern): MongoDatabase =
+    new MongoDatabase(underlying.withReadConcern(concern.legacy))
   def withReadPreference(pref: ReadPreference): MongoDatabase = new MongoDatabase(underlying.withReadPreference(pref))
-  def withWriteConcern(concern: WriteConcern): MongoDatabase = new MongoDatabase(underlying.withWriteConcern(concern))
+  def withWriteConcern(concern: WriteConcern): MongoDatabase =
+    new MongoDatabase(underlying.withWriteConcern(concern.legacy))
 }
 
 object MongoDatabase {
