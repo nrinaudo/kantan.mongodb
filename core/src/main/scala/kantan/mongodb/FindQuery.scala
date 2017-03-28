@@ -35,6 +35,18 @@ abstract class FindQuery[A] extends ResourceIterable[A] {
   def skip(i: Int): FindQuery[A]
   def sort[E: BsonDocumentEncoder](e: E): FindQuery[A]
 
+  override def take(n: Int) = limit(n)
+  override def drop(n: Int) = skip(n)
+
+  override def headOption: Option[A] =  {
+    val it = limit(1).iterator
+    if(it.hasNext) Some(it.next())
+    else           None
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
+  override def head: A = headOption.get
+
   override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
 }
 

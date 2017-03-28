@@ -40,6 +40,17 @@ abstract class MapReduceQuery[A] extends ResourceIterable[A] {
   def toCollection: MapReduceQuery[A]
   def limit(i: Int): MapReduceQuery[A]
   def maxTime(duration: Duration): MapReduceQuery[A]
+
+  override def take(n: Int) = limit(n)
+  override def headOption: Option[A] =  {
+    val it = limit(1).iterator
+    if(it.hasNext) Some(it.next())
+    else           None
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
+  override def head: A = headOption.get
+
   override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
 }
 
