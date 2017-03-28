@@ -108,6 +108,8 @@ final case class BsonDocument(value: Map[String, BsonValue]) extends BsonValue w
 }
 
 object BsonDocument {
+  val empty: BsonDocument = BsonDocument(Map.empty)
+
   private[mongodb] def valuesFromLegacy(d: org.bson.BsonDocument): Map[String, BsonValue] = {
     val builder = Map.newBuilder[String, BsonValue]
 

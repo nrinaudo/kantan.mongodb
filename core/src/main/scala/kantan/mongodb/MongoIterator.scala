@@ -18,17 +18,22 @@ package kantan.mongodb
 
 import com.mongodb.client.MongoIterable
 import kantan.codecs.Decoder
+import kantan.codecs.Result.{Failure, Success}
 import kantan.codecs.resource.ResourceIterator
 
 private[mongodb] object MongoIterator {
   def apply[E, D](iterable: MongoIterable[E])(implicit decoder: Decoder[E, D, MongoError.Decode, codecs.type])
-  : ResourceIterator[MongoResult[D]] = new ResourceIterator[MongoResult[D]] {
-    val iterator = iterable.iterator()
-    override protected def readNext() = for {
-      doc ← MongoResult(iterator.next())
-      d   ← decoder.decode(doc)
-    } yield d
-    override protected def checkNext = iterator.hasNext
-    override protected def release() = iterator.close()
+  : ResourceIterator[MongoResult[D]] = {
+    MongoResult(iterable.iterator()) match {
+      case f@Failure(_) ⇒ ResourceIterator(f)
+      case Success(iterator) ⇒ new ResourceIterator[MongoResult[D]] {
+        override protected def readNext() = for {
+          doc ← MongoResult(iterator.next())
+          d ← decoder.decode(doc)
+        } yield d
+        override protected def checkNext = iterator.hasNext
+        override protected def release() = iterator.close()
+      }
+    }
   }
 }
