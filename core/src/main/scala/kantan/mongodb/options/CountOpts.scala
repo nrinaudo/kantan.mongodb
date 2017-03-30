@@ -22,7 +22,6 @@ import scala.concurrent.duration.Duration
 
 final case class CountOpts(collation: Collation, hint: Option[Either[BsonDocument, String]], limit: Option[Int],
                            maxTime: Option[Duration], skip: Int) {
-  def collation(c: Collation): CountOpts = copy(collation = c)
   def hint[H: BsonDocumentEncoder](h: H): CountOpts = copy(hint = Some(Left(BsonDocumentEncoder[H].encode(h))))
   def hint(string: String): CountOpts = copy(hint = Some(Right(string)))
   def clearHint: CountOpts = copy(hint = None)
@@ -33,8 +32,9 @@ final case class CountOpts(collation: Collation, hint: Option[Either[BsonDocumen
   def skip(i: Int): CountOpts = copy(skip = i)
 
   private[mongodb] lazy val legacy: CountOptions = {
-    val opts = new CountOptions().collation(collation.legacy)
-      .skip(skip)
+    val opts = new CountOptions()
+
+    if(skip != 0) opts.skip(skip)
 
     hint.foreach {
       case Left(doc)  ⇒ opts.hint(doc)

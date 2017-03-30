@@ -103,6 +103,7 @@ object BsonJavaScriptWithScope {
 }
 
 final case class BsonDocument(value: Map[String, BsonValue]) extends BsonValue with Bson {
+  override def toString = toBsonDocument[BsonDocument](classOf[BsonDocument], io.registry).toString
   override def toBsonDocument[A](documentClass: Class[A], codecRegistry: CodecRegistry) =
     new RawBsonDocument(this, new DocumentCodec(codecRegistry))
 }
