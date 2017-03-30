@@ -33,8 +33,10 @@ final case class CountOpts(collation: Collation, hint: Option[Either[BsonDocumen
   def skip(i: Int): CountOpts = copy(skip = i)
 
   private[mongodb] lazy val legacy: CountOptions = {
-    val opts = new CountOptions().collation(collation.legacy)
-      .skip(skip)
+    val opts = new CountOptions()
+
+    if(collation != Collation.default) opts.collation(collation.legacy)
+    if(skip != 0) opts.skip(skip)
 
     hint.foreach {
       case Left(doc)  ⇒ opts.hint(doc)

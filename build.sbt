@@ -14,11 +14,9 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
       |import kantan.mongodb.generic._
     """.stripMargin
   )
-  .aggregate(core, generic, jodaTime, laws)
+  .aggregate(core, generic, jodaTime, laws, query)
   .aggregateIf(java8Supported)(java8)
-  .dependsOn(core, generic)
-
-
+  .dependsOn(core, generic, query)
 
 lazy val core = project
   .settings(
@@ -43,6 +41,13 @@ lazy val core = project
     """.stripMargin
   )
 
+lazy val query = project
+  .settings(
+    moduleName := "kantan.mongodb-query",
+    name       := "query"
+  )
+  .enablePlugins(PublishedPlugin)
+  .dependsOn(core)
 
 lazy val laws = project
   .settings(

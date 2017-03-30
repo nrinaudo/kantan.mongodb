@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package kantan.mongodb
+package kantan.mongodb.query
+
+import kantan.mongodb._
 
 sealed abstract class Sort extends Product with Serializable {
   def asc(field: String): Sort = Sort.Compound(List(Sort.Ascending(field), this))
@@ -36,7 +38,7 @@ object Sort {
     override def metaTextScore(field: String) = copy(sorts = MetaTextScore(field) :: sorts)
   }
 
-  implicit val sortBsonDocumentEncoder: BsonDocumentEncoder[Sort] = BsonDocumentEncoder.from {
+  implicit val sortDocumentEncoder: BsonDocumentEncoder[Sort] = BsonDocumentEncoder.from {
     case Ascending(field)     ⇒ BsonDocument(Map(field → BsonInt(1)))
     case Descending(field)    ⇒ BsonDocument(Map(field → BsonInt(-1)))
     case MetaTextScore(field) ⇒ BsonDocument(Map(field → BsonDocument(Map("$meta" → BsonString("textScore")))))
