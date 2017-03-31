@@ -47,6 +47,7 @@ lazy val query = project
     name       := "query"
   )
   .enablePlugins(PublishedPlugin)
+  .settings(libraryDependencies += "org.scalatest" %% "scalatest" % Versions.scalatest % "test")
   .dependsOn(core)
 
 lazy val laws = project

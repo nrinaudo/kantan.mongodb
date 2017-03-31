@@ -63,8 +63,9 @@ object QueryOperator {
 
   sealed trait Geo
   object Geo {
-    // TODO: near
     final case class Intersects[A: BsonValueEncoder](value: A) extends QueryOperator("$geoIntersects", value) with Geo
     final case class Within[A: BsonValueEncoder](value: A) extends QueryOperator("$geoWithin", value) with Geo
   }
+
+  // TODO: type, near, text
 }

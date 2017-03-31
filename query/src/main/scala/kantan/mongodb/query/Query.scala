@@ -26,8 +26,8 @@ sealed trait Query extends Product with Serializable
 object Query {
   // - Helper methods --------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def and(filters: Query*): Query = And(filters)
   def all[A: BsonValueEncoder](field: String, as: A*): Query = Field(field, All(as))
+  def and(filters: Query*): Query = And(filters)
   def bitsAllClear(field: String, mask: Long): Query = Field(field, Bits.AllClear(mask))
   def bitsAllSet(field: String, mask: Long): Query = Field(field, Bits.AllSet(mask))
   def bitsAnyClear(field: String, mask: Long): Query = Field(field, Bits.AnyClear(mask))
@@ -47,19 +47,19 @@ object Query {
   def none: Query = None
   def nor(filters: Query*): Query = Nor(filters)
   def not(filter: Query): Query = filter match {
-      // None doesn't get negatd.
+    // None doesn't get negated.
     case None                     ⇒ None
 
-      // Compound operators follow normal rules.
+    // Compound operators follow normal rules.
     case And(filters)             ⇒ Or(filters.map(not))
     case Or(filters)              ⇒ Nor(filters)
     case Nor(filters)             ⇒ Or(filters)
 
-      // Eq and Ne are dual
+    // Eq and Ne are dual
     case Field(field, o@Eq(a))    ⇒ Field(field, Ne(a)(o.encoder))
     case Field(field, o@Ne(a))    ⇒ Field(field, Eq(a)(o.encoder))
 
-      // Not is wrapped / unwrapped
+    // Not is wrapped / unwrapped
     case Field(field, o@Not(operator))     ⇒ Field(field, operator)(o.encoder)
     case f@Field(field, operator) ⇒ Field(field, Not(operator)(f.encoder))
   }
