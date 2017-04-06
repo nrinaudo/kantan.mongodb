@@ -17,31 +17,22 @@
 package kantan.mongodb.query
 
 import java.util.regex.Pattern
-import kantan.mongodb.{BsonDocument, BsonValue, BsonValueEncoder}
+import kantan.mongodb.{BsonDocument, BsonValueEncoder}
 
-sealed abstract class QueryOperator[A](val operator: String, val operand: A)(implicit val encoder: BsonValueEncoder[A])
-  extends Product with Serializable {
-  def encodedOperand: BsonValue = BsonValueEncoder[A].encode(operand)
-}
+sealed abstract class QueryOperator[A](val operator: String, val operand: A) extends Product with Serializable
 
 object QueryOperator {
-  implicit def operatorValueEncoder[A <: QueryOperator[_]]: BsonValueEncoder[A] = BsonValueEncoder.from {
-    case o@Eq(_)             ⇒ o.encodedOperand
-    case o@Regex(_)          ⇒ o.encodedOperand
-    case o: QueryOperator[_] ⇒ BsonDocument(Map(o.operator → o.encodedOperand))
-  }
+  def unapply[A](op: QueryOperator[A]): Option[(String, A)] = Some((op.operator, op.operand))
 
-  final case class Eq[A: BsonValueEncoder](value: A) extends QueryOperator("$eq", value)
-  final case class Not[A: BsonValueEncoder](value: A) extends QueryOperator("$not", value)
-  final case class Ne[A: BsonValueEncoder](value: A) extends QueryOperator("$ne", value)
-  final case class Gt[A: BsonValueEncoder](value: A) extends QueryOperator("$gt", value)
-  final case class Gte[A: BsonValueEncoder](value: A) extends QueryOperator("$gte", value)
-  final case class Lt[A: BsonValueEncoder](value: A) extends QueryOperator("$lt", value)
-  final case class Lte[A: BsonValueEncoder](value: A) extends QueryOperator("$lte", value)
-  final case class In[A: BsonValueEncoder](values: Seq[A]) extends QueryOperator("$in", values)
-  final case class Nin[A: BsonValueEncoder](values: Seq[A]) extends QueryOperator("$nin", values)
-  final case class All[A: BsonValueEncoder](values: Seq[A]) extends QueryOperator("$all", values)
-  final case class ElemMatch[A: BsonValueEncoder](filter: A) extends QueryOperator("$elemMatch", filter)
+  final case class Eq[A](value: A) extends QueryOperator("$eq", value)
+  final case class Gt[A](value: A) extends QueryOperator("$gt", value)
+  final case class Gte[A](value: A) extends QueryOperator("$gte", value)
+  final case class Lt[A](value: A) extends QueryOperator("$lt", value)
+  final case class Lte[A](value: A) extends QueryOperator("$lte", value)
+  final case class In[A](values: Seq[A]) extends QueryOperator("$in", values)
+  final case class Nin[A](values: Seq[A]) extends QueryOperator("$nin", values)
+  final case class All[A](values: Seq[A]) extends QueryOperator("$all", values)
+  final case class ElemMatch[A](filter: A) extends QueryOperator("$elemMatch", filter)
   final case class Exists(flag: Boolean) extends QueryOperator("$exists", flag)
   final case class Regex(value: Pattern) extends QueryOperator("$regex", value)
   final case class Size(value: Int) extends QueryOperator("$size", value)
@@ -63,9 +54,20 @@ object QueryOperator {
 
   sealed trait Geo
   object Geo {
-    final case class Intersects[A: BsonValueEncoder](value: A) extends QueryOperator("$geoIntersects", value) with Geo
-    final case class Within[A: BsonValueEncoder](value: A) extends QueryOperator("$geoWithin", value) with Geo
+    final case class Intersects[A](value: A) extends QueryOperator("$geoIntersects", value) with Geo
+    final case class Within[A](value: A) extends QueryOperator("$geoWithin", value) with Geo
   }
 
   // TODO: type, near, text
+
+  // - BSON encoding ---------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  private[query] def encode[A: BsonValueEncoder](operator: String, operand: A): BsonDocument =
+    BsonDocument(Map(operator → BsonValueEncoder[A].encode(operand)))
+
+  implicit def operatorEncoder[Q[X] <: QueryOperator[X], A: BsonValueEncoder]: BsonValueEncoder[Q[A]] =
+    BsonValueEncoder.from { case QueryOperator(op, a) ⇒ encode(op, a) }
+
+  implicit def eqValueEncoder[A: BsonValueEncoder]: BsonValueEncoder[Eq[A]] =
+    BsonValueEncoder[A].contramap { case Eq(a) ⇒ a }
 }

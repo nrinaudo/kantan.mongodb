@@ -11,6 +11,7 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
     """
       |import kantan.mongodb._
       |import kantan.mongodb.ops._
+      |import kantan.mongodb.query._
       |import kantan.mongodb.generic._
     """.stripMargin
   )
