@@ -25,10 +25,6 @@ sealed abstract class Sort extends Product with Serializable {
 }
 
 object Sort {
-  def asc(field: String): Sort = Ascending(field)
-  def desc(field: String): Sort = Descending(field)
-  def metaTextScore(field: String): Sort = MetaTextScore(field)
-
   final case class Ascending(field: String) extends Sort
   final case class Descending(field: String) extends Sort
   final case class MetaTextScore(field: String) extends Sort

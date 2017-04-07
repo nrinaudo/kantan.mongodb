@@ -30,7 +30,6 @@ object QueryOperator {
   final case class Lt[A](value: A) extends QueryOperator("$lt", value)
   final case class Lte[A](value: A) extends QueryOperator("$lte", value)
   final case class In[A](values: Seq[A]) extends QueryOperator("$in", values)
-  final case class Nin[A](values: Seq[A]) extends QueryOperator("$nin", values)
   final case class All[A](values: Seq[A]) extends QueryOperator("$all", values)
   final case class ElemMatch[A](filter: A) extends QueryOperator("$elemMatch", filter)
   final case class Exists(flag: Boolean) extends QueryOperator("$exists", flag)
@@ -44,12 +43,13 @@ object QueryOperator {
       BsonValueEncoder[List[Long]].contramap(v ⇒ List(v.divisor, v.remainder))
   }
 
-  sealed trait Bits
+  sealed abstract class Bits(op: String, mask: Long) extends QueryOperator(op, mask)
   object Bits {
-    final case class AllClear(mask: Long) extends QueryOperator("$bitsAllClear", mask) with Bits
-    final case class AllSet(mask: Long) extends QueryOperator("$bitsAllSet", mask) with Bits
-    final case class AnyClear(mask: Long) extends QueryOperator("$bitsAnyClear", mask) with Bits
-    final case class AnySet(mask: Long) extends QueryOperator("$bitsAnySet", mask) with Bits
+    def unapply(op: Bits): Option[(String, Long)] = Some((op.operator, op.operand))
+    final case class AllClear(mask: Long) extends Bits("$bitsAllClear", mask)
+    final case class AllSet(mask: Long) extends Bits("$bitsAllSet", mask)
+    final case class AnyClear(mask: Long) extends Bits("$bitsAnyClear", mask)
+    final case class AnySet(mask: Long) extends Bits("$bitsAnySet", mask)
   }
 
   sealed trait Geo
@@ -65,7 +65,24 @@ object QueryOperator {
   private[query] def encode[A: BsonValueEncoder](operator: String, operand: A): BsonDocument =
     BsonDocument(Map(operator → BsonValueEncoder[A].encode(operand)))
 
-  implicit def operatorEncoder[Q[X] <: QueryOperator[X], A: BsonValueEncoder]: BsonValueEncoder[Q[A]] =
+  implicit val existsValueEncoder: BsonValueEncoder[Exists] =
+    BsonValueEncoder[QueryOperator[Boolean]].contramap(identity)
+
+  implicit val regexEncoder: BsonValueEncoder[Regex] = BsonValueEncoder[QueryOperator[Pattern]].contramap(identity)
+
+  implicit val sizeEncoder: BsonValueEncoder[Size] = BsonValueEncoder[QueryOperator[Int]].contramap(identity)
+
+  implicit val whereEncoder: BsonValueEncoder[Where] = BsonValueEncoder[QueryOperator[String]].contramap(identity)
+
+  implicit val modEncoder: BsonValueEncoder[Mod] = BsonValueEncoder[QueryOperator[Mod.Value]].contramap(identity)
+
+  implicit def seqOperatorEncoder[Q[X] <: QueryOperator[Seq[X]], A: BsonValueEncoder]: BsonValueEncoder[Q[A]] =
+    BsonValueEncoder[QueryOperator[Seq[A]]].contramap(identity)
+
+  implicit def bitsOperatorEncoder[Q <: Bits]: BsonValueEncoder[Q] =
+    BsonValueEncoder[QueryOperator[Long]].contramap(identity)
+
+  implicit def simpleOperatorEncoder[Q[X] <: QueryOperator[X], A: BsonValueEncoder]: BsonValueEncoder[Q[A]] =
     BsonValueEncoder.from { case QueryOperator(op, a) ⇒ encode(op, a) }
 
   implicit def eqValueEncoder[A: BsonValueEncoder]: BsonValueEncoder[Eq[A]] =

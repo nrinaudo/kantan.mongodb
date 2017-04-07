@@ -18,19 +18,12 @@ package kantan.mongodb.query
 
 import kantan.mongodb._
 import kantan.mongodb.query.Query.Compound.Or
-import kantan.mongodb.query.QueryOperator.Eq
+import kantan.mongodb.query.QueryOperator._
 import sun.invoke.empty.Empty
 
 sealed trait Query extends Product with Serializable
 
 object Query {
-  // - Helper functions ------------------------------------------------------------------------------------------------
-  // -------------------------------------------------------------------------------------------------------------------
-  def eq[A](field: String, value: A): Field[QueryOperator.Eq[A]] = Query.Field(field, QueryOperator.Eq(value))
-  def ne[A](field: String, value: A): Not[Field[QueryOperator.Eq[A]]] = Not(Field(field, QueryOperator.Eq(value)))
-
-
-
   // - Empty -----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   case object Empty extends Query {
@@ -58,7 +51,10 @@ object Query {
     BsonDocumentEncoder[Field[Not[A]]].contramap { case (Not(Field(name, a))) ⇒ Field(name, Not(a)) }
 
   implicit def notEqEncoder[A: BsonValueEncoder]: BsonDocumentEncoder[Not[Field[Eq[A]]]] = BsonDocumentEncoder.from {
-    case Not(Field(name, QueryOperator.Eq(a))) ⇒ BsonDocument(Map(name → QueryOperator.encode("$ne", a))) }
+    case Not(Field(name, Eq(a))) ⇒ BsonDocument(Map(name → QueryOperator.encode("$ne", a))) }
+
+  implicit def notInEncoder[A: BsonValueEncoder]: BsonDocumentEncoder[Not[Field[In[A]]]] = BsonDocumentEncoder.from {
+    case Not(Field(name, In(a))) ⇒ BsonDocument(Map(name → QueryOperator.encode("$nin", a))) }
 
   implicit def norEncoder[L, R](implicit f: Compound.Flattener[Or[L, R]]): BsonDocumentEncoder[Not[Or[L, R]]] =
       BsonDocumentEncoder.from { case Not(or) ⇒
@@ -134,7 +130,9 @@ object Query {
     def unary_!(): Not[Field[A]] = Not(this)
   }
 
-  implicit def fieldDocumentEncoder[A: BsonValueEncoder]: BsonDocumentEncoder[Field[A]] = BsonDocumentEncoder.from {
-    case Field(name, value) ⇒ BsonDocument(Map(name → BsonValueEncoder[A].encode(value)))
+  object Field {
+    implicit def fieldDocumentEncoder[A: BsonValueEncoder]: BsonDocumentEncoder[Field[A]] = BsonDocumentEncoder.from {
+      case Field(name, value) ⇒ BsonDocument(Map(name → BsonValueEncoder[A].encode(value)))
+    }
   }
 }

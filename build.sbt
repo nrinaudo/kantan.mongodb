@@ -12,8 +12,8 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
       |import kantan.mongodb._
       |import kantan.mongodb.ops._
       |import kantan.mongodb.query._
-      |import kantan.mongodb.generic._
     """.stripMargin
+    //import kantan.mongodb.generic._
   )
   .aggregate(core, generic, jodaTime, laws, query)
   .aggregateIf(java8Supported)(java8)
