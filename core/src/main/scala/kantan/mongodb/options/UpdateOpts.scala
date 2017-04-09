@@ -18,17 +18,20 @@ package kantan.mongodb.options
 
 import com.mongodb.client.model.UpdateOptions
 
-final case class UpdateOpts(bypassDocumentValidation: Boolean, collation: Collation, upsert: Boolean) {
-  def upsert(u: Boolean): UpdateOpts = copy(upsert = u)
-  def collation(c: Collation): UpdateOpts = copy(collation = c)
-  def bypassDocumentValidation(b: Boolean): UpdateOpts = copy(bypassDocumentValidation = b)
+final case class UpdateOpts(collation: Option[Collation], upsert: Option[Boolean]) {
+  def upsert(u: Boolean): UpdateOpts = copy(upsert = Some(u))
+  def collation(c: Collation): UpdateOpts = copy(collation = Some(c))
 
-  private[mongodb] lazy val legacy: UpdateOptions =
-    new UpdateOptions().upsert(upsert)
-      .bypassDocumentValidation(bypassDocumentValidation)
-      .collation(collation.legacy)
+  private[mongodb] lazy val legacy: UpdateOptions = {
+    val opts = new UpdateOptions()
+
+    upsert.foreach(opts.upsert)
+    collation.foreach(c ⇒ opts.collation(c.legacy))
+
+    opts
+  }
 }
 
 object UpdateOpts {
-  val default: UpdateOpts = UpdateOpts(false, Collation.default, false)
+  val default: UpdateOpts = UpdateOpts(None, None)
 }

@@ -20,22 +20,19 @@ import com.mongodb.client.model.CountOptions
 import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 import scala.concurrent.duration.Duration
 
-final case class CountOpts(collation: Collation, hint: Option[Either[BsonDocument, String]], limit: Option[Int],
-                           maxTime: Option[Duration], skip: Int) {
+/** Options for a [[https://docs.mongodb.com/manual/reference/method/db.collection.count/ count]] operation. */
+final case class CountOpts(hint: Option[Either[BsonDocument, String]], limit: Option[Int],
+                           maxTime: Option[Duration], skip: Option[Int]) {
   def hint[H: BsonDocumentEncoder](h: H): CountOpts = copy(hint = Some(Left(BsonDocumentEncoder[H].encode(h))))
   def hint(string: String): CountOpts = copy(hint = Some(Right(string)))
-  def clearHint: CountOpts = copy(hint = None)
   def limit(i: Int): CountOpts = copy(limit = Some(i))
-  def clearLimit: CountOpts = copy(limit = None)
   def maxTime(duration: Duration): CountOpts = copy(maxTime = Some(duration))
-  def clearMaxTime: CountOpts = copy(maxTime = None)
-  def skip(i: Int): CountOpts = copy(skip = i)
+  def skip(i: Int): CountOpts = copy(skip = Some(i))
 
   private[mongodb] lazy val legacy: CountOptions = {
     val opts = new CountOptions()
 
-    if(skip != 0) opts.skip(skip)
-
+    skip.foreach(opts.skip)
     hint.foreach {
       case Left(doc)  ⇒ opts.hint(doc)
       case Right(str) ⇒ opts.hintString(str)
@@ -48,5 +45,5 @@ final case class CountOpts(collation: Collation, hint: Option[Either[BsonDocumen
 }
 
 object CountOpts {
-  val default: CountOpts = CountOpts(Collation.default, None, None, None, 0)
+  val default: CountOpts = CountOpts(None, None, None, None)
 }

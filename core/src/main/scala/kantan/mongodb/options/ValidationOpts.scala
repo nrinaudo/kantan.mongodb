@@ -25,7 +25,6 @@ final case class ValidationOpts(action: ValidationOpts.Action, level: Validation
   def action(a: ValidationOpts.Action): ValidationOpts = copy(action = a)
   def level(l: ValidationOpts.Level): ValidationOpts = copy(level = l)
   def validator[V: BsonDocumentEncoder](v: V): ValidationOpts = copy(validator = Some(BsonDocumentEncoder[V].encode(v)))
-  def clearValidator: ValidationOpts = copy(validator = None)
 
   private[mongodb] lazy val legacy: ValidationOptions = {
     val opts = new ValidationOptions().validationAction(action.legacy).validationLevel(level.legacy)

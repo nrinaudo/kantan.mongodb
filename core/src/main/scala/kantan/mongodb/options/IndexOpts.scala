@@ -21,30 +21,26 @@ import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 import kantan.mongodb.options.IndexOpts.SpecialisedOpts
 import scala.concurrent.duration.Duration
 
-final case class IndexOpts(collation: Collation, expiresAfter: Option[Duration],
+final case class IndexOpts(collation: Option[Collation], expiresAfter: Option[Duration],
                            name: Option[String], partialFilterExpression: Option[BsonDocument],
                            storageEngine: Option[BsonDocument], version: Int, sparse: Boolean, unique: Boolean,
                            specialised: Option[SpecialisedOpts]) {
-  def collation(c: Collation): IndexOpts = copy(collation = c)
+  def collation(c: Collation): IndexOpts = copy(collation = Some(c))
   def expiresAfter(duration: Duration): IndexOpts = copy(expiresAfter = Some(duration))
-  def clearExpiresAfter: IndexOpts = copy(expiresAfter = None)
   def name(n: String): IndexOpts = copy(name = Some(n))
-  def clearName: IndexOpts = copy(name = None)
   def partialFilterExpression[P: BsonDocumentEncoder](p: P): IndexOpts =
     copy(partialFilterExpression = Some(BsonDocumentEncoder[P].encode(p)))
-  def clearPartialFilterExpression: IndexOpts = copy(partialFilterExpression = None)
   def storageEngine[S: BsonDocumentEncoder](s: S): IndexOpts =
     copy(storageEngine = Some(BsonDocumentEncoder[S].encode(s)))
-  def clearStorageEngine: IndexOpts = copy(storageEngine = None)
   def version(v: Int): IndexOpts = copy(version = v)
   def sparse(s: Boolean): IndexOpts = copy(sparse = s)
   def unique(u: Boolean): IndexOpts = copy(unique = u)
   def specialised(s: SpecialisedOpts): IndexOpts = copy(specialised = Some(s))
-  def clearSpecialised: IndexOpts = copy(specialised = None)
 
   private[mongodb] lazy val legacy: IndexOptions = {
-    val opts = new IndexOptions().collation(collation.legacy).version(version).sparse(sparse).unique(unique)
+    val opts = new IndexOptions().version(version).sparse(sparse).unique(unique)
 
+    collation.foreach(c ⇒ opts.collation(c.legacy))
     storageEngine.foreach(opts.storageEngine)
     partialFilterExpression.foreach(opts.partialFilterExpression)
     expiresAfter.foreach(m ⇒ opts.expireAfter(m.length, m.unit))
@@ -66,7 +62,7 @@ final case class IndexOpts(collation: Collation, expiresAfter: Option[Duration],
 
 
 object IndexOpts {
-  val default: IndexOpts = IndexOpts(Collation.default, None, None, None, None, 1, false, false, None)
+  val default: IndexOpts = IndexOpts(None, None, None, None, None, 1, false, false, None)
 
   sealed abstract class SpecialisedOpts extends Product with Serializable
 
@@ -74,9 +70,7 @@ object IndexOpts {
                         version: Int) extends SpecialisedOpts {
     def defaultLanguage(s: String): Text = copy(defaultLanguage = s)
     def languageOverride(s: String): Text = copy(languageOverride = Some(s))
-    def clearLanguageOverride: Text = copy(languageOverride = None)
     def weights[W: BsonDocumentEncoder](w: W): Text = copy(weights = Some(BsonDocumentEncoder[W].encode(w)))
-    def clearWeights: Text = copy(weights = None)
     def version(v: Int): Text = copy(version = v)
   }
   object Text {

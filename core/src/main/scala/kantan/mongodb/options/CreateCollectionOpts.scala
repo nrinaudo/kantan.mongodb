@@ -26,12 +26,9 @@ final case class CreateCollectionOpts(autoIndex: Boolean, collation: Collation, 
   def collation(c: Collation): CreateCollectionOpts = copy(collation = c)
   def indexOptions[I: BsonDocumentEncoder](i: I): CreateCollectionOpts =
     copy(indexOptions = Some(BsonDocumentEncoder[I].encode(i)))
-  def clearIndexOptions: CreateCollectionOpts = copy(indexOptions = None)
   def cap(c: CreateCollectionOpts.Cap): CreateCollectionOpts = copy(cap = Some(c))
-  def clearCap: CreateCollectionOpts = copy(cap = None)
   def storageEngine[E: BsonDocumentEncoder](e: E): CreateCollectionOpts =
     copy(storageEngine = Some(BsonDocumentEncoder[E].encode(e)))
-  def clearStorageEngine: CreateCollectionOpts = copy(storageEngine = None)
   def validation(v: ValidationOpts): CreateCollectionOpts = copy(validation = v)
 
   private[mongodb] lazy val legacy: CreateCollectionOptions = {

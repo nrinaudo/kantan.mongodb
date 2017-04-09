@@ -20,27 +20,26 @@ import com.mongodb.client.model.FindOneAndDeleteOptions
 import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 import scala.concurrent.duration.Duration
 
-final case class FindOneAndDeleteOpts(collation: Collation, maxTime: Option[Duration], projection: Option[BsonDocument],
-                                      sort: Option[BsonDocument]) {
-  def collation(c: Collation): FindOneAndDeleteOpts = copy(collation = c)
+final case class FindOneAndDeleteOpts(collation: Option[Collation], maxTime: Option[Duration],
+                                      projection: Option[BsonDocument], sort: Option[BsonDocument]) {
+  def collation(c: Collation): FindOneAndDeleteOpts = copy(collation = Some(c))
   def maxTime(duration: Duration): FindOneAndDeleteOpts = copy(maxTime = Some(duration))
-  def clearMaxTime: FindOneAndDeleteOpts = copy(maxTime = None)
   def projection[P: BsonDocumentEncoder](p: P): FindOneAndDeleteOpts =
     copy(projection = Some(BsonDocumentEncoder[P].encode(p)))
-  def clearProjection: FindOneAndDeleteOpts = copy(projection = None)
   def sort[S: BsonDocumentEncoder](s: S): FindOneAndDeleteOpts = copy(sort = Some(BsonDocumentEncoder[S].encode(s)))
-  def clearSort: FindOneAndDeleteOpts = copy(sort = None)
 
   private[mongodb] lazy val legacy: FindOneAndDeleteOptions = {
-    val opts = new FindOneAndDeleteOptions().collation(collation.legacy)
+    val opts = new FindOneAndDeleteOptions()
 
+    collation.foreach(c ⇒ opts.collation(c.legacy))
     maxTime.foreach(m ⇒ opts.maxTime(m.length, m.unit))
     projection.foreach(opts.projection)
     sort.foreach(opts.sort)
+
     opts
   }
 }
 
 object FindOneAndDeleteOpts {
-  val default: FindOneAndDeleteOpts = FindOneAndDeleteOpts(Collation.default, None, None, None)
+  val default: FindOneAndDeleteOpts = FindOneAndDeleteOpts(None, None, None, None)
 }

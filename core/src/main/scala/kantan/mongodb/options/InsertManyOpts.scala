@@ -18,13 +18,12 @@ package kantan.mongodb.options
 
 import com.mongodb.client.model.InsertManyOptions
 
-final case class InsertManyOpts(bypassDocumentValidation: Boolean, ordered: Boolean) {
-  def bypassDocumentValdiation(b: Boolean): InsertManyOpts = copy(bypassDocumentValidation = b)
+final case class InsertManyOpts(ordered: Boolean) {
   def ordered(o: Boolean): InsertManyOpts = copy(ordered = o)
   private[mongodb] lazy val legacy: InsertManyOptions =
-    new InsertManyOptions().bypassDocumentValidation(bypassDocumentValidation).ordered(ordered)
+    new InsertManyOptions().ordered(ordered)
 }
 
 object InsertManyOpts {
-  val default: InsertManyOpts = InsertManyOpts(false, true)
+  val default: InsertManyOpts = InsertManyOpts(true)
 }

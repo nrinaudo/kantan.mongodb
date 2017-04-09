@@ -32,6 +32,8 @@ class MongoClient private (private val client: MClient) extends Closeable {
 
   def databaseNames(): Iterator[String] = databases().map(_.name)
 
+  override def toString = client.getAllAddress.asScala.mkString("MongoClient(", ", ", ")")
+
   override def close() = client.close()
 }
 

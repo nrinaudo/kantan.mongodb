@@ -20,28 +20,24 @@ import com.mongodb.client.model.{FindOneAndReplaceOptions, ReturnDocument}
 import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 import scala.concurrent.duration.Duration
 
-final case class FindOneAndReplaceOpts(bypassDocumentValidation: Boolean, collation: Collation,
-                                       maxTime: Option[Duration], projection: Option[BsonDocument], updated: Boolean,
-                                       sort: Option[BsonDocument], upsert: Boolean) {
-  def bypassDocumentValidation(b: Boolean): FindOneAndReplaceOpts = copy(bypassDocumentValidation = b)
-  def collation(c: Collation): FindOneAndReplaceOpts = copy(collation = c)
+final case class FindOneAndReplaceOpts(collation: Option[Collation], maxTime: Option[Duration],
+                                       projection: Option[BsonDocument], updated: Boolean, sort: Option[BsonDocument],
+                                       upsert: Option[Boolean]) {
+  def collation(c: Collation): FindOneAndReplaceOpts = copy(collation = Some(c))
   def maxTime(duration: Duration): FindOneAndReplaceOpts = copy(maxTime = Some(duration))
-  def clearMaxTime: FindOneAndReplaceOpts = copy(maxTime = None)
   def projection[P: BsonDocumentEncoder](p: P): FindOneAndReplaceOpts =
     copy(projection = Some(BsonDocumentEncoder[P].encode(p)))
-  def clearProjection: FindOneAndReplaceOpts = copy(projection = None)
   def updated(b: Boolean): FindOneAndReplaceOpts = copy(updated = b)
   def sort[S: BsonDocumentEncoder](s: S): FindOneAndReplaceOpts =
     copy(sort = Some(BsonDocumentEncoder[S].encode(s)))
-  def clearSort: FindOneAndReplaceOpts = copy(sort = None)
-  def upsert(b: Boolean): FindOneAndReplaceOpts = copy(upsert = b)
+  def upsert(b: Boolean): FindOneAndReplaceOpts = copy(upsert = Some(b))
 
   private[mongodb] lazy val legacy: FindOneAndReplaceOptions = {
-    val opts = new FindOneAndReplaceOptions().bypassDocumentValidation(bypassDocumentValidation)
-      .collation(collation.legacy)
+    val opts = new FindOneAndReplaceOptions()
       .returnDocument(if(updated) ReturnDocument.AFTER else ReturnDocument.BEFORE)
-      .upsert(upsert)
 
+    upsert.foreach(opts.upsert)
+    collation.foreach(c ⇒ opts.collation(c.legacy))
     maxTime.foreach(m ⇒ opts.maxTime(m.length, m.unit))
     projection.foreach(opts.projection)
     sort.foreach(opts.sort)
@@ -51,6 +47,5 @@ final case class FindOneAndReplaceOpts(bypassDocumentValidation: Boolean, collat
 }
 
 object FindOneAndReplaceOpts {
-  val default: FindOneAndReplaceOpts = FindOneAndReplaceOpts(false, Collation.default, None, None, false, None,
-    false)
+  val default: FindOneAndReplaceOpts = FindOneAndReplaceOpts(None, None, None, false, None, None)
 }

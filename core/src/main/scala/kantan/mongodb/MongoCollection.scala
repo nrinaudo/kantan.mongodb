@@ -139,8 +139,9 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
 
   // - Delete ----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def deleteMany[F: BsonDocumentEncoder](filter: F): MongoResult[DeleteResult] =
-    deleteManyWith(filter)(DeleteOpts.default)
+  /** Deletes all documents contained by the collection. */
+  def deleteAll(): MongoResult[DeleteResult] = deleteManyWith(BsonDocument.empty)(DeleteOpts.default)
+  def deleteAllWith(options: DeleteOpts): MongoResult[DeleteResult] = deleteManyWith(BsonDocument.empty)(options)
 
   def deleteManyWith[F: BsonDocumentEncoder](filter: F)(options: DeleteOpts): MongoResult[DeleteResult] =
     MongoResult(DeleteResult.fromLegacy(underlying.deleteMany(BsonDocumentEncoder[F].encode(filter), options.legacy)))
@@ -170,16 +171,13 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
     MongoResult(underlying.insertMany(documents.map(ea.encode).toList.asJava, options.legacy))
 
   def insertOne(document: A)(implicit ea: BsonDocumentEncoder[A]): MongoResult[Unit] =
-    insertOneWith(document)(InsertOneOpts.default)
-
-  def insertOneWith(document: A)(options: InsertOneOpts)(implicit ea: BsonDocumentEncoder[A]): MongoResult[Unit] =
-    MongoResult(underlying.insertOne(ea.encode(document), options.legacy))
+    MongoResult(underlying.insertOne(ea.encode(document)))
 
 
 
   // - Misc. -----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  override def toString = s"MongoCollection($namespace)"
+  override def toString = s"MongoCollection(${namespace.db}.${namespace.collection})"
 
   def drop(): Unit = underlying.drop()
 

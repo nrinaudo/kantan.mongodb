@@ -18,12 +18,19 @@ package kantan.mongodb.options
 
 import com.mongodb.client.model.DeleteOptions
 
-final case class DeleteOpts(collation: Collation) {
-  def collation(c: Collation): DeleteOpts = copy(collation = c)
-  private[mongodb] lazy val legacy: DeleteOptions = new DeleteOptions().collation(collation.legacy)
+final case class DeleteOpts(collation: Option[Collation]) {
+  def collation(c: Collation): DeleteOpts = copy(collation = Some(c))
+
+  private[mongodb] lazy val legacy: DeleteOptions = {
+    val opts = new DeleteOptions()
+
+    collation.foreach(c ⇒ opts.collation(c.legacy))
+
+    opts
+  }
 }
 
 object DeleteOpts {
-  val default: DeleteOpts = DeleteOpts(Collation.default)
+  val default: DeleteOpts = DeleteOpts(None)
 }
 
