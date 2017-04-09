@@ -17,8 +17,10 @@
 package kantan.mongodb
 
 import java.util.regex.Pattern
-import kantan.mongodb.query.Query._
+import kantan.mongodb.query.Query.{Field => QField, _}
 import kantan.mongodb.query.QueryOperator._
+import kantan.mongodb.query.Update.{Field => UField}
+import kantan.mongodb.query.UpdateOperator._
 
 package object query {
   // - Sort ------------------------------------------------------------------------------------------------------------
@@ -31,25 +33,49 @@ package object query {
 
   // - Queries ---------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def $eq[A](field: String, value: A): Field[Eq[A]]                        = Field(field, Eq(value))
-  def $ne[A](field: String, value: A): Not[Field[Eq[A]]]                   = Not(Field(field, Eq(value)))
-  def $gt[A](field: String, value: A): Field[Gt[A]]                        = Field(field, Gt(value))
-  def $gte[A](field: String, value: A): Field[Gte[A]]                      = Field(field, Gte(value))
-  def $lt[A](field: String, value: A): Field[Lt[A]]                        = Field(field, Lt(value))
-  def $lte[A](field: String, value: A): Field[Lte[A]]                      = Field(field, Lte(value))
-  def $in[A](field: String, values: A*): Field[In[A]]                      = Field(field, In(values))
-  def $nin[A](field: String, values: A*): Not[Field[In[A]]]                = Not(Field(field, In(values)))
-  def $elemMatch[A](field: String, value: A): Field[ElemMatch[A]]          = Field(field, ElemMatch(value))
-  def $exists(field: String, value: Boolean): Field[Exists]                = Field(field, Exists(value))
-  def $regex(field: String, value: Pattern): Field[Regex]                  = Field(field, Regex(value))
-  def $size(field: String, value: Int): Field[Size]                        = Field(field, Size(value))
-  def $where(field: String, value: String): Field[Where]                   = Field(field, Where(value))
-  def $mod(field: String, div: Long, rem: Long): Field[Mod]                = Field(field, Mod(Mod.Value(div, rem)))
-  def $all[A](field: String, values: A*): Field[All[A]]                    = Field(field, All(values))
-  def $bitsAllClear(field: String, mask: Long): Field[Bits.AllClear]       = Field(field, Bits.AllClear(mask))
-  def $bitsAllSet(field: String, mask: Long): Field[Bits.AllSet]           = Field(field, Bits.AllSet(mask))
-  def $bitsAnyClear(field: String, mask: Long): Field[Bits.AnyClear]       = Field(field, Bits.AnyClear(mask))
-  def $bitsAnySet(field: String, mask: Long): Field[Bits.AnySet]           = Field(field, Bits.AnySet(mask))
-  def $geoIntersects[A](field: String, value: A): Field[Geo.Intersects[A]] = Field(field, Geo.Intersects(value))
-  def $geoWithin[A](field: String, value: A): Field[Geo.Within[A]]         = Field(field, Geo.Within(value))
+  def $eq[A](field: String, value: A): QField[Eq[A]]                        = QField(field, Eq(value))
+  def $ne[A](field: String, value: A): Not[QField[Eq[A]]]                   = Not(QField(field, Eq(value)))
+  def $gt[A](field: String, value: A): QField[Gt[A]]                        = QField(field, Gt(value))
+  def $gte[A](field: String, value: A): QField[Gte[A]]                      = QField(field, Gte(value))
+  def $lt[A](field: String, value: A): QField[Lt[A]]                        = QField(field, Lt(value))
+  def $lte[A](field: String, value: A): QField[Lte[A]]                      = QField(field, Lte(value))
+  def $in[A](field: String, values: A*): QField[In[A]]                      = QField(field, In(values))
+  def $nin[A](field: String, values: A*): Not[QField[In[A]]]                = Not(QField(field, In(values)))
+  def $elemMatch[A](field: String, value: A): QField[ElemMatch[A]]          = QField(field, ElemMatch(value))
+  def $exists(field: String, value: Boolean): QField[Exists]                = QField(field, Exists(value))
+  def $regex(field: String, value: Pattern): QField[Regex]                  = QField(field, Regex(value))
+  def $size(field: String, value: Int): QField[Size]                        = QField(field, Size(value))
+  def $where(field: String, value: String): QField[Where]                   = QField(field, Where(value))
+  def $mod(field: String, div: Long, rem: Long): QField[Mod]                = QField(field, Mod(Mod.Value(div, rem)))
+  def $all[A](field: String, values: A*): QField[All[A]]                    = QField(field, All(values))
+  def $bitsAllClear(field: String, mask: Long): QField[Bits.AllClear]       = QField(field, Bits.AllClear(mask))
+  def $bitsAllSet(field: String, mask: Long): QField[Bits.AllSet]           = QField(field, Bits.AllSet(mask))
+  def $bitsAnyClear(field: String, mask: Long): QField[Bits.AnyClear]       = QField(field, Bits.AnyClear(mask))
+  def $bitsAnySet(field: String, mask: Long): QField[Bits.AnySet]           = QField(field, Bits.AnySet(mask))
+  def $geoIntersects[A](field: String, value: A): QField[Geo.Intersects[A]] = QField(field, Geo.Intersects(value))
+  def $geoWithin[A](field: String, value: A): QField[Geo.Within[A]]         = QField(field, Geo.Within(value))
+
+
+
+  // - Update ----------------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------------------------
+  def $each[A](values: A*): Modifiers[A] = Modifiers(values, None, None, None)
+
+  def $addToSet[A](field: String, value: A): UField[A] = UField(field, AddToSet(value))
+  def $bit(field: String, value: BitOp): UField[BitOp] = UField(field, Bitwise(value))
+  def $currentDate(field: String, value: Time): UField[Time] = UField(field, CurrentDate(value))
+  def $inc(field: String, by: Int): UField[Int] = UField(field, Inc(by))
+  def $max[A](field: String, value: A): UField[A] = UField(field, Max(value))
+  def $min[A](field: String, value: A): UField[A] = UField(field, Min(value))
+  def $mul(field: String, by: Int): UField[Int] = UField(field, Mul(by))
+  def $popFirst(field: String): UField[Int] = UField(field, PopFirst)
+  def $popLast(field: String): UField[Int] = UField(field, PopLast)
+  def $pull[A](field: String, condition: A): UField[A] = UField(field, Pull(condition))
+  def $pullAll[A](field: String, values: A*): UField[Seq[A]] = UField(field, PullAll(values))
+  def $push[A](field: String, value: A): UField[A] = UField(field, Push(value))
+  def $pushAll[A](field: String, values: A*): UField[Seq[A]] = UField(field, PushAll(values))
+  def $rename(field: String, to: String): UField[String] = UField(field, Rename(to))
+  def $set[A](field: String, value: A): UField[A] = UField(field, Set(value))
+  def $setOnInsert[A](field: String, value: A): UField[A] = UField(field, SetOnInsert(value))
+  def $unset(field: String): UField[String] = UField(field, Unset)
 }
