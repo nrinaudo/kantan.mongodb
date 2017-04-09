@@ -19,6 +19,15 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
   .aggregateIf(java8Supported)(java8)
   .dependsOn(core, generic, query)
 
+lazy val docs = project
+  .enablePlugins(DocumentationPlugin)
+  .settings(unidocProjectFilter in (ScalaUnidoc, unidoc) :=
+    inAnyProject -- inProjectsIf(!java8Supported)(java8)
+  )
+  .dependsOn(core, jodaTime, query, generic)
+  .dependsOnIf(java8Supported)(java8)
+
+
 lazy val core = project
   .settings(
     moduleName := "kantan.mongodb",
