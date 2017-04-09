@@ -1,0 +1,12 @@
+name: kantan.mongodb
+markdown: kramdown
+highlighter: rouge
+baseurl: /kantan.mongodb
+
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+collections:
+  tut:
+    output: true
