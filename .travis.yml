@@ -1,5 +1,7 @@
 language: scala
 sudo: false
+services:
+  - mongodb
 cache:
   directories:
     - $HOME/.ivy2/cache
