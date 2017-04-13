@@ -17,34 +17,39 @@
 package kantan.mongodb
 
 import com.mongodb.client.ListIndexesIterable
-import kantan.codecs.resource.ResourceIterable
+import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
+import kantan.mongodb.IndexQuery.Config
 import scala.concurrent.duration.Duration
 
-abstract class IndexQuery[A] extends ResourceIterable[A] {
-  def batchSize(i: Int): IndexQuery[A]
-  def maxTime(duration: Duration): IndexQuery[A]
+final class IndexQuery[A] private(val config: Config, eval: Config ⇒ ResourceIterator[A]) extends ResourceIterable[A] {
+  override type Repr[X] = IndexQuery[X]
 
-  override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
+  def withConfig(conf: Config): IndexQuery[A] = new IndexQuery[A](conf, eval)
+
+  def batchSize(i: Int): IndexQuery[A] = withConfig(config.copy(batchSize = Some(i)))
+  def maxTime(duration: Duration): IndexQuery[A] = withConfig(config.copy(maxTime = Some(duration)))
+
+  override def iterator = eval(config)
+
+  override protected def onIterator[B](f: ResourceIterator[A] ⇒ ResourceIterator[B]) =
+    new IndexQuery[B](config, eval andThen f)
 }
 
-private object IndexQuery {
-  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ ListIndexesIterable[BsonDocument])
-  : IndexQuery[MongoResult[R]] = IndexQueryImpl(None, None, () ⇒ f)
+object IndexQuery {
+  final case class Config(batchSize: Option[Int], maxTime: Option[Duration])
 
-  private final case class IndexQueryImpl[A: BsonDocumentDecoder](
-                                                                 batch: Option[Int],
-                                                                 time: Option[Duration],
-                                                                 eval: () ⇒ ListIndexesIterable[BsonDocument]
-                                                                 ) extends IndexQuery[MongoResult[A]] {
-    override def batchSize(i: Int) = copy(batch = Some(i))
-    override def maxTime(d: Duration) = copy(time = Some(d))
-    override def iterator = {
-      val iterable = eval()
-
-      batch.foreach(i ⇒ iterable.batchSize(i))
-      time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
-
-      MongoIterator(iterable)
-    }
+  object Config {
+    val empty: Config = Config(None, None)
   }
+
+
+  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ ListIndexesIterable[BsonDocument])
+  : IndexQuery[MongoResult[R]] = new IndexQuery[MongoResult[R]](Config.empty, conf ⇒ {
+    val iterable = f
+
+    conf.batchSize.foreach(i ⇒ iterable.batchSize(i))
+    conf.maxTime.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
+
+    MongoIterator(iterable)
+  })
 }

@@ -18,107 +18,82 @@ package kantan.mongodb
 
 import com.mongodb.client.MapReduceIterable
 import com.mongodb.client.model.MapReduceAction
-import kantan.codecs.resource.ResourceIterable
+import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
+import kantan.mongodb.MapReduceQuery.{Action, Config}
 import kantan.mongodb.options.Collation
 import scala.concurrent.duration.Duration
 
-abstract class MapReduceQuery[A] extends ResourceIterable[A] {
-  def action(a: MapReduceQuery.Action): MapReduceQuery[A]
-  def batchSize(i: Int): MapReduceQuery[A]
-  def bypassDocumentValidation(b: Boolean): MapReduceQuery[A]
-  def collectionName(n: String): MapReduceQuery[A]
-  def databaseName(n: String): MapReduceQuery[A]
-  def filter[F: BsonDocumentEncoder](filter: F): MapReduceQuery[A]
-  def finalizeFunction(s: String): MapReduceQuery[A]
-  def jsMode(m: Boolean): MapReduceQuery[A]
-  def nonAtomic(b: Boolean): MapReduceQuery[A]
-  def scope[S: BsonDocumentEncoder](scope: S): MapReduceQuery[A]
-  def sharded(s: Boolean): MapReduceQuery[A]
-  def sort[S: BsonDocumentEncoder](sort: S): MapReduceQuery[A]
-  def collation(c: Collation): MapReduceQuery[A]
-  def verbose(b: Boolean): MapReduceQuery[A]
-  def toCollection: MapReduceQuery[A]
-  def limit(i: Int): MapReduceQuery[A]
-  def maxTime(duration: Duration): MapReduceQuery[A]
+final class MapReduceQuery[A] private (val config: Config, private val eval: Config ⇒ ResourceIterator[A])
+  extends ResourceIterable[A] {
+  override type Repr[X] = MapReduceQuery[X]
+
+  def withConfig(conf: Config): MapReduceQuery[A] = new MapReduceQuery[A](conf, eval)
+
+  def action(a: Action): MapReduceQuery[A] = withConfig(config.copy(action = Some(a)))
+  def batchSize(i: Int): MapReduceQuery[A] = withConfig(config.copy(batchSize= Some(i)))
+  def collectionName(n: String): MapReduceQuery[A] = withConfig(config.copy(collectionName = Some(n)))
+  def databaseName(n: String): MapReduceQuery[A] = withConfig(config.copy(databaseName = Some(n)))
+  def filter[F: BsonDocumentEncoder](filter: F): MapReduceQuery[A] =
+    withConfig(config.copy(filter = Some(BsonDocumentEncoder[F].encode(filter))))
+  def finalizeFunction(s: String): MapReduceQuery[A] = withConfig(config.copy(finalizeFunction = Some(s)))
+  def jsMode(m: Boolean): MapReduceQuery[A] = withConfig(config.copy(jsMode = Some(m)))
+  def nonAtomic(b: Boolean): MapReduceQuery[A] = withConfig(config.copy(nonAtomic = Some(b)))
+  def scope[S: BsonDocumentEncoder](scope: S): MapReduceQuery[A] =
+    withConfig(config.copy(scope = Some(BsonDocumentEncoder[S].encode(scope))))
+  def sharded(s: Boolean): MapReduceQuery[A] = withConfig(config.copy(sharded = Some(s)))
+  def sort[S: BsonDocumentEncoder](sort: S): MapReduceQuery[A] =
+    withConfig(config.copy(sort = Some(BsonDocumentEncoder[S].encode(sort))))
+  def collation(c: Collation): MapReduceQuery[A] = withConfig(config.copy(collation = Some(c)))
+  def verbose(b: Boolean): MapReduceQuery[A] = withConfig(config.copy(verbose = Some(b)))
+  def toCollection: MapReduceQuery[A] = withConfig(config.copy(toCollection = true))
+  def limit(i: Int): MapReduceQuery[A] = withConfig(config.copy(limit = Some(i)))
+  def maxTime(duration: Duration): MapReduceQuery[A] = withConfig(config.copy(maxTime = Some(duration)))
 
   override def take(n: Int) = limit(n)
-  override def headOption: Option[A] =  {
-    val it = limit(1).iterator
-    if(it.hasNext) Some(it.next())
-    else           None
-  }
 
-  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
-  override def head: A = headOption.get
+  override def iterator = eval(config)
 
-  override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
+  override protected def onIterator[B](f: ResourceIterator[A] ⇒ ResourceIterator[B]) =
+    new MapReduceQuery[B](config, eval andThen f)
 }
 
 object MapReduceQuery {
-  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ MapReduceIterable[BsonDocument])
-  : MapReduceQuery[MongoResult[R]] = MapReduceQueryImpl(None, None, None, None, None, None, None, None, None, None,
-    None, None, None, None, false, None, None, () ⇒ f)
-  private final case class MapReduceQueryImpl[A: BsonDocumentDecoder](
-                                                                       action: Option[Action],
-                                                                       batch: Option[Int],
-                                                                       bypassValidation: Option[Boolean],
-                                                                       collection: Option[String],
-                                                                       database: Option[String],
-                                                                       filter: Option[BsonDocument],
-                                                                       finalizer: Option[String],
-                                                                       js: Option[Boolean],
-                                                                       nonAtom: Option[Boolean],
-                                                                       scp: Option[BsonDocument],
-                                                                       shrd: Option[Boolean],
-                                                                       srt: Option[BsonDocument],
-                                                                       col: Option[Collation],
-                                                                       verb: Option[Boolean],
-                                                                       toCol: Boolean,
-                                                                       max: Option[Int],
-                                                                       time: Option[Duration],
-                                                                       eval: () ⇒ MapReduceIterable[BsonDocument]
-                                                                     ) extends MapReduceQuery[MongoResult[A]] {
-    override def action(a: Action) = copy(action = Some(a))
-    override def batchSize(i: Int) = copy(batch = Some(i))
-    override def bypassDocumentValidation(b: Boolean) = copy(bypassValidation = Some(b))
-    override def collectionName(n: String) = copy(collection = Some(n))
-    override def databaseName(n: String) = copy(database = Some(n))
-    override def filter[F: BsonDocumentEncoder](f: F) = copy(filter = Some(BsonDocumentEncoder[F].encode(f)))
-    override def finalizeFunction(s: String) = copy(finalizer = Some(s))
-    override def jsMode(m: Boolean) = copy(js = Some(m))
-    override def nonAtomic(b: Boolean) = copy(nonAtom = Some(b))
-    override def scope[S: BsonDocumentEncoder](s: S) = copy(scp = Some(BsonDocumentEncoder[S].encode(s)))
-    override def sharded(s: Boolean) = copy(shrd = Some(s))
-    override def sort[S: BsonDocumentEncoder](s: S) = copy(srt = Some(BsonDocumentEncoder[S].encode(s)))
-    override def collation(c: Collation) = copy(col = Some(c))
-    override def verbose(b: Boolean) = copy(verb = Some(b))
-    override def toCollection = copy(toCol = true)
-    override def limit(i: Int) = copy(max = Some(i))
-    override def maxTime(d: Duration) = copy(time = Some(d))
-    override def iterator = {
-      val iterable = eval()
+  final case class Config(action: Option[Action], batchSize: Option[Int], collectionName: Option[String],
+                          databaseName: Option[String], filter: Option[BsonDocument], finalizeFunction: Option[String],
+                          jsMode: Option[Boolean], nonAtomic: Option[Boolean], scope: Option[BsonDocument],
+                          sharded: Option[Boolean], sort: Option[BsonDocument], collation: Option[Collation],
+                          verbose: Option[Boolean], toCollection: Boolean, limit: Option[Int],
+                          maxTime: Option[Duration])
 
-      action.foreach(a ⇒ iterable.action(a.toLegacy))
-      batch.foreach(iterable.batchSize)
-      bypassValidation.foreach(b ⇒ iterable.bypassDocumentValidation(b))
-      collection.foreach(iterable.collectionName)
-      database.foreach(iterable.databaseName)
-      filter.foreach(iterable.filter)
-      finalizer.foreach(iterable.finalizeFunction)
-      js.foreach(iterable.jsMode)
-      nonAtom.foreach(iterable.nonAtomic)
-      scp.foreach(iterable.scope)
-      shrd.foreach(iterable.sharded)
-      srt.foreach(iterable.sort)
-      col.foreach(c ⇒ iterable.collation(c.legacy))
-      verb.foreach(iterable.verbose)
-      if(toCol) iterable.toCollection()
-      max.foreach(iterable.limit)
-      time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
-
-      MongoIterator(iterable)
-    }
+  object Config {
+    val empty: Config = Config(None, None, None, None, None, None, None, None, None, None, None, None, None, false,
+      None, None)
   }
+
+
+  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ MapReduceIterable[BsonDocument])
+  : MapReduceQuery[MongoResult[R]] = new MapReduceQuery[MongoResult[R]](Config.empty, conf ⇒ {
+    val iterable = f
+
+    conf.action.foreach(a ⇒ iterable.action(a.toLegacy))
+    conf.batchSize.foreach(iterable.batchSize)
+    conf.collectionName.foreach(iterable.collectionName)
+    conf.databaseName.foreach(iterable.databaseName)
+    conf.filter.foreach(iterable.filter)
+    conf.finalizeFunction.foreach(iterable.finalizeFunction)
+    conf.jsMode.foreach(iterable.jsMode)
+    conf.nonAtomic.foreach(iterable.nonAtomic)
+    conf.scope.foreach(iterable.scope)
+    conf.sharded.foreach(iterable.sharded)
+    conf.sort.foreach(iterable.sort)
+    conf.collation.foreach(c ⇒ iterable.collation(c.legacy))
+    conf.verbose.foreach(iterable.verbose)
+    if(conf.toCollection) iterable.toCollection()
+    conf.limit.foreach(iterable.limit)
+    conf.maxTime.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
+
+    MongoIterator(iterable)
+  })
 
   sealed abstract class Action extends Product with Serializable {
     def label: String

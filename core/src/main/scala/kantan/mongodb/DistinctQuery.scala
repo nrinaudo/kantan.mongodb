@@ -17,38 +17,42 @@
 package kantan.mongodb
 
 import com.mongodb.client.DistinctIterable
-import kantan.codecs.resource.ResourceIterable
+import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
+import kantan.mongodb.DistinctQuery.Config
 import kantan.mongodb.options.Collation
 import scala.concurrent.duration.Duration
 
-abstract class DistinctQuery[A] extends ResourceIterable[A] {
-  def batchSize(i: Int): DistinctQuery[A]
-  def collation(c: Collation): DistinctQuery[A]
-  def maxTime(duration: Duration): DistinctQuery[A]
+final class DistinctQuery[A] private(val config: Config, private val eval: Config ⇒ ResourceIterator[A])
+  extends ResourceIterable[A] {
+  override type Repr[X] = DistinctQuery[X]
 
-  override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
+  def withConfig(c: Config): DistinctQuery[A] = new DistinctQuery[A](c, eval)
+
+  def batchSize(i: Int): DistinctQuery[A] = withConfig(config.copy(batchSize = Some(i)))
+  def collation(c: Collation): DistinctQuery[A] = withConfig(config.copy(collation = Some(c)))
+  def maxTime(duration: Duration): DistinctQuery[A] = withConfig(config.copy(maxTime = Some(duration)))
+
+  override def iterator = eval(config)
+
+  override protected def onIterator[B](f: ResourceIterator[A] ⇒ ResourceIterator[B]) =
+  new DistinctQuery[B](config, eval andThen f)
 }
 
-private object DistinctQuery {
-  private[mongodb] def from[R: BsonValueDecoder](f: ⇒ DistinctIterable[BsonValue]): DistinctQuery[MongoResult[R]] =
-    DistinctQueryImpl(None, None, None, () ⇒ f)
-  private final case class DistinctQueryImpl[A: BsonValueDecoder](
-                                                                   batch: Option[Int],
-                                                                   col: Option[Collation],
-                                                                   time: Option[Duration],
-                                                                   eval: () ⇒ DistinctIterable[BsonValue]
-                                                                 ) extends DistinctQuery[MongoResult[A]] {
-    override def batchSize(i: Int) = copy(batch = Some(i))
-    override def collation(c: Collation) = copy(col = Some(c))
-    override def maxTime(d: Duration) = copy(time = Some(d))
-    override def iterator = {
-      val iterable = eval()
+object DistinctQuery {
+  final case class Config(batchSize: Option[Int], collation: Option[Collation], maxTime: Option[Duration])
 
-      batch.foreach(i ⇒ iterable.batchSize(i))
-      col.foreach(c ⇒ iterable.collation(c.legacy))
-      time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
+  object Config {
+    val empty: Config = Config(None, None, None)
+  }
+
+  private[mongodb] def from[R: BsonValueDecoder](f: ⇒ DistinctIterable[BsonValue]): DistinctQuery[MongoResult[R]] =
+    new DistinctQuery[MongoResult[R]](Config.empty, conf ⇒ {
+      val iterable = f
+
+      conf.batchSize.foreach(i ⇒ iterable.batchSize(i))
+      conf.collation.foreach(c ⇒ iterable.collation(c.legacy))
+      conf.maxTime.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
 
       MongoIterator(iterable)
-    }
-  }
+    })
 }

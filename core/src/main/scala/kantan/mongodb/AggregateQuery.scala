@@ -17,52 +17,46 @@
 package kantan.mongodb
 
 import com.mongodb.client.AggregateIterable
-import kantan.codecs.resource.ResourceIterable
+import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
+import kantan.mongodb.AggregateQuery.Config
 import kantan.mongodb.options.Collation
 import scala.concurrent.duration.Duration
 
-abstract class AggregateQuery[A] extends ResourceIterable[A] {
-  def allowDiskUse(b: Boolean): AggregateQuery[A]
-  def batchSize(i: Int): AggregateQuery[A]
-  def bypassDocumentValidation(b: Boolean): AggregateQuery[A]
-  def collation(c: Collation): AggregateQuery[A]
-  def maxTime(duration: Duration): AggregateQuery[A]
-  def useCursor(b: Boolean): AggregateQuery[A]
+final class AggregateQuery[A] private(val config: Config, private val eval: Config ⇒ ResourceIterator[A])
+  extends ResourceIterable[A] {
+  type Repr[X] = AggregateQuery[X]
 
-  override final def toString = s"${getClass.getName}@${Integer.toHexString(hashCode())}"
+  def withConfig(conf: Config): AggregateQuery[A] = new AggregateQuery[A](config, eval)
+
+  def allowDiskUse(b: Boolean): AggregateQuery[A] = withConfig(config.copy(allowDiskUse = Some(b)))
+  def batchSize(i: Int): AggregateQuery[A] = withConfig(config.copy(batchSize = Some(i)))
+  def collation(c: Collation): AggregateQuery[A] = withConfig(config.copy(collation = Some(c)))
+  def useCursor(b: Boolean): AggregateQuery[A] = withConfig(config.copy(useCursor= Some(b)))
+  def maxTime(duration: Duration): AggregateQuery[A] = withConfig(config.copy(maxTime = Some(duration)))
+
+  override def iterator = eval(config)
+
+  override protected def onIterator[B](f: ResourceIterator[A] ⇒ ResourceIterator[B]) =
+    new AggregateQuery[B](config, eval andThen f)
 }
 
-private object AggregateQuery {
-  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ AggregateIterable[BsonDocument])
-  : AggregateQuery[MongoResult[R]] = AggregateQueryImpl(None, None, None, None, None, None, () ⇒ f)
-
-  private final case class AggregateQueryImpl[A: BsonDocumentDecoder](
-                                                                       diskUse: Option[Boolean],
-                                                                       batchSize: Option[Int],
-                                                                       bypassValidation: Option[Boolean],
-                                                                       col: Option[Collation],
-                                                                       time: Option[Duration],
-                                                                       cursor: Option[Boolean],
-                                                                       eval: () ⇒ AggregateIterable[BsonDocument]
-                                                                     ) extends AggregateQuery[MongoResult[A]] {
-    override def allowDiskUse(b: Boolean) = copy(diskUse = Some(b))
-    override def batchSize(i: Int) = copy(batchSize = Some(i))
-    override def bypassDocumentValidation(b: Boolean) = copy(bypassValidation = Some(b))
-    override def collation(c: Collation) = copy(col = Some(c))
-    override def maxTime(d: Duration) = copy(time = Some(d))
-    override def useCursor(b: Boolean) = copy(cursor = Some(b))
-
-    override def iterator = {
-      val iterable = eval()
-
-      diskUse.foreach(b ⇒ iterable.allowDiskUse(b))
-      batchSize.foreach(i ⇒ iterable.batchSize(i))
-      bypassValidation.foreach(b ⇒ iterable.bypassDocumentValidation(b))
-      col.foreach(c ⇒ iterable.collation(c.legacy))
-      time.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
-      cursor.foreach(b ⇒ iterable.useCursor(b))
-
-      MongoIterator(iterable)
-    }
+object AggregateQuery {
+  final case class Config(allowDiskUse: Option[Boolean], batchSize: Option[Int], collation: Option[Collation],
+                          maxTime: Option[Duration], useCursor: Option[Boolean])
+  object Config {
+    val empty: Config = Config(None, None, None, None, None)
   }
+
+  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ AggregateIterable[BsonDocument])
+  : AggregateQuery[MongoResult[R]] = new AggregateQuery[MongoResult[R]](Config.empty, conf ⇒ {
+    val iterable = f
+
+    conf.allowDiskUse.foreach(b ⇒ iterable.allowDiskUse(b))
+    conf.batchSize.foreach(i ⇒ iterable.batchSize(i))
+    conf.collation.foreach(c ⇒ iterable.collation(c.legacy))
+    conf.maxTime.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
+    conf.useCursor.foreach(b ⇒ iterable.useCursor(b))
+
+    MongoIterator(iterable)
+  })
 }
