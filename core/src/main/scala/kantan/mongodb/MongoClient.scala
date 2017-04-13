@@ -29,11 +29,17 @@ class MongoClient private (private val client: MClient) extends Closeable {
   /** Returns the database with the specified name. */
   def database(name: String): MongoDatabase = new MongoDatabase(client.getDatabase(name))
 
-  def databases(): Iterator[DatabaseInfo] =
-  // We're assuming that DatabaseInfo is always succesfully decoded. Probably an ok assumption to make, but still...
-    client.listDatabases(classOf[BsonDocument]).iterator().asScala.map(BsonDocumentDecoder[DatabaseInfo].unsafeDecode)
+  /** Fetches all available databases as instances of `D`.
+    *
+    * If you want to use the [[MongoClient.DatabaseInfo default representation]], use [[databases]] instead
+    * (or [[databaseNames]] if you just need the names).
+    */
+  def rawDatabases[D: BsonDocumentDecoder](): DatabaseQuery[MongoResult[D]] =
+    DatabaseQuery.from[D](client.listDatabases(classOf[BsonDocument]))
 
-  def databaseNames(): Iterator[String] = databases().map(_.name)
+  def databases(): DatabaseQuery[MongoResult[DatabaseInfo]] = rawDatabases[DatabaseInfo]()
+
+  def databaseNames(): DatabaseQuery[MongoResult[String]] = databases().map(_.map(_.name))
 
   override def toString = client.getAllAddress.asScala.mkString("MongoClient(", ", ", ")")
 

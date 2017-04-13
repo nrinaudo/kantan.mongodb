@@ -32,7 +32,9 @@ final class DatabaseQuery[A](config: Config, eval: Config ⇒ ResourceIterator[A
   override def iterator = eval(config)
 
   override protected def onIterator[B](f: ResourceIterator[A] ⇒ ResourceIterator[B]) =
-  new DatabaseQuery[B](config, eval andThen f)
+    new DatabaseQuery[B](config, eval andThen f)
+
+  override def toString: String = super.toString
 }
 
 object DatabaseQuery {
