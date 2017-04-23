@@ -1,5 +1,7 @@
 # kantan.mongodb
 
+[![Join the chat at https://gitter.im/nrinaudo/kantan.mongodb](https://badges.gitter.im/nrinaudo/kantan.mongodb.svg)](https://gitter.im/nrinaudo/kantan.mongodb?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/nrinaudo/kantan.mongodb.svg?branch=master)](https://travis-ci.org/nrinaudo/kantan.mongodb)
 [![codecov](https://codecov.io/gh/nrinaudo/kantan.mongodb/branch/master/graph/badge.svg)](https://codecov.io/gh/nrinaudo/kantan.mongodb)
 [![Latest version](https://index.scala-lang.org/nrinaudo/kantan.mongodb/kantan.mongodb/latest.svg)](https://index.scala-lang.org/nrinaudo/kantan.mongodb)
