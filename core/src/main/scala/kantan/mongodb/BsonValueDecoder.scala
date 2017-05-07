@@ -219,7 +219,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * Note that the resulting decoder will only work on values of type [[BsonString]].
     */
   def fromStringDecoder[A: StringDecoder]: BsonValueDecoder[A] =
-    BsonValueDecoder[String].mapResult(s ⇒ StringDecoder[A].decode(s).leftMap(e ⇒ MongoError.Decode(e.message)))
+    BsonValueDecoder[String].emap(s ⇒ StringDecoder[A].decode(s).leftMap(e ⇒ MongoError.Decode(e.message)))
 
   /** Decodes instances of [[BsonString]] as `URI`.
     *
