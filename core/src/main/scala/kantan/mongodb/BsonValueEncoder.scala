@@ -21,16 +21,11 @@ import java.net.{URI, URL}
 import java.nio.file.Path
 import java.util.{Date, UUID}
 import java.util.regex.Pattern
-import kantan.codecs.Encoder
+import kantan.codecs._
 import kantan.codecs.strings.StringEncoder
 import org.bson.types.ObjectId
 
-object BsonValueEncoder {
-  def apply[A](implicit ev: BsonValueEncoder[A]): BsonValueEncoder[A] = macro imp.summon[BsonValueEncoder[A]]
-
-  def from[A](f: A ⇒ BsonValue): BsonValueEncoder[A] = Encoder.from(f)
-}
-
+object BsonValueEncoder extends EncoderCompanion[BsonValue, codecs.type] 
 trait LowPriorityBsonValueEncoderInstances {
   /** Turns any [[BsonDocumentEncoder]] instance into a [[BsonValueEncoder]] one. */
   implicit def encoderFromDocument[A: BsonDocumentEncoder]: BsonValueEncoder[A] =

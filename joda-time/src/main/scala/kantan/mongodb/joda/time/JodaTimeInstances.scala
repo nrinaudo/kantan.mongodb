@@ -20,8 +20,8 @@ import kantan.mongodb._
 import org.joda.time._
 
 trait JodaTimeInstances {
-  implicit val jodaDateTimeDecoder: BsonValueDecoder[DateTime] = BsonValueDecoder.fromSafe {
-    case BsonDateTime(i) ⇒ new DateTime(i)
+  implicit val jodaDateTimeDecoder: BsonValueDecoder[DateTime] = BsonValueDecoder.fromPartial {
+    case BsonDateTime(i) ⇒ DecodeResult.success(new DateTime(i))
   }
   implicit val jodaDateTimeEncoder: BsonValueEncoder[DateTime] = BsonValueEncoder.from(d ⇒ BsonDateTime(d.getMillis))
 }

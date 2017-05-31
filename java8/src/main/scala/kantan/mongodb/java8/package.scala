@@ -19,8 +19,8 @@ package kantan.mongodb
 import java.time._
 
 package object java8 {
-  implicit val java8InstantDecoder: BsonValueDecoder[Instant] = BsonValueDecoder.fromSafe {
-    case BsonDateTime(i) ⇒ Instant.ofEpochMilli(i)
+  implicit val java8InstantDecoder: BsonValueDecoder[Instant] = BsonValueDecoder.fromPartial {
+    case BsonDateTime(i) ⇒ DecodeResult.success(Instant.ofEpochMilli(i))
   }
 
   implicit val java8InstantEncoder: BsonValueEncoder[Instant] = BsonValueEncoder.from(i ⇒ BsonDateTime(i.toEpochMilli))

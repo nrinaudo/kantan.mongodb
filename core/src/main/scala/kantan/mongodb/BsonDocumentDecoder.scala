@@ -16,18 +16,10 @@
 
 package kantan.mongodb
 
-import kantan.codecs.Result.Success
+import kantan.codecs.DecoderCompanion
 
-object BsonDocumentDecoder extends GeneratedBsonDocumentDecoders {
-  def apply[A](implicit ev: BsonDocumentDecoder[A]): BsonDocumentDecoder[A] = macro imp.summon[BsonDocumentDecoder[A]]
-
-  def from[A](f: BsonDocument ⇒ DecodeResult[A]): BsonDocumentDecoder[A] = new BsonDocumentDecoder[A] {
-    override def decode(d: BsonDocument) = f(d)
-  }
-
-  def fromSafe[A](f: BsonDocument ⇒ A): BsonDocumentDecoder[A] =
-    BsonDocumentDecoder.from(f andThen Success.apply)
-}
+object BsonDocumentDecoder extends DecoderCompanion[BsonDocument, MongoError.Decode, codecs.type]
+    with GeneratedBsonDocumentDecoders
 
 trait BsonDocumentDecoderInstances {
   implicit val bsonDocumentDocumentDecoder: BsonDocumentDecoder[BsonDocument] = BsonDocumentDecoder.fromSafe(identity)

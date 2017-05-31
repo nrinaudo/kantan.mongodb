@@ -16,13 +16,9 @@
 
 package kantan.mongodb
 
-object BsonDocumentEncoder extends GeneratedBsonDocumentEncoders {
-  def apply[A](implicit ev: BsonDocumentEncoder[A]): BsonDocumentEncoder[A] = macro imp.summon[BsonDocumentEncoder[A]]
+import kantan.codecs.EncoderCompanion
 
-  def from[A](f: A ⇒ BsonDocument): BsonDocumentEncoder[A] = new BsonDocumentEncoder[A] {
-    override def encode(d: A) = f(d)
-  }
-}
+object BsonDocumentEncoder extends EncoderCompanion[BsonDocument, codecs.type] with GeneratedBsonDocumentEncoders
 
 trait BsonDocumentEncoderInstances {
   implicit val bsonDocumentDocumentEncoder: BsonDocumentEncoder[BsonDocument] = BsonDocumentEncoder.from(identity)
