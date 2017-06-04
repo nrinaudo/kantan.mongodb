@@ -1,4 +1,5 @@
 kantanProject in ThisBuild := "mongodb"
+startYear in ThisBuild     := Some(2017)
 
 
 // - root projects -----------------------------------------------------------------------------------------------------
