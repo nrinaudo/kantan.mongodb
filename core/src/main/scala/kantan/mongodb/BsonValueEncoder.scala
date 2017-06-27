@@ -25,7 +25,7 @@ import kantan.codecs._
 import kantan.codecs.strings.StringEncoder
 import org.bson.types.ObjectId
 
-object BsonValueEncoder extends EncoderCompanion[BsonValue, codecs.type] 
+object BsonValueEncoder extends EncoderCompanion[BsonValue, codecs.type]
 trait LowPriorityBsonValueEncoderInstances {
   /** Turns any [[BsonDocumentEncoder]] instance into a [[BsonValueEncoder]] one. */
   implicit def encoderFromDocument[A: BsonDocumentEncoder]: BsonValueEncoder[A] =
