@@ -146,7 +146,7 @@ trait ArbitraryInstances extends kantan.codecs.laws.discipline.ArbitraryInstance
 
   implicit val cogenBsonDocument: Cogen[BsonDocument] = cogenBsonDocumentContent.contramap(_.value)
 
-  implicit val cogenPattern: Cogen[Pattern] = imp[Cogen[(String, Int)]].contramap(p ⇒ (p.pattern(), p.flags()))
+  //implicit val cogenPattern: Cogen[Pattern] = imp[Cogen[(String, Int)]].contramap(p ⇒ (p.pattern(), p.flags()))
 
   implicit lazy val bsonValueCogen: Cogen[BsonValue] = Cogen((seed: Seed, a: BsonValue) ⇒ a match {
     case BsonUuid(uuid)                        ⇒ imp[Cogen[UUID]].perturb(seed, uuid)

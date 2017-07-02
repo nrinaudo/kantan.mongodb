@@ -17,18 +17,24 @@
 package kantan.mongodb
 
 import com.mongodb._
-import kantan.codecs.{Error, ErrorCompanion}
+import kantan.codecs.error._
 
 sealed abstract class MongoError(message: String, code: Int) extends Error(message)
 
 abstract class MongoErrorCompanion[T <: MongoError](msg: String)(f: (String, Int) ⇒ T)
   extends ErrorCompanion[T](msg)(s ⇒ f(s, -4)) {
-  def apply(msg: String): T = f(msg, -4)
+  override implicit val isError: IsError[T] = new IsError[T] {
+    override def from(msg: String, cause: Throwable) = {
+      val error = f(msg, cause match {
+        case e: MongoException ⇒ e.getCode
+        case _                 ⇒ -4
+      })
+      error.initCause(cause)
+      error
+    }
 
-  def apply(e: MongoException): T = {
-    val error = f(e.getMessage, e.getCode)
-    error.initCause(e)
-    error
+    override def fromMessage(msg: String) = from(msg, new Exception(msg))
+    override def fromThrowable(cause: Throwable): T = from(Option(cause.getMessage).getOrElse(msg), cause)
   }
 }
 

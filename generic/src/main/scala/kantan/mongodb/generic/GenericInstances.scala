@@ -45,7 +45,7 @@ trait GenericInstances extends ShapelessInstances {
   // - Product-type decoding -------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   implicit val bsonHnilDecoder: BsonDocumentDecoder[HNil] =
-  BsonDocumentDecoder.fromSafe { _ ⇒ HNil }
+  BsonDocumentDecoder.fromUnsafe { _ ⇒ HNil }
 
   implicit def bsonHlistDecoder[K <: Symbol, H: BsonValueDecoder, T <: HList: BsonDocumentDecoder]
   (implicit witness: Witness.Aux[K]): BsonDocumentDecoder[FieldType[K, H] :: T] = {

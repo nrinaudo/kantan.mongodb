@@ -22,5 +22,5 @@ object BsonDocumentDecoder extends DecoderCompanion[BsonDocument, MongoError.Dec
     with GeneratedBsonDocumentDecoders
 
 trait BsonDocumentDecoderInstances {
-  implicit val bsonDocumentDocumentDecoder: BsonDocumentDecoder[BsonDocument] = BsonDocumentDecoder.fromSafe(identity)
+  implicit val bsonDocumentDocumentDecoder: BsonDocumentDecoder[BsonDocument] = BsonDocumentDecoder.fromUnsafe(identity)
 }
