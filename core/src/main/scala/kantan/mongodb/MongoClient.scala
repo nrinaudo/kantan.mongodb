@@ -23,8 +23,6 @@ import kantan.mongodb.MongoClient.DatabaseInfo
 import scala.collection.JavaConverters._
 import scala.util.Try
 
-// TODO: databases() need to be turned into something more generic && safe.
-
 class MongoClient private (private val client: MClient) extends Closeable {
   /** Returns the database with the specified name. */
   def database(name: String): MongoDatabase = new MongoDatabase(client.getDatabase(name))
@@ -66,28 +64,28 @@ object MongoClient {
     *
     * Specify an empty list for anonymous login.
     */
-  def local(creds: List[MongoCredential]): MongoClient =
-    fromAddressWith(List(ServerAddress.default), creds)(defaultOptions)
+  def local(creds: MongoCredential*): MongoClient =
+    fromAddressWith(List(ServerAddress.default), creds: _*)(defaultOptions)
 
   /** Connects to the local MongoDB server, using the specified credentials and options.
     *
     * Specify an empty list for anonymous login.
     */
   def localWith(creds: List[MongoCredential])(options: MongoClientOptions): MongoClient =
-    fromAddressWith(List(ServerAddress.default), creds)(options)
+    fromAddressWith(List(ServerAddress.default), creds: _*)(options)
 
   /** Connects to the specified MongoDB cluster, using the specified credentials.
     *
     * Specify an empty list for anonymous login.
     */
-  def fromAddress(cluster: List[ServerAddress], creds: List[MongoCredential]): MongoClient =
-    fromAddressWith(cluster, creds)(defaultOptions)
+  def fromAddress(cluster: List[ServerAddress], creds: MongoCredential*): MongoClient =
+    fromAddressWith(cluster, creds: _*)(defaultOptions)
 
   /** Connects to the specified MongoDB cluster, using the specified credentials and options.
     *
     * Specify an empty list for anonymous login.
     */
-  def fromAddressWith(cluster: List[ServerAddress], creds: List[MongoCredential])
+  def fromAddressWith(cluster: List[ServerAddress], creds: MongoCredential*)
                      (options: MongoClientOptions): MongoClient =
       new MongoClient(new MClient(cluster.map(_.legacy).asJava, creds.asJava,
         com.mongodb.MongoClientOptions.builder(options).codecRegistry(kantan.mongodb.io.registry).build(), driverInfo))
