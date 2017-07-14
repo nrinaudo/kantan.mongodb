@@ -18,7 +18,6 @@ package kantan.mongodb
 
 import com.mongodb.client.MongoIterable
 import kantan.codecs.Decoder
-import kantan.codecs.Result.{Failure, Success}
 import kantan.codecs.resource.ResourceIterator
 
 private[mongodb] object MongoIterator {
