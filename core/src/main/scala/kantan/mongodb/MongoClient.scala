@@ -60,10 +60,7 @@ object MongoClient {
   private def defaultOptions: MongoClientOptions =
     com.mongodb.MongoClientOptions.builder().build()
 
-  /** Connects to the local MongoDB server, using the specified credentials.
-    *
-    * Specify an empty list for anonymous login.
-    */
+  /** Connects to the local MongoDB server, using the specified credentials. */
   def local(creds: MongoCredential*): MongoClient =
     fromAddressWith(List(ServerAddress.default), creds: _*)(defaultOptions)
 
@@ -71,12 +68,11 @@ object MongoClient {
     *
     * Specify an empty list for anonymous login.
     */
-  def localWith(creds: List[MongoCredential])(options: MongoClientOptions): MongoClient =
+  def localWith(creds: MongoCredential*)(options: MongoClientOptions): MongoClient =
     fromAddressWith(List(ServerAddress.default), creds: _*)(options)
 
   /** Connects to the specified MongoDB cluster, using the specified credentials.
-    *
-    * Specify an empty list for anonymous login.
+
     */
   def fromAddress(cluster: List[ServerAddress], creds: MongoCredential*): MongoClient =
     fromAddressWith(cluster, creds: _*)(defaultOptions)
