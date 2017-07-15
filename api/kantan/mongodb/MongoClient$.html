@@ -234,7 +234,7 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="index.html" class="extype" name="kantan.mongodb">mongodb</a></dd></dl></div>
     </li><li class="current-entities indented2">
-                        <span class="separator"></span>
+                        <a class="object" href="AggregateQuery$.html" title=""></a>
                         <a class="class" href="AggregateQuery.html" title=""></a>
                         <a href="AggregateQuery.html" title="">
                           AggregateQuery
@@ -492,6 +492,12 @@
                           BulkResult
                         </a>
                       </li><li class="current-entities indented2">
+                        <a class="object" href="DatabaseQuery$.html" title=""></a>
+                        <a class="class" href="DatabaseQuery.html" title=""></a>
+                        <a href="DatabaseQuery.html" title="">
+                          DatabaseQuery
+                        </a>
+                      </li><li class="current-entities indented2">
                         <span class="separator"></span>
                         <a class="object" href="DecodeResult$.html" title=""></a>
                         <a href="DecodeResult$.html" title="">
@@ -504,13 +510,13 @@
                           DeleteResult
                         </a>
                       </li><li class="current-entities indented2">
-                        <span class="separator"></span>
+                        <a class="object" href="DistinctQuery$.html" title=""></a>
                         <a class="class" href="DistinctQuery.html" title=""></a>
                         <a href="DistinctQuery.html" title="">
                           DistinctQuery
                         </a>
                       </li><li class="current-entities indented2">
-                        <span class="separator"></span>
+                        <a class="object" href="FindQuery$.html" title=""></a>
                         <a class="class" href="FindQuery.html" title=""></a>
                         <a href="FindQuery.html" title="">
                           FindQuery
@@ -534,7 +540,7 @@
                           GeneratedBsonDocumentEncoders
                         </a>
                       </li><li class="current-entities indented2">
-                        <span class="separator"></span>
+                        <a class="object" href="IndexQuery$.html" title=""></a>
                         <a class="class" href="IndexQuery.html" title=""></a>
                         <a href="IndexQuery.html" title="">
                           IndexQuery
@@ -558,7 +564,7 @@
                           MapReduceQuery
                         </a>
                       </li><li class="current-entities indented2">
-                        <a class="object" href="" title=""></a>
+                        <a class="object" href="" title="Provides functions for connecting to a MongoDB server or cluster."></a>
                         <a class="class" href="MongoClient.html" title=""></a>
                         <a href="MongoClient.html" title="">
                           MongoClient
@@ -659,14 +665,12 @@
       </h4>
 
       
-          <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Annotations</dt><dd>
-                <span class="name">@SuppressWarnings</span><span class="args">()</span>
-              
-        </dd><dt>Source</dt><dd><a href="https://github.com/nrinaudo/kantan.mongodb/tree/master/core/src/main/scala/kantan/mongodb/MongoClient.scala" target="_blank">MongoClient.scala</a></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Provides functions for connecting to a MongoDB server or cluster.</p><p>There are three main ways to connect to a MongoDB cluster:</p><ul><li>the <a href="#local(creds:kantan.mongodb.MongoCredential*):kantan.mongodb.MongoClient" class="extmbr" name="kantan.mongodb.MongoClient#local">local</a> one (which basically attempts to connect to <a href="ServerAddress$.html#default:kantan.mongodb.ServerAddress" class="extmbr" name="kantan.mongodb.ServerAddress#default">ServerAddress.default</a>.</li><li>a <a href="#fromAddress(cluster:List[kantan.mongodb.ServerAddress],creds:kantan.mongodb.MongoCredential*):kantan.mongodb.MongoClient" class="extmbr" name="kantan.mongodb.MongoClient#fromAddress">list of server addresses</a>.</li><li>a <a href="#fromUri(uri:String):Option[kantan.mongodb.MongoClient]" class="extmbr" name="kantan.mongodb.MongoClient#fromUri">MongoDB URI</a> describing a server cluster.</li></ul><p>The first two come with a <code>xyzWith</code> variant that lets you pass in options at connection time.
+</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/nrinaudo/kantan.mongodb/tree/master/core/src/main/scala/kantan/mongodb/MongoClient.scala" target="_blank">MongoClient.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">
             Linear Supertypes
           </span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.AnyRef" class="extype" target="_top">AnyRef</a>, <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Any" class="extype" target="_top">Any</a></div>
         </div></div>
         
 
@@ -728,7 +732,7 @@
       <span class="symbol">
         <a title="" href="MongoClient$$DatabaseInfo.html">
               <span class="name">DatabaseInfo</span>
-            </a><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sizeOnDisk">sizeOnDisk: <span class="extype" name="scala.Double">Double</span></span>, <span name="empty">empty: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+            </a><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sizeOnDisk">sizeOnDisk: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Double" class="extype" target="_top">Double</a></span>, <span name="empty">empty: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>)</span><span class="result"> extends <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Product" class="extype" target="_top">Product</a> with <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Serializable" class="extype" target="_top">Serializable</a></span>
       </span>
       
       
@@ -752,7 +756,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Any" class="extype" target="_top">Any</a></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -768,7 +772,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Int" class="extype" target="_top">Int</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -784,7 +788,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Any" class="extype" target="_top">Any</a></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -816,7 +820,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">clone</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.AnyRef" class="extype" target="_top">AnyRef</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -826,22 +830,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="kantan.mongodb.MongoClient#driverInfo" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="driverInfo:com.mongodb.client.MongoDriverInformation"></a><a id="driverInfo:MongoDriverInformation"></a>
-      <span class="permalink">
-      <a href="../../kantan/mongodb/MongoClient$.html#driverInfo:com.mongodb.client.MongoDriverInformation" title="Permalink">
-        <i class="material-icons"></i>
-      </a>
-    </span>
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">driverInfo</span><span class="result">: <span class="extype" name="com.mongodb.client.MongoDriverInformation">MongoDriverInformation</span></span>
-      </span>
-      
-      
     </li><li name="scala.AnyRef#eq" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a><a id="eq(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -854,7 +842,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.AnyRef" class="extype" target="_top">AnyRef</a></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -870,7 +858,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Any" class="extype" target="_top">Any</a></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -886,7 +874,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">finalize</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -897,9 +885,9 @@
               
         </dd></dl></div>
     </li><li name="kantan.mongodb.MongoClient#fromAddress" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="fromAddress(cluster:List[kantan.mongodb.ServerAddress],creds:List[kantan.mongodb.MongoCredential],options:Option[kantan.mongodb.MongoClientOptions]):kantan.mongodb.MongoClient"></a><a id="fromAddress(List[ServerAddress],List[MongoCredential],Option[MongoClientOptions]):MongoClient"></a>
+      <a id="fromAddress(cluster:List[kantan.mongodb.ServerAddress],creds:kantan.mongodb.MongoCredential*):kantan.mongodb.MongoClient"></a><a id="fromAddress(List[ServerAddress],MongoCredential*):MongoClient"></a>
       <span class="permalink">
-      <a href="../../kantan/mongodb/MongoClient$.html#fromAddress(cluster:List[kantan.mongodb.ServerAddress],creds:List[kantan.mongodb.MongoCredential],options:Option[kantan.mongodb.MongoClientOptions]):kantan.mongodb.MongoClient" title="Permalink">
+      <a href="../../kantan/mongodb/MongoClient$.html#fromAddress(cluster:List[kantan.mongodb.ServerAddress],creds:kantan.mongodb.MongoCredential*):kantan.mongodb.MongoClient" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -908,10 +896,27 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">fromAddress</span><span class="params">(<span name="cluster">cluster: <span class="extype" name="scala.List">List</span>[<a href="ServerAddress.html" class="extype" name="kantan.mongodb.ServerAddress">ServerAddress</a>]</span>, <span name="creds">creds: <span class="extype" name="scala.List">List</span>[<a href="index.html#MongoCredential=com.mongodb.MongoCredential" class="extmbr" name="kantan.mongodb.MongoCredential">MongoCredential</a>] = <span class="symbol">List.empty</span></span>, <span name="options">options: <span class="extype" name="scala.Option">Option</span>[<a href="index.html#MongoClientOptions=com.mongodb.MongoClientOptions" class="extmbr" name="kantan.mongodb.MongoClientOptions">MongoClientOptions</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <a href="MongoClient.html" class="extype" name="kantan.mongodb.MongoClient">MongoClient</a></span>
+        <span class="name">fromAddress</span><span class="params">(<span name="cluster">cluster: <span class="extype" name="scala.List">List</span>[<a href="ServerAddress.html" class="extype" name="kantan.mongodb.ServerAddress">ServerAddress</a>]</span>, <span name="creds">creds: <a href="index.html#MongoCredential=com.mongodb.MongoCredential" class="extmbr" name="kantan.mongodb.MongoCredential">MongoCredential</a>*</span>)</span><span class="result">: <a href="MongoClient.html" class="extype" name="kantan.mongodb.MongoClient">MongoClient</a></span>
       </span>
       
+      <p class="shortcomment cmt">Connects to the specified MongoDB cluster, using the specified credentials.</p>
+    </li><li name="kantan.mongodb.MongoClient#fromAddressWith" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fromAddressWith(cluster:List[kantan.mongodb.ServerAddress],creds:kantan.mongodb.MongoCredential*)(options:kantan.mongodb.MongoClientOptions):kantan.mongodb.MongoClient"></a><a id="fromAddressWith(List[ServerAddress],MongoCredential*)(MongoClientOptions):MongoClient"></a>
+      <span class="permalink">
+      <a href="../../kantan/mongodb/MongoClient$.html#fromAddressWith(cluster:List[kantan.mongodb.ServerAddress],creds:kantan.mongodb.MongoCredential*)(options:kantan.mongodb.MongoClientOptions):kantan.mongodb.MongoClient" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fromAddressWith</span><span class="params">(<span name="cluster">cluster: <span class="extype" name="scala.List">List</span>[<a href="ServerAddress.html" class="extype" name="kantan.mongodb.ServerAddress">ServerAddress</a>]</span>, <span name="creds">creds: <a href="index.html#MongoCredential=com.mongodb.MongoCredential" class="extmbr" name="kantan.mongodb.MongoCredential">MongoCredential</a>*</span>)</span><span class="params">(<span name="options">options: <a href="index.html#MongoClientOptions=com.mongodb.MongoClientOptions" class="extmbr" name="kantan.mongodb.MongoClientOptions">MongoClientOptions</a></span>)</span><span class="result">: <a href="MongoClient.html" class="extype" name="kantan.mongodb.MongoClient">MongoClient</a></span>
+      </span>
       
+      <p class="shortcomment cmt">Connects to the specified MongoDB cluster, using the specified credentials and options.</p><div class="fullcomment"><div class="comment cmt"><p>Connects to the specified MongoDB cluster, using the specified credentials and options.</p><p>Specify an empty list for anonymous login.
+</p></div></div>
     </li><li name="kantan.mongodb.MongoClient#fromUri" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="fromUri(uri:String):Option[kantan.mongodb.MongoClient]"></a><a id="fromUri(String):Option[MongoClient]"></a>
       <span class="permalink">
@@ -924,10 +929,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">fromUri</span><span class="params">(<span name="uri">uri: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="MongoClient.html" class="extype" name="kantan.mongodb.MongoClient">MongoClient</a>]</span>
+        <span class="name">fromUri</span><span class="params">(<span name="uri">uri: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Option" class="extype" target="_top">Option</a>[<a href="MongoClient.html" class="extype" name="kantan.mongodb.MongoClient">MongoClient</a>]</span>
       </span>
       
-      
+      <p class="shortcomment cmt">Connects to the specified MongoDB cluster.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <span class="permalink">
@@ -956,7 +961,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Int" class="extype" target="_top">Int</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -972,14 +977,14 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="kantan.mongodb.MongoClient#local" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="local(creds:List[kantan.mongodb.MongoCredential],options:Option[kantan.mongodb.MongoClientOptions]):kantan.mongodb.MongoClient"></a><a id="local(List[MongoCredential],Option[MongoClientOptions]):MongoClient"></a>
+      <a id="local(creds:kantan.mongodb.MongoCredential*):kantan.mongodb.MongoClient"></a><a id="local(MongoCredential*):MongoClient"></a>
       <span class="permalink">
-      <a href="../../kantan/mongodb/MongoClient$.html#local(creds:List[kantan.mongodb.MongoCredential],options:Option[kantan.mongodb.MongoClientOptions]):kantan.mongodb.MongoClient" title="Permalink">
+      <a href="../../kantan/mongodb/MongoClient$.html#local(creds:kantan.mongodb.MongoCredential*):kantan.mongodb.MongoClient" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -988,10 +993,27 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">local</span><span class="params">(<span name="creds">creds: <span class="extype" name="scala.List">List</span>[<a href="index.html#MongoCredential=com.mongodb.MongoCredential" class="extmbr" name="kantan.mongodb.MongoCredential">MongoCredential</a>] = <span class="symbol">List.empty</span></span>, <span name="options">options: <span class="extype" name="scala.Option">Option</span>[<a href="index.html#MongoClientOptions=com.mongodb.MongoClientOptions" class="extmbr" name="kantan.mongodb.MongoClientOptions">MongoClientOptions</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <a href="MongoClient.html" class="extype" name="kantan.mongodb.MongoClient">MongoClient</a></span>
+        <span class="name">local</span><span class="params">(<span name="creds">creds: <a href="index.html#MongoCredential=com.mongodb.MongoCredential" class="extmbr" name="kantan.mongodb.MongoCredential">MongoCredential</a>*</span>)</span><span class="result">: <a href="MongoClient.html" class="extype" name="kantan.mongodb.MongoClient">MongoClient</a></span>
       </span>
       
+      <p class="shortcomment cmt">Connects to the local MongoDB server, using the specified credentials.</p>
+    </li><li name="kantan.mongodb.MongoClient#localWith" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="localWith(creds:kantan.mongodb.MongoCredential*)(options:kantan.mongodb.MongoClientOptions):kantan.mongodb.MongoClient"></a><a id="localWith(MongoCredential*)(MongoClientOptions):MongoClient"></a>
+      <span class="permalink">
+      <a href="../../kantan/mongodb/MongoClient$.html#localWith(creds:kantan.mongodb.MongoCredential*)(options:kantan.mongodb.MongoClientOptions):kantan.mongodb.MongoClient" title="Permalink">
+        <i class="material-icons"></i>
+      </a>
+    </span>
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">localWith</span><span class="params">(<span name="creds">creds: <a href="index.html#MongoCredential=com.mongodb.MongoCredential" class="extmbr" name="kantan.mongodb.MongoCredential">MongoCredential</a>*</span>)</span><span class="params">(<span name="options">options: <a href="index.html#MongoClientOptions=com.mongodb.MongoClientOptions" class="extmbr" name="kantan.mongodb.MongoClientOptions">MongoClientOptions</a></span>)</span><span class="result">: <a href="MongoClient.html" class="extype" name="kantan.mongodb.MongoClient">MongoClient</a></span>
+      </span>
       
+      <p class="shortcomment cmt">Connects to the local MongoDB server, using the specified credentials and options.</p><div class="fullcomment"><div class="comment cmt"><p>Connects to the local MongoDB server, using the specified credentials and options.</p><p>Specify an empty list for anonymous login.
+</p></div></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a><a id="ne(AnyRef):Boolean"></a>
       <span class="permalink">
@@ -1004,7 +1026,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.AnyRef" class="extype" target="_top">AnyRef</a></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Boolean" class="extype" target="_top">Boolean</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -1020,7 +1042,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">notify</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -1036,7 +1058,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -1084,7 +1106,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -1106,7 +1128,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Long" class="extype" target="_top">Long</a></span>, <span name="arg1">arg1: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Int" class="extype" target="_top">Int</a></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -1128,7 +1150,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Long" class="extype" target="_top">Long</a></span>)</span><span class="result">: <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Unit" class="extype" target="_top">Unit</a></span>
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -1152,7 +1174,7 @@
       <span class="symbol">
         <a title="" href="MongoClient$$DatabaseInfo$.html">
               <span class="name">DatabaseInfo</span>
-            </a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+            </a><span class="result"> extends <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Serializable" class="extype" target="_top">Serializable</a></span>
       </span>
       
       
@@ -1167,9 +1189,9 @@
 
         <div id="inheritedMembers">
         <div class="parent" name="scala.AnyRef">
-              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+              <h3>Inherited from <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.AnyRef" class="extype" target="_top">AnyRef</a></h3>
             </div><div class="parent" name="scala.Any">
-              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+              <h3>Inherited from <a href="http://www.scala-lang.org/api/2.12.2/index.html#scala.Any" class="extype" target="_top">Any</a></h3>
             </div>
         
         </div>
