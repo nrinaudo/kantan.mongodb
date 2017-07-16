@@ -98,7 +98,7 @@ This defines various query operators, such as `$eq`:
 
 ```scala
 col.find($eq("name", "Peter")).foreach(println _)
-// Success(User(5a15a933-11f6-4f0b-9a47-a663884f78d0,Peter,15))
+// Success(User(aac8d80f-9b0e-4d9f-9fa9-d4a1670ad6e8,Peter,15))
 ```
 
 
@@ -111,9 +111,9 @@ col.updateOne($eq("name", "Tony"), $set("name", "Riri") && $set("age", 15))
 // res5: kantan.mongodb.MongoResult[kantan.mongodb.UpdateResult] = Success(Update(1,Some(1)))
 
 col.find().foreach(println _)
-// Success(User(5a15a933-11f6-4f0b-9a47-a663884f78d0,Peter,15))
-// Success(User(dc63b52d-4575-4b9c-9f25-853282cc5cc4,Bruce,25))
-// Success(User(bdc73dd1-ba19-4a7b-98e1-b270813c1add,Riri,15))
+// Success(User(aac8d80f-9b0e-4d9f-9fa9-d4a1670ad6e8,Peter,15))
+// Success(User(6b59edf4-e0bd-4a1a-b956-a214fcbf50bb,Bruce,25))
+// Success(User(58d9ed73-953c-4300-ab86-6faa1568e431,Riri,15))
 ```
 
 
@@ -130,8 +130,8 @@ And we can verify that `Riri` is not in our collection anymore:
 
 ```scala
 col.find().foreach(println _)
-// Success(User(5a15a933-11f6-4f0b-9a47-a663884f78d0,Peter,15))
-// Success(User(dc63b52d-4575-4b9c-9f25-853282cc5cc4,Bruce,25))
+// Success(User(aac8d80f-9b0e-4d9f-9fa9-d4a1670ad6e8,Peter,15))
+// Success(User(6b59edf4-e0bd-4a1a-b956-a214fcbf50bb,Bruce,25))
 ```
 
 ## Cleanup

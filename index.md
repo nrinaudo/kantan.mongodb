@@ -14,21 +14,21 @@ kantan.mongodb is a library for interacting with mongodb written in the
 
 kantan.mongodb is currently available for Scala 2.10, 2.11 and 2.12.
 
-The current version is `0.1.0`, which can be added to your project with one or more of the following line(s)
+The current version is `0.1.0-SNAPSHOT`, which can be added to your project with one or more of the following line(s)
 in your SBT build file:
 
 ```scala
 // Core library, included automatically if any other module is imported.
-libraryDependencies += "com.nrinaudo" %% "kantan.mongodb" % "0.1.0"
+libraryDependencies += "com.nrinaudo" %% "kantan.mongodb" % "0.1.0-SNAPSHOT"
 
 // Java 8 date and time instances.
-libraryDependencies += "com.nrinaudo" %% "kantan.mongodb-java8" % "0.1.0"
+libraryDependencies += "com.nrinaudo" %% "kantan.mongodb-java8" % "0.1.0-SNAPSHOT"
 
 // Automatic type class instances derivation.
-libraryDependencies += "com.nrinaudo" %% "kantan.mongodb-generic" % "0.1.0"
+libraryDependencies += "com.nrinaudo" %% "kantan.mongodb-generic" % "0.1.0-SNAPSHOT"
 
 // Provides instances for joda time types.
-libraryDependencies += "com.nrinaudo" %% "kantan.mongodb-joda-time" % "0.1.0"
+libraryDependencies += "com.nrinaudo" %% "kantan.mongodb-joda-time" % "0.1.0-SNAPSHOT"
 ```
 
 ## Motivation
