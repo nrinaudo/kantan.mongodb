@@ -102,7 +102,7 @@ col.find($eq("name", "Peter")).foreach(println _)
 We can also easily update documents through one of the various _update_ methods. For example, [`updateOne`]:
 
 ```tut:book
-col.updateOne($eq("name", "Tony"), $set("name", "Riri"))
+col.updateOne($eq("name", "Tony"), $set("name", "Riri") && $set("age", 15))
 
 col.find().foreach(println _)
 ```
