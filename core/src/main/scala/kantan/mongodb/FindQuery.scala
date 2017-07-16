@@ -25,9 +25,7 @@ import scala.concurrent.duration.Duration
 final class FindQuery[A] private (val config: Config, private val eval: Config ⇒ ResourceIterator[A])
   extends ResourceIterable[A] {
   override type Repr[X] = FindQuery[X]
-
   def withConfig(config: Config): FindQuery[A] = new FindQuery[A](config, eval)
-
   def batchSize(i: Int): FindQuery[A] = withConfig(config.copy(batchSize = Some(i)))
   def collation(c: Collation): FindQuery[A] = withConfig(config.copy(collation = Some(c)))
   def cursorType(c: CursorType): FindQuery[A] = withConfig(config.copy(cursorType= Some(c)))

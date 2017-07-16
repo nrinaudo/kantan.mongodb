@@ -20,7 +20,6 @@ package kantan.mongodb
 trait GeneratedBsonDocumentEncoders {
   def encoder[A: BsonValueEncoder, B](name: String)(f: B ⇒ A): BsonDocumentEncoder[B] =
     BsonDocumentEncoder.from(b ⇒ BsonDocument(Map(name → BsonValueEncoder[A].encode(f(b)))))
-
   [2..#def encoder[[#A1: BsonValueEncoder#], B]([#n1: String#])(f: B ⇒ Tuple1[[#A1#]]): BsonDocumentEncoder[B] =
     BsonDocumentEncoder.from { b ⇒
       val res = f(b)
