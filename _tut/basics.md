@@ -98,7 +98,7 @@ This defines various query operators, such as `$eq`:
 
 ```scala
 col.find($eq("name", "Peter")).foreach(println _)
-// Success(User(5d65cfdc-fa79-41a0-95af-638f4ba57272,Peter,15))
+// Success(User(5a15a933-11f6-4f0b-9a47-a663884f78d0,Peter,15))
 ```
 
 
@@ -107,13 +107,13 @@ col.find($eq("name", "Peter")).foreach(println _)
 We can also easily update documents through one of the various _update_ methods. For example, [`updateOne`]:
 
 ```scala
-col.updateOne($eq("name", "Tony"), $set("name", "Riri"))
+col.updateOne($eq("name", "Tony"), $set("name", "Riri") && $set("age", 15))
 // res5: kantan.mongodb.MongoResult[kantan.mongodb.UpdateResult] = Success(Update(1,Some(1)))
 
 col.find().foreach(println _)
-// Success(User(5d65cfdc-fa79-41a0-95af-638f4ba57272,Peter,15))
-// Success(User(dc07b381-2b16-4fd4-8034-d37f575ef4e4,Bruce,25))
-// Success(User(4d95bb5b-4448-4e34-ba19-e196ffe91044,Riri,21))
+// Success(User(5a15a933-11f6-4f0b-9a47-a663884f78d0,Peter,15))
+// Success(User(dc63b52d-4575-4b9c-9f25-853282cc5cc4,Bruce,25))
+// Success(User(bdc73dd1-ba19-4a7b-98e1-b270813c1add,Riri,15))
 ```
 
 
@@ -130,8 +130,8 @@ And we can verify that `Riri` is not in our collection anymore:
 
 ```scala
 col.find().foreach(println _)
-// Success(User(5d65cfdc-fa79-41a0-95af-638f4ba57272,Peter,15))
-// Success(User(dc07b381-2b16-4fd4-8034-d37f575ef4e4,Bruce,25))
+// Success(User(5a15a933-11f6-4f0b-9a47-a663884f78d0,Peter,15))
+// Success(User(dc63b52d-4575-4b9c-9f25-853282cc5cc4,Bruce,25))
 ```
 
 ## Cleanup
