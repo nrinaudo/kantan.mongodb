@@ -33,14 +33,24 @@ class DerivedBsonDocumentCodecTests extends FunSuite with GeneratorDrivenPropert
   case class Complex(i: Int, b: Boolean, c: Option[Double])
 
   implicit val arbLegal: Arbitrary[LegalBsonDocument[Or[Complex, Simple]]] =
-    arbLegalValue((o: Or[Complex, Simple]) ⇒ o match {
-      case Left(Complex(i, b, c)) ⇒ BsonDocument(Map("a" → BsonDocument(
-        Map("i" → BsonInt(i), "b" → BsonBoolean(b), "c" → c.fold[BsonValue](BsonNull)(BsonDouble.apply))))
-      )
-      case Right(Simple(i)) ⇒
-        BsonDocument(Map("b" → BsonDocument(Map("i" → BsonInt(i)))))
-    })
+    arbLegalValue(
+      (o: Or[Complex, Simple]) ⇒
+        o match {
+          case Left(Complex(i, b, c)) ⇒
+            BsonDocument(
+              Map(
+                "a" → BsonDocument(
+                  Map("i" → BsonInt(i), "b" → BsonBoolean(b), "c" → c.fold[BsonValue](BsonNull)(BsonDouble.apply))
+                )
+              )
+            )
+          case Right(Simple(i)) ⇒
+            BsonDocument(Map("b" → BsonDocument(Map("i" → BsonInt(i)))))
+      }
+    )
 
-  checkAll("DerivedBsonDocumentCodec[Or[Complex, Simple]]",
-    BsonDocumentCodecTests[Or[Complex, Simple]].codec[Byte, Float])
+  checkAll(
+    "DerivedBsonDocumentCodec[Or[Complex, Simple]]",
+    BsonDocumentCodecTests[Or[Complex, Simple]].codec[Byte, Float]
+  )
 }

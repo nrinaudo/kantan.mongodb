@@ -19,11 +19,12 @@ package kantan.mongodb.options
 import com.mongodb.client.model.BulkWriteOptions
 
 final case class BulkWriteOpts(bypassDocumentValidation: Boolean, ordered: Boolean) {
-  def ordered(o: Boolean): BulkWriteOpts = copy(ordered = o)
+  def ordered(o: Boolean): BulkWriteOpts                  = copy(ordered = o)
   def bypassDocumentValidation(b: Boolean): BulkWriteOpts = copy(bypassDocumentValidation = b)
 
   private[mongodb] lazy val legacy: BulkWriteOptions =
-    new BulkWriteOptions().ordered(ordered)
+    new BulkWriteOptions()
+      .ordered(ordered)
       .bypassDocumentValidation(bypassDocumentValidation)
 }
 

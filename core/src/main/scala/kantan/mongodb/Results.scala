@@ -19,11 +19,12 @@ package kantan.mongodb
 import com.mongodb.MongoException
 import kantan.codecs.ResultCompanion
 
+/** Provides convenient methods for creating instances of [[MongoResult]]. */
 object MongoResult extends ResultCompanion.WithDefault[MongoError] {
   override protected def fromThrowable(t: Throwable) = MongoError(MongoException.fromThrowable(t))
 }
 
+/** Provides convenient methods for creating instances of [[DecodeResult]]. */
 object DecodeResult extends ResultCompanion.WithDefault[MongoError.Decode] {
   override protected def fromThrowable(t: Throwable) = MongoError.Decode(t)
 }
-

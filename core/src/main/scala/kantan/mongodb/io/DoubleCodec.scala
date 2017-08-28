@@ -21,7 +21,7 @@ import org.bson.{BsonReader, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 
 object DoubleCodec extends Codec[BsonDouble] {
-  override def decode(reader: BsonReader, d: DecoderContext) = BsonDouble(reader.readDouble())
+  override def decode(reader: BsonReader, d: DecoderContext)                    = BsonDouble(reader.readDouble())
   override def encode(writer: BsonWriter, value: BsonDouble, e: EncoderContext) = writer.writeDouble(value.value)
-  override def getEncoderClass = classOf[BsonDouble]
+  override def getEncoderClass                                                  = classOf[BsonDouble]
 }

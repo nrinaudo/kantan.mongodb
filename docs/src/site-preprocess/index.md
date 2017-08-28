@@ -12,7 +12,7 @@ kantan.mongodb is a library for interacting with mongodb written in the
 
 ## Getting started
 
-kantan.mongodb is currently available for Scala 2.10, 2.11 and 2.12.
+kantan.mongodb is currently available for Scala 2.11 and 2.12.
 
 The current version is `@VERSION@`, which can be added to your project with one or more of the following line(s)
 in your SBT build file:
@@ -41,7 +41,7 @@ areas:
   which I feel is too late.
 * safety - the mongodb libraries I worked with throw exceptions and make it almost impossible to make sure you've
   dealt with all possible error cases.
-  
+
 kantan.mongodb addresses these issues in the standard way: type classes for decoding, and errors directly encoded in
 types.
 

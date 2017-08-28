@@ -20,9 +20,11 @@ import com.mongodb.client.model.FindOneAndDeleteOptions
 import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 import scala.concurrent.duration.Duration
 
-final case class FindOneAndDeleteOpts(collation: Option[Collation], maxTime: Option[Duration],
-                                      projection: Option[BsonDocument], sort: Option[BsonDocument]) {
-  def collation(c: Collation): FindOneAndDeleteOpts = copy(collation = Some(c))
+final case class FindOneAndDeleteOpts(collation: Option[Collation],
+                                      maxTime: Option[Duration],
+                                      projection: Option[BsonDocument],
+                                      sort: Option[BsonDocument]) {
+  def collation(c: Collation): FindOneAndDeleteOpts     = copy(collation = Some(c))
   def maxTime(duration: Duration): FindOneAndDeleteOpts = copy(maxTime = Some(duration))
   def projection[P: BsonDocumentEncoder](p: P): FindOneAndDeleteOpts =
     copy(projection = Some(BsonDocumentEncoder[P].encode(p)))

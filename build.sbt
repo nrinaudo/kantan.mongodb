@@ -1,7 +1,6 @@
 kantanProject in ThisBuild := "mongodb"
 startYear in ThisBuild     := Some(2017)
 
-
 // - root projects -----------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------
 lazy val root = Project(id = "kantan-mongodb", base = file("."))
@@ -9,7 +8,7 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
   .enablePlugins(UnpublishedPlugin)
   .settings(
     initialCommands in console :=
-    """
+      """
       |import kantan.mongodb._
       |import kantan.mongodb.ops._
       |import kantan.mongodb.query._
@@ -22,12 +21,12 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
 
 lazy val docs = project
   .enablePlugins(DocumentationPlugin)
-  .settings(unidocProjectFilter in (ScalaUnidoc, unidoc) :=
-    inAnyProject -- inProjectsIf(!java8Supported)(java8)
+  .settings(
+    unidocProjectFilter in (ScalaUnidoc, unidoc) :=
+      inAnyProject -- inProjectsIf(!java8Supported)(java8)
   )
   .dependsOn(core, jodaTime, query, generic)
   .dependsOnIf(java8Supported)(java8)
-
 
 lazy val core = project
   .settings(
@@ -36,18 +35,20 @@ lazy val core = project
   )
   .enablePlugins(PublishedPlugin, BuildInfoPlugin, spray.boilerplate.BoilerplatePlugin)
   .settings(
-    buildInfoKeys := Seq[BuildInfoKey](version, BuildInfoKey.action("commit") {git.gitHeadCommit.value}),
+    buildInfoKeys    := Seq[BuildInfoKey](version, BuildInfoKey.action("commit") { git.gitHeadCommit.value }),
     buildInfoPackage := "kantan.mongodb"
   )
-  .settings(libraryDependencies ++= Seq(
-    "com.nrinaudo"  %% "kantan.codecs"  % Versions.kantanCodecs,
-    "org.mongodb"   %  "mongodb-driver" % Versions.mongodb,
-    "org.scalatest" %% "scalatest"      % Versions.scalatest % "test"
-  ))
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.nrinaudo"  %% "kantan.codecs" % Versions.kantanCodecs,
+      "org.mongodb"   % "mongodb-driver" % Versions.mongodb,
+      "org.scalatest" %% "scalatest"     % Versions.scalatest % "test"
+    )
+  )
   .laws("laws")
   .settings(
     initialCommands in console :=
-    """
+      """
       |import kantan.mongodb._
     """.stripMargin
   )
@@ -77,11 +78,13 @@ lazy val generic = project
   )
   .enablePlugins(PublishedPlugin)
   .dependsOn(core, laws % "test")
-  .settings(libraryDependencies ++= Seq(
-    "com.nrinaudo"  %% "kantan.codecs-shapeless"      % Versions.kantanCodecs,
-    "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test",
-    "com.nrinaudo"  %% "kantan.codecs-shapeless-laws" % Versions.kantanCodecs % "test"
-  ))
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.nrinaudo"  %% "kantan.codecs-shapeless"      % Versions.kantanCodecs,
+      "org.scalatest" %% "scalatest"                    % Versions.scalatest % "test",
+      "com.nrinaudo"  %% "kantan.codecs-shapeless-laws" % Versions.kantanCodecs % "test"
+    )
+  )
 
 lazy val jodaTime = Project(id = "joda-time", base = file("joda-time"))
   .settings(
@@ -90,21 +93,25 @@ lazy val jodaTime = Project(id = "joda-time", base = file("joda-time"))
   )
   .enablePlugins(PublishedPlugin)
   .dependsOn(core, laws % "test")
-  .settings(libraryDependencies ++= Seq(
-    "com.nrinaudo"  %% "kantan.codecs-joda-time"      % Versions.kantanCodecs,
-    "com.nrinaudo"  %% "kantan.codecs-joda-time-laws" % Versions.kantanCodecs % "test",
-    "org.scalatest" %% "scalatest"                    % Versions.scalatest    % "test"
-  ))
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.nrinaudo"  %% "kantan.codecs-joda-time"      % Versions.kantanCodecs,
+      "com.nrinaudo"  %% "kantan.codecs-joda-time-laws" % Versions.kantanCodecs % "test",
+      "org.scalatest" %% "scalatest"                    % Versions.scalatest % "test"
+    )
+  )
 
 lazy val java8 = project
   .settings(
-    moduleName    := "kantan.mongodb-java8",
-    name          := "java8"
+    moduleName := "kantan.mongodb-java8",
+    name       := "java8"
   )
   .enablePlugins(PublishedPlugin)
   .dependsOn(core, laws % "test")
-  .settings(libraryDependencies ++= Seq(
-    "com.nrinaudo"  %% "kantan.codecs-java8"      % Versions.kantanCodecs,
-    "com.nrinaudo"  %% "kantan.codecs-java8-laws" % Versions.kantanCodecs % "test",
-    "org.scalatest" %% "scalatest"                % Versions.scalatest    % "test"
-  ))
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.nrinaudo"  %% "kantan.codecs-java8"      % Versions.kantanCodecs,
+      "com.nrinaudo"  %% "kantan.codecs-java8-laws" % Versions.kantanCodecs % "test",
+      "org.scalatest" %% "scalatest"                % Versions.scalatest % "test"
+    )
+  )

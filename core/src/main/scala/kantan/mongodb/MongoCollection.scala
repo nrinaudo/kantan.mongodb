@@ -29,15 +29,12 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
   def countWith[I: BsonDocumentEncoder](filter: I)(options: CountOpts): MongoResult[Long] =
     MongoResult(underlying.count(BsonDocumentEncoder[I].encode(filter), options.legacy))
 
-
-
   // - Bulk operations -------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def bulkWrite(operations: BulkOperation*): MongoResult[BulkResult] =
     MongoResult(BulkResult(underlying.bulkWrite(operations.map(_.toModel).asJava)))
   def bulkWriteWith(operations: BulkOperation*)(options: BulkWriteOpts): MongoResult[BulkResult] =
     MongoResult(BulkResult(underlying.bulkWrite(operations.map(_.toModel).asJava, options.legacy)))
-
 
   // - Aggregate / Map-Reduce ------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
@@ -47,16 +44,13 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
   def mapReduce[O: BsonDocumentDecoder](map: String, reduce: String): MapReduceQuery[MongoResult[O]] =
     MapReduceQuery.from(underlying.mapReduce(map, reduce))
 
-
-
   // - Distinct --------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def distinct[O: BsonValueDecoder](field: String): DistinctQuery[MongoResult[O]] =
-  DistinctQuery.from(underlying.distinct(field, classOf[BsonValue]))
+    DistinctQuery.from(underlying.distinct(field, classOf[BsonValue]))
 
   def distinct[F: BsonDocumentEncoder, O: BsonValueDecoder](field: String, filter: F): DistinctQuery[MongoResult[O]] =
     DistinctQuery.from(underlying.distinct(field, BsonDocumentEncoder[F].encode(filter), classOf[BsonValue]))
-
 
   // - Indexes ---------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
@@ -76,8 +70,6 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
 
   def dropIndexes(): MongoResult[Unit] = MongoResult(underlying.dropIndexes())
 
-
-
   // - Find ------------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def find[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): FindQuery[MongoResult[A]] =
@@ -86,61 +78,74 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
   def find()(implicit da: BsonDocumentDecoder[A]): FindQuery[MongoResult[A]] =
     FindQuery.from(underlying.find())
 
-
-
   // - Update ----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def findOneAndUpdate[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)
-                                                                      (implicit da: BsonDocumentDecoder[A])
-  : MongoResult[A] = findOneAndUpdateWith(filter, update)(FindOneAndUpdateOpts.default)
+  def findOneAndUpdate[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)(
+    implicit da: BsonDocumentDecoder[A]
+  ): MongoResult[A] = findOneAndUpdateWith(filter, update)(FindOneAndUpdateOpts.default)
 
-  def findOneAndUpdateWith[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)
-                                                                          (options: FindOneAndUpdateOpts)
-                                                                          (implicit da: BsonDocumentDecoder[A])
-  : MongoResult[A] = da.decode(underlying.findOneAndUpdate(BsonDocumentEncoder[F].encode(filter),
-    BsonDocumentEncoder[U].encode(update), options.legacy))
+  def findOneAndUpdateWith[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)(
+    options: FindOneAndUpdateOpts
+  )(implicit da: BsonDocumentDecoder[A]): MongoResult[A] =
+    da.decode(
+      underlying
+        .findOneAndUpdate(BsonDocumentEncoder[F].encode(filter), BsonDocumentEncoder[U].encode(update), options.legacy)
+    )
 
   def updateOne[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U): MongoResult[UpdateResult] =
     updateOneWith(filter, update)(UpdateOpts.default)
 
-  def updateOneWith[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)(options: UpdateOpts)
-  : MongoResult[UpdateResult] = MongoResult(UpdateResult(underlying.updateOne(BsonDocumentEncoder[F].encode(filter),
-    BsonDocumentEncoder[U].encode(update), options.legacy)))
+  def updateOneWith[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)(
+    options: UpdateOpts
+  ): MongoResult[UpdateResult] =
+    MongoResult(
+      UpdateResult(
+        underlying
+          .updateOne(BsonDocumentEncoder[F].encode(filter), BsonDocumentEncoder[U].encode(update), options.legacy)
+      )
+    )
 
   def updateMany[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U): MongoResult[UpdateResult] =
     updateManyWith(filter, update)(UpdateOpts.default)
 
-  def updateManyWith[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)(options: UpdateOpts)
-  : MongoResult[UpdateResult] = MongoResult(UpdateResult(underlying.updateMany(BsonDocumentEncoder[F].encode(filter),
-    BsonDocumentEncoder[U].encode(update), options.legacy)))
-
+  def updateManyWith[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U)(
+    options: UpdateOpts
+  ): MongoResult[UpdateResult] =
+    MongoResult(
+      UpdateResult(
+        underlying
+          .updateMany(BsonDocumentEncoder[F].encode(filter), BsonDocumentEncoder[U].encode(update), options.legacy)
+      )
+    )
 
   // - Replacement -----------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def findOneAndReplace[F: BsonDocumentEncoder](filter: F, replacement: A)
-                                               (implicit da: BsonDocumentDecoder[A], ea: BsonDocumentEncoder[A])
-  : Option[MongoResult[A]] = findOneAndReplaceWith(filter, replacement)(FindOneAndReplaceOpts.default)
+  def findOneAndReplace[F: BsonDocumentEncoder](filter: F, replacement: A)(
+    implicit da: BsonDocumentDecoder[A],
+    ea: BsonDocumentEncoder[A]
+  ): Option[MongoResult[A]] = findOneAndReplaceWith(filter, replacement)(FindOneAndReplaceOpts.default)
 
-  def findOneAndReplaceWith[F: BsonDocumentEncoder](filter: F, replacement: A)(options: FindOneAndReplaceOpts)
-                                                   (implicit da: BsonDocumentDecoder[A], ea: BsonDocumentEncoder[A])
-  : Option[MongoResult[A]] =
-    Option(underlying.findOneAndReplace(BsonDocumentEncoder[F].encode(filter), ea.encode(replacement),
-      options.legacy)).map(da.decode)
+  def findOneAndReplaceWith[F: BsonDocumentEncoder](filter: F, replacement: A)(
+    options: FindOneAndReplaceOpts
+  )(implicit da: BsonDocumentDecoder[A], ea: BsonDocumentEncoder[A]): Option[MongoResult[A]] =
+    Option(underlying.findOneAndReplace(BsonDocumentEncoder[F].encode(filter), ea.encode(replacement), options.legacy))
+      .map(da.decode)
 
-  def replaceOne[F: BsonDocumentEncoder](filter: F, rep: A)(implicit ea: BsonDocumentEncoder[A])
-  : MongoResult[UpdateResult] = replaceOneWith(filter, rep)(UpdateOpts.default)
+  def replaceOne[F: BsonDocumentEncoder](filter: F, rep: A)(
+    implicit ea: BsonDocumentEncoder[A]
+  ): MongoResult[UpdateResult] = replaceOneWith(filter, rep)(UpdateOpts.default)
 
-  def replaceOneWith[F: BsonDocumentEncoder](filter: F, rep: A)(options: UpdateOpts)
-                                            (implicit ea: BsonDocumentEncoder[A]): MongoResult[UpdateResult] =
-    MongoResult(UpdateResult(underlying.replaceOne(BsonDocumentEncoder[F].encode(filter), ea.encode(rep),
-      options.legacy)))
-
-
+  def replaceOneWith[F: BsonDocumentEncoder](filter: F, rep: A)(
+    options: UpdateOpts
+  )(implicit ea: BsonDocumentEncoder[A]): MongoResult[UpdateResult] =
+    MongoResult(
+      UpdateResult(underlying.replaceOne(BsonDocumentEncoder[F].encode(filter), ea.encode(rep), options.legacy))
+    )
 
   // - Delete ----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   /** Deletes all documents contained by the collection. */
-  def deleteAll(): MongoResult[DeleteResult] = deleteManyWith(BsonDocument.empty)(DeleteOpts.default)
+  def deleteAll(): MongoResult[DeleteResult]                        = deleteManyWith(BsonDocument.empty)(DeleteOpts.default)
   def deleteAllWith(options: DeleteOpts): MongoResult[DeleteResult] = deleteManyWith(BsonDocument.empty)(options)
 
   def deleteManyWith[F: BsonDocumentEncoder](filter: F)(options: DeleteOpts): MongoResult[DeleteResult] =
@@ -155,25 +160,21 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
   def findOneAndDelete[F: BsonDocumentEncoder](filter: F)(implicit da: BsonDocumentDecoder[A]): MongoResult[A] =
     findOneAndDeleteWith(filter)(FindOneAndDeleteOpts.default)
 
-  def findOneAndDeleteWith[F: BsonDocumentEncoder](filter: F)(options: FindOneAndDeleteOpts)
-                                                  (implicit da: BsonDocumentDecoder[A]): MongoResult[A] =
-      da.decode(underlying.findOneAndDelete(BsonDocumentEncoder[F].encode(filter), options.legacy))
-
-
-
+  def findOneAndDeleteWith[F: BsonDocumentEncoder](
+    filter: F
+  )(options: FindOneAndDeleteOpts)(implicit da: BsonDocumentDecoder[A]): MongoResult[A] =
+    da.decode(underlying.findOneAndDelete(BsonDocumentEncoder[F].encode(filter), options.legacy))
 
   // - Insert ----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def insertMany(documents: A*)(implicit ea: BsonDocumentEncoder[A]): MongoResult[Unit] =
-    insertManyWith(documents:_*)(InsertManyOpts.default)
+    insertManyWith(documents: _*)(InsertManyOpts.default)
 
   def insertManyWith(documents: A*)(options: InsertManyOpts)(implicit ea: BsonDocumentEncoder[A]): MongoResult[Unit] =
     MongoResult(underlying.insertMany(documents.map(ea.encode).toList.asJava, options.legacy))
 
   def insertOne(document: A)(implicit ea: BsonDocumentEncoder[A]): MongoResult[Unit] =
     MongoResult(underlying.insertOne(ea.encode(document)))
-
-
 
   // - Misc. -----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
@@ -188,15 +189,15 @@ class MongoCollection[A] private[mongodb] (private val underlying: MCollection[B
   def renameWith(namespace: MongoNamespace)(options: RenameCollectionOpts): MongoResult[Unit] =
     MongoResult(underlying.renameCollection(namespace.legacy, options.legacy))
 
-  def readConcern: ReadConcern = ReadConcern.fromLegacy(underlying.getReadConcern)
-  def writeConcern: WriteConcern = WriteConcern.fromLegacy(underlying.getWriteConcern)
+  def readConcern: ReadConcern       = ReadConcern.fromLegacy(underlying.getReadConcern)
+  def writeConcern: WriteConcern     = WriteConcern.fromLegacy(underlying.getWriteConcern)
   def readPreference: ReadPreference = underlying.getReadPreference
 
   def withReadConcern(concern: ReadConcern): MongoCollection[A] =
     new MongoCollection(underlying.withReadConcern(concern.legacy))
 
-  def withReadPreference(Preference: ReadPreference): MongoCollection[A] =
-    new MongoCollection(underlying.withReadPreference(Preference))
+  def withReadPreference(preference: ReadPreference): MongoCollection[A] =
+    new MongoCollection(underlying.withReadPreference(preference))
 
   def withWriteConcern(concern: WriteConcern): MongoCollection[A] =
     new MongoCollection(underlying.withWriteConcern(concern.legacy))

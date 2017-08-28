@@ -31,14 +31,14 @@ object Update {
     def merge(left: Map[String, BsonValue], right: Map[String, BsonValue])(f: (BsonValue, BsonValue) ⇒ BsonValue) =
       left.foldLeft(right) { case (acc, (op, l)) ⇒ acc.get(op).fold(acc + (op → l))(r ⇒ acc + (op → f(l, r))) }
 
-    BsonDocumentEncoder.from { case Combined(left, right) ⇒
-      BsonDocument(merge(BsonDocumentEncoder[L].encode(left).value, BsonDocumentEncoder[R].encode(right).value) {
-        case (BsonDocument(l), BsonDocument(r)) ⇒ BsonDocument(merge(l, r)((_, r2) ⇒ r2))
-        case (_, r2) ⇒ r2
-      })
+    BsonDocumentEncoder.from {
+      case Combined(left, right) ⇒
+        BsonDocument(merge(BsonDocumentEncoder[L].encode(left).value, BsonDocumentEncoder[R].encode(right).value) {
+          case (BsonDocument(l), BsonDocument(r)) ⇒ BsonDocument(merge(l, r)((_, r2) ⇒ r2))
+          case (_, r2)                            ⇒ r2
+        })
     }
   }
-
 
   // - Field updates ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
@@ -48,7 +48,6 @@ object Update {
 
   implicit def fieldEncoder[A: BsonValueEncoder]: BsonDocumentEncoder[Field[A]] = BsonDocumentEncoder.from {
     case Field(name, update) ⇒
-      BsonDocument(Map(update.operator → BsonDocument(Map(name→ BsonValueEncoder[A].encode(update.operand))))
-      )
+      BsonDocument(Map(update.operator → BsonDocument(Map(name → BsonValueEncoder[A].encode(update.operand)))))
   }
 }

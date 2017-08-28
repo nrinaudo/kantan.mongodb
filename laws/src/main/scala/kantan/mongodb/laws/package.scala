@@ -21,17 +21,17 @@ import kantan.codecs.laws.{CodecLaws, CodecValue, DecoderLaws, EncoderLaws}
 package object laws {
   type BsonValueDecoderLaws[A] = DecoderLaws[BsonValue, A, MongoError.Decode, codecs.type]
   type BsonValueEncoderLaws[A] = EncoderLaws[BsonValue, A, codecs.type]
-  type BsonValueCodecLaws[A] = CodecLaws[BsonValue, A, MongoError.Decode, codecs.type]
+  type BsonValueCodecLaws[A]   = CodecLaws[BsonValue, A, MongoError.Decode, codecs.type]
 
   type BsonDocumentDecoderLaws[A] = DecoderLaws[BsonDocument, A, MongoError.Decode, codecs.type]
   type BsonDocumentEncoderLaws[A] = EncoderLaws[BsonDocument, A, codecs.type]
-  type BsonDocumentCodecLaws[A] = CodecLaws[BsonDocument, A, MongoError.Decode, codecs.type]
+  type BsonDocumentCodecLaws[A]   = CodecLaws[BsonDocument, A, MongoError.Decode, codecs.type]
 
-  type BsonValueValue[A] = CodecValue[BsonValue, A, codecs.type]
-  type LegalBsonValue[A] = CodecValue.LegalValue[BsonValue, A, codecs.type]
+  type BsonValueValue[A]   = CodecValue[BsonValue, A, codecs.type]
+  type LegalBsonValue[A]   = CodecValue.LegalValue[BsonValue, A, codecs.type]
   type IllegalBsonValue[A] = CodecValue.IllegalValue[BsonValue, A, codecs.type]
 
-  type BsonDocumentValue[A] = CodecValue[BsonDocument, A, codecs.type]
-  type LegalBsonDocument[A] = CodecValue.LegalValue[BsonDocument, A, codecs.type]
+  type BsonDocumentValue[A]   = CodecValue[BsonDocument, A, codecs.type]
+  type LegalBsonDocument[A]   = CodecValue.LegalValue[BsonDocument, A, codecs.type]
   type IllegalBsonDocument[A] = CodecValue.IllegalValue[BsonDocument, A, codecs.type]
 }

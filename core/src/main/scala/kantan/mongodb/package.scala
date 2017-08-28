@@ -25,24 +25,32 @@ package object mongodb {
   type Failure[A] = Result.Failure[A]
   val Failure: Result.Failure.type = Result.Failure
 
+  /** Represents the result of any mongo operation.
+    *
+    * @documentable
+    */
   type MongoResult[A] = Result[MongoError, A]
+
+  /** Represents the result of any decoding operation.
+    *
+    * @documentable
+    */
   type DecodeResult[A] = Result[MongoError.Decode, A]
 
   type BsonValueDecoder[A] = Decoder[BsonValue, A, MongoError.Decode, codecs.type]
   type BsonValueEncoder[A] = Encoder[BsonValue, A, codecs.type]
-  type BsonValueCodec[A] = Codec[BsonValue, A, MongoError.Decode, codecs.type]
+  type BsonValueCodec[A]   = Codec[BsonValue, A, MongoError.Decode, codecs.type]
 
   type BsonDocumentDecoder[A] = Decoder[BsonDocument, A, MongoError.Decode, codecs.type]
   type BsonDocumentEncoder[A] = Encoder[BsonDocument, A, codecs.type]
-  type BsonDocumentCodec[A] = Codec[BsonDocument, A, MongoError.Decode, codecs.type]
-
+  type BsonDocumentCodec[A]   = Codec[BsonDocument, A, MongoError.Decode, codecs.type]
 
   // - Mongo aliases ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   // TODO: write dedicated types for these. They are kind of non-critical at this stage and rather a lot of work,
   // but need to be sorted out eventually.
-  type MongoClientOptions       = com.mongodb.MongoClientOptions
-  type MongoClientURI           = com.mongodb.MongoClientURI
-  type MongoCredential          = com.mongodb.MongoCredential
-  type ReadPreference           = com.mongodb.ReadPreference
+  type MongoClientOptions = com.mongodb.MongoClientOptions
+  type MongoClientURI     = com.mongodb.MongoClientURI
+  type MongoCredential    = com.mongodb.MongoCredential
+  type ReadPreference     = com.mongodb.ReadPreference
 }

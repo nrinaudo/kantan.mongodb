@@ -20,6 +20,6 @@ import org.bson.codecs.Codec
 import org.bson.codecs.configuration.{CodecRegistries, CodecRegistry}
 
 package object io {
-  val registry: CodecRegistry = CodecRegistries.fromProviders(BsonValueCodecProvider)
+  val registry: CodecRegistry          = CodecRegistries.fromProviders(BsonValueCodecProvider)
   val bsonValueCodec: Codec[BsonValue] = registry.get(classOf[BsonValue])
 }

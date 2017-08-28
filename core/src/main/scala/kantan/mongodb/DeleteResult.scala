@@ -18,13 +18,23 @@ package kantan.mongodb
 
 import com.mongodb.client.result.{DeleteResult ⇒ DResult}
 
+/** Represents the result of a delete operation.
+  *
+  * Possible values are [[DeleteResult.Acknowledged]] and [[DeleteResult.Unacknowledged]].
+  */
 sealed abstract class DeleteResult(val acknowledged: Boolean) extends Product with Serializable
 
 object DeleteResult {
   private[mongodb] def fromLegacy(legacy: DResult): DeleteResult =
     if(legacy.wasAcknowledged()) Acknowledged(legacy.getDeletedCount)
-    else                         Unacknowledged
+    else Unacknowledged
+
+  /** Represents a delete operation that was acknowledged by the server.
+    *
+    * [[deleted]] is the number of documents that were deleted.
+    */
   final case class Acknowledged(deleted: Long) extends DeleteResult(true)
+
+  /** Represents a delete operation that was not acknowledged by the server. */
   case object Unacknowledged extends DeleteResult(false)
 }
-

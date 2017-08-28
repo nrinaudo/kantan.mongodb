@@ -22,20 +22,20 @@ import kantan.mongodb.DistinctQuery.Config
 import kantan.mongodb.options.Collation
 import scala.concurrent.duration.Duration
 
-final class DistinctQuery[A] private(val config: Config, private val eval: Config ⇒ ResourceIterator[A])
-  extends ResourceIterable[A] {
+final class DistinctQuery[A] private (val config: Config, private val eval: Config ⇒ ResourceIterator[A])
+    extends ResourceIterable[A] {
   override type Repr[X] = DistinctQuery[X]
 
   def withConfig(c: Config): DistinctQuery[A] = new DistinctQuery[A](c, eval)
 
-  def batchSize(i: Int): DistinctQuery[A] = withConfig(config.copy(batchSize = Some(i)))
-  def collation(c: Collation): DistinctQuery[A] = withConfig(config.copy(collation = Some(c)))
+  def batchSize(i: Int): DistinctQuery[A]           = withConfig(config.copy(batchSize = Some(i)))
+  def collation(c: Collation): DistinctQuery[A]     = withConfig(config.copy(collation = Some(c)))
   def maxTime(duration: Duration): DistinctQuery[A] = withConfig(config.copy(maxTime = Some(duration)))
 
   override def iterator = eval(config)
 
   override protected def onIterator[B](f: ResourceIterator[A] ⇒ ResourceIterator[B]) =
-  new DistinctQuery[B](config, eval andThen f)
+    new DistinctQuery[B](config, eval andThen f)
 }
 
 object DistinctQuery {
@@ -46,13 +46,16 @@ object DistinctQuery {
   }
 
   private[mongodb] def from[R: BsonValueDecoder](f: ⇒ DistinctIterable[BsonValue]): DistinctQuery[MongoResult[R]] =
-    new DistinctQuery[MongoResult[R]](Config.empty, conf ⇒ {
-      val iterable = f
+    new DistinctQuery[MongoResult[R]](
+      Config.empty,
+      conf ⇒ {
+        val iterable = f
 
-      conf.batchSize.foreach(i ⇒ iterable.batchSize(i))
-      conf.collation.foreach(c ⇒ iterable.collation(c.legacy))
-      conf.maxTime.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
+        conf.batchSize.foreach(i ⇒ iterable.batchSize(i))
+        conf.collation.foreach(c ⇒ iterable.collation(c.legacy))
+        conf.maxTime.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
 
-      MongoIterator(iterable)
-    })
+        MongoIterator(iterable)
+      }
+    )
 }

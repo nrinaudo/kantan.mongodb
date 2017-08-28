@@ -18,8 +18,8 @@ package kantan.mongodb
 
 import kantan.codecs.DecoderCompanion
 
-object BsonDocumentDecoder extends DecoderCompanion[BsonDocument, MongoError.Decode, codecs.type]
-    with GeneratedBsonDocumentDecoders
+object BsonDocumentDecoder
+    extends DecoderCompanion[BsonDocument, MongoError.Decode, codecs.type] with GeneratedBsonDocumentDecoders
 
 trait BsonDocumentDecoderInstances {
   implicit val bsonDocumentDocumentDecoder: BsonDocumentDecoder[BsonDocument] = BsonDocumentDecoder.fromUnsafe(identity)

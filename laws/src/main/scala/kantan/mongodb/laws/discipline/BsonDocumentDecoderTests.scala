@@ -23,6 +23,7 @@ import kantan.mongodb.laws.discipline.arbitrary._
 import org.scalacheck.{Arbitrary, Cogen}
 
 object BsonDocumentDecoderTests {
-  def apply[A: BsonDocumentCodecLaws: Arbitrary: Cogen](implicit al: Arbitrary[LegalBsonDocument[A]])
-  : BsonDocumentCodecTests[A] = CodecTests[BsonDocument, A, MongoError.Decode, codecs.type]
+  def apply[A: BsonDocumentCodecLaws: Arbitrary: Cogen](
+    implicit al: Arbitrary[LegalBsonDocument[A]]
+  ): BsonDocumentCodecTests[A] = CodecTests[BsonDocument, A, MongoError.Decode, codecs.type]
 }

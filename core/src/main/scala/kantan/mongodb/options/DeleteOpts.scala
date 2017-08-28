@@ -33,4 +33,3 @@ final case class DeleteOpts(collation: Option[Collation]) {
 object DeleteOpts {
   val default: DeleteOpts = DeleteOpts(None)
 }
-

@@ -20,16 +20,19 @@ import com.mongodb.client.model.{FindOneAndUpdateOptions, ReturnDocument}
 import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 import scala.concurrent.duration.Duration
 
-final case class FindOneAndUpdateOpts(collation: Option[Collation], maxTime: Option[Duration],
-                                      projection: Option[BsonDocument], sort: Option[BsonDocument], updated: Boolean,
+final case class FindOneAndUpdateOpts(collation: Option[Collation],
+                                      maxTime: Option[Duration],
+                                      projection: Option[BsonDocument],
+                                      sort: Option[BsonDocument],
+                                      updated: Boolean,
                                       upsert: Option[Boolean]) {
-  def collation(c: Collation): FindOneAndUpdateOpts = copy(collation = Some(c))
+  def collation(c: Collation): FindOneAndUpdateOpts     = copy(collation = Some(c))
   def maxTime(duration: Duration): FindOneAndUpdateOpts = copy(maxTime = Some(duration))
   def projection[P: BsonDocumentEncoder](p: P): FindOneAndUpdateOpts =
     copy(projection = Some(BsonDocumentEncoder[P].encode(p)))
   def sort[S: BsonDocumentEncoder](s: S): FindOneAndUpdateOpts = copy(sort = Some(BsonDocumentEncoder[S].encode(s)))
-  def updated(b: Boolean): FindOneAndUpdateOpts = copy(updated = b)
-  def upsert(b: Boolean): FindOneAndUpdateOpts = copy(upsert = Some(b))
+  def updated(b: Boolean): FindOneAndUpdateOpts                = copy(updated = b)
+  def upsert(b: Boolean): FindOneAndUpdateOpts                 = copy(upsert = Some(b))
 
   private[mongodb] lazy val legacy: FindOneAndUpdateOptions = {
     val opts = new FindOneAndUpdateOptions()

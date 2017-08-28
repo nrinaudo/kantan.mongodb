@@ -21,7 +21,7 @@ import org.bson.{BsonReader, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 
 object ObjectIdCodec extends Codec[BsonObjectId] {
-  override def decode(reader: BsonReader, d: DecoderContext) = BsonObjectId(reader.readObjectId())
+  override def decode(reader: BsonReader, d: DecoderContext)                      = BsonObjectId(reader.readObjectId())
   override def encode(writer: BsonWriter, value: BsonObjectId, e: EncoderContext) = writer.writeObjectId(value.value)
-  override def getEncoderClass = classOf[BsonObjectId]
+  override def getEncoderClass                                                    = classOf[BsonObjectId]
 }

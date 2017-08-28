@@ -19,7 +19,7 @@ package kantan.mongodb.options
 import com.mongodb.client.model.UpdateOptions
 
 final case class UpdateOpts(collation: Option[Collation], upsert: Option[Boolean]) {
-  def upsert(u: Boolean): UpdateOpts = copy(upsert = Some(u))
+  def upsert(u: Boolean): UpdateOpts      = copy(upsert = Some(u))
   def collation(c: Collation): UpdateOpts = copy(collation = Some(c))
 
   private[mongodb] lazy val legacy: UpdateOptions = {

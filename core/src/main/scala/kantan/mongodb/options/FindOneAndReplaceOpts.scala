@@ -20,10 +20,13 @@ import com.mongodb.client.model.{FindOneAndReplaceOptions, ReturnDocument}
 import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 import scala.concurrent.duration.Duration
 
-final case class FindOneAndReplaceOpts(collation: Option[Collation], maxTime: Option[Duration],
-                                       projection: Option[BsonDocument], updated: Boolean, sort: Option[BsonDocument],
+final case class FindOneAndReplaceOpts(collation: Option[Collation],
+                                       maxTime: Option[Duration],
+                                       projection: Option[BsonDocument],
+                                       updated: Boolean,
+                                       sort: Option[BsonDocument],
                                        upsert: Option[Boolean]) {
-  def collation(c: Collation): FindOneAndReplaceOpts = copy(collation = Some(c))
+  def collation(c: Collation): FindOneAndReplaceOpts     = copy(collation = Some(c))
   def maxTime(duration: Duration): FindOneAndReplaceOpts = copy(maxTime = Some(duration))
   def projection[P: BsonDocumentEncoder](p: P): FindOneAndReplaceOpts =
     copy(projection = Some(BsonDocumentEncoder[P].encode(p)))

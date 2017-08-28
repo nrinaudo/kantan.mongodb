@@ -26,4 +26,3 @@ object BsonValueEncoderTests {
   def apply[A: BsonValueEncoderLaws: Arbitrary](implicit al: Arbitrary[LegalBsonValue[A]]): BsonValueEncoderTests[A] =
     EncoderTests[BsonValue, A, codecs.type]
 }
-

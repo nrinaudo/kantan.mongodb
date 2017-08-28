@@ -28,8 +28,7 @@ class ValueCodec(val registry: CodecRegistry) extends Codec[BsonValue] {
     BsonValueCodecProvider.codecFor(registry, reader.getCurrentBsonType).decode(reader, context)
   }
 
-  override def encode(writer: BsonWriter, value: BsonValue, context: EncoderContext) = {
-      context.encodeWithChildContext(BsonValueCodecProvider.codecFor(registry, value.getClass), writer, value)
-  }
+  override def encode(writer: BsonWriter, value: BsonValue, context: EncoderContext) =
+    context.encodeWithChildContext(BsonValueCodecProvider.codecFor(registry, value.getClass), writer, value)
   override def getEncoderClass = classOf[BsonValue]
 }

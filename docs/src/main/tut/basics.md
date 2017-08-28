@@ -64,6 +64,10 @@ Let's make sure it's clear before we start inserting documents:
 col.deleteAll()
 ```
 
+Note the return type: [`MongoResult`], which behaves very much like a standard `Either` and contains all error cases.
+This specific value is telling us that the _delete_ operation was a success, and tells us the number of documents that
+were affected.
+
 ## Working with documents
 
 ### Document insertion
@@ -75,9 +79,12 @@ such as [`insertMany`], with parameters of type `User`:
 col.insertMany(
   User(UUID.randomUUID(), "Peter", 15),
   User(UUID.randomUUID(), "Bruce", 25),
-  User(UUID.randomUUID(), "Tony", 21)
+  User(UUID.randomUUID(), "Tony",  21)
 )
 ```
+
+The return type is interesting as well - [`MongoResult`] again, but this type, the success side is `Unit` - we have nothing
+to say in case of a success, but still need to wrap potential errors in the return value.
 
 
 ### Document lookup
@@ -93,8 +100,18 @@ This defines various query operators, such as `$eq`:
 
 
 ```tut:book
-col.find($eq("name", "Peter")).foreach(println _)
+col.find($eq("name", "Peter")).toList
 ```
+
+We've turned the result into a `List` for display purposes, but the returned value is something that is closer to `Iterable`.
+
+Note that we're getting a list of [`MongoResult`], but a common use case is to to want to get all results, or none if at least
+one failed. [`MongoResult`] provides the [`sequence`] method for that purpose:
+
+```tut:book
+MongoResult.sequence(col.find($eq("name", "Peter")).toList)
+```
+
 
 
 ### Document update
@@ -104,7 +121,7 @@ We can also easily update documents through one of the various _update_ methods.
 ```tut:book
 col.updateOne($eq("name", "Tony"), $set("name", "Riri") && $set("age", 15))
 
-col.find().foreach(println _)
+MongoResult.sequence(col.find().toList)
 ```
 
 
@@ -119,7 +136,7 @@ col.deleteOne($eq("name", "Riri"))
 And we can verify that `Riri` is not in our collection anymore:
 
 ```tut:book
-col.find().foreach(println _)
+MongoResult.sequence(col.find().toList)
 ```
 
 ## Cleanup
@@ -142,3 +159,5 @@ client.close()
 [`updateOne`]:{{ site.baseurl }}/api/kantan/mongodb/MongoCollection.html#updateOne[F,U](filter:F,update:U)(implicitevidence$18:kantan.mongodb.BsonDocumentEncoder[F],implicitevidence$19:kantan.mongodb.BsonDocumentEncoder[U]):kantan.mongodb.MongoResult[kantan.mongodb.UpdateResult]
 [`deleteOne`]:{{ site.baseurl }}/api/kantan/mongodb/MongoCollection.html#deleteOne[F](filter:F)(implicitevidence$31:kantan.mongodb.BsonDocumentEncoder[F]):kantan.mongodb.MongoResult[kantan.mongodb.DeleteResult]
 [`close`]:{{ site.baseurl }}/api/kantan/mongodb/MongoClient.html#close():Unit
+[`MongoResult`]:{{ site.baseurl }}/api/kantan/mongodb/package$$MongoResult.html
+[`sequence`]:{{ site.baseurl }}/api/kantan/mongodb/MongoResult$.html#sequence[S,M<:<?>](rs:M[kantan.codecs.Result[F,S]])(implicitcbf:scala.collection.generic.CanBuildFrom[M[kantan.codecs.Result[F,S]],S,M[S]]):kantan.codecs.Result[F,M[S]]

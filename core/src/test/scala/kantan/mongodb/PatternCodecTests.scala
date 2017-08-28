@@ -21,5 +21,5 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.typelevel.discipline.scalatest.Discipline
 
 class PatternCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline
-  // TODO: this is unfortunately currently disabled because of Java's messed up Pattern.equals implementation.
-  //checkAll("BsonValueCodec[Pattern]", BsonValueCodecTests[Pattern].codec[String, Float])
+// TODO: this is unfortunately currently disabled because of Java's messed up Pattern.equals implementation.
+//checkAll("BsonValueCodec[Pattern]", BsonValueCodecTests[Pattern].codec[String, Float])

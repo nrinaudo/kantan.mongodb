@@ -17,19 +17,17 @@
 package kantan.mongodb
 
 import java.util.regex.Pattern
-import kantan.mongodb.query.Query.{Field => QField, _}
+import kantan.mongodb.query.Query.{Field ⇒ QField, _}
 import kantan.mongodb.query.QueryOperator._
-import kantan.mongodb.query.Update.{Field => UField}
+import kantan.mongodb.query.Update.{Field ⇒ UField}
 import kantan.mongodb.query.UpdateOperator._
 
 package object query {
   // - Sort ------------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def $asc(field: String): Sort = Sort.Ascending(field)
-  def $desc(field: String): Sort = Sort.Descending(field)
+  def $asc(field: String): Sort           = Sort.Ascending(field)
+  def $desc(field: String): Sort          = Sort.Descending(field)
   def $metaTextScore(field: String): Sort = Sort.MetaTextScore(field)
-
-
 
   // - Queries ---------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
@@ -55,27 +53,25 @@ package object query {
   def $geoIntersects[A](field: String, value: A): QField[Geo.Intersects[A]] = QField(field, Geo.Intersects(value))
   def $geoWithin[A](field: String, value: A): QField[Geo.Within[A]]         = QField(field, Geo.Within(value))
 
-
-
   // - Update ----------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def $each[A](values: A*): Modifiers[A] = Modifiers(values, None, None, None)
 
-  def $addToSet[A](field: String, value: A): UField[A] = UField(field, AddToSet(value))
-  def $bit(field: String, value: BitOp): UField[BitOp] = UField(field, Bitwise(value))
+  def $addToSet[A](field: String, value: A): UField[A]       = UField(field, AddToSet(value))
+  def $bit(field: String, value: BitOp): UField[BitOp]       = UField(field, Bitwise(value))
   def $currentDate(field: String, value: Time): UField[Time] = UField(field, CurrentDate(value))
-  def $inc(field: String, by: Int): UField[Int] = UField(field, Inc(by))
-  def $max[A](field: String, value: A): UField[A] = UField(field, Max(value))
-  def $min[A](field: String, value: A): UField[A] = UField(field, Min(value))
-  def $mul(field: String, by: Int): UField[Int] = UField(field, Mul(by))
-  def $popFirst(field: String): UField[Int] = UField(field, PopFirst)
-  def $popLast(field: String): UField[Int] = UField(field, PopLast)
-  def $pull[A](field: String, condition: A): UField[A] = UField(field, Pull(condition))
+  def $inc(field: String, by: Int): UField[Int]              = UField(field, Inc(by))
+  def $max[A](field: String, value: A): UField[A]            = UField(field, Max(value))
+  def $min[A](field: String, value: A): UField[A]            = UField(field, Min(value))
+  def $mul(field: String, by: Int): UField[Int]              = UField(field, Mul(by))
+  def $popFirst(field: String): UField[Int]                  = UField(field, PopFirst)
+  def $popLast(field: String): UField[Int]                   = UField(field, PopLast)
+  def $pull[A](field: String, condition: A): UField[A]       = UField(field, Pull(condition))
   def $pullAll[A](field: String, values: A*): UField[Seq[A]] = UField(field, PullAll(values))
-  def $push[A](field: String, value: A): UField[A] = UField(field, Push(value))
+  def $push[A](field: String, value: A): UField[A]           = UField(field, Push(value))
   def $pushAll[A](field: String, values: A*): UField[Seq[A]] = UField(field, PushAll(values))
-  def $rename(field: String, to: String): UField[String] = UField(field, Rename(to))
-  def $set[A](field: String, value: A): UField[A] = UField(field, Set(value))
-  def $setOnInsert[A](field: String, value: A): UField[A] = UField(field, SetOnInsert(value))
-  def $unset(field: String): UField[String] = UField(field, Unset)
+  def $rename(field: String, to: String): UField[String]     = UField(field, Rename(to))
+  def $set[A](field: String, value: A): UField[A]            = UField(field, Set(value))
+  def $setOnInsert[A](field: String, value: A): UField[A]    = UField(field, SetOnInsert(value))
+  def $unset(field: String): UField[String]                  = UField(field, Unset)
 }

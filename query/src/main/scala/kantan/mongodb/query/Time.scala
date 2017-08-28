@@ -21,7 +21,7 @@ import kantan.mongodb.{BsonDocument, BsonDocumentEncoder, BsonValueEncoder}
 sealed abstract class Time extends Product with Serializable
 object Time {
   case object Timestamp extends Time
-  case object Date extends Time
+  case object Date      extends Time
 
   implicit val timeTypeEncoder: BsonDocumentEncoder[Time] = BsonDocumentEncoder.from { time ⇒
     BsonDocument(Map("$type" → BsonValueEncoder[String].encode(time match {

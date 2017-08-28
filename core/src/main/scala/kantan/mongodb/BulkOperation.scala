@@ -38,27 +38,39 @@ object BulkOperation {
       new InsertOneModel[BsonDocument](BsonDocumentEncoder[D].encode(document))
   }
 
-  final case class ReplaceOne[F: BsonDocumentEncoder, D: BsonDocumentEncoder](filter: F, document: D,
+  final case class ReplaceOne[F: BsonDocumentEncoder, D: BsonDocumentEncoder](filter: F,
+                                                                              document: D,
                                                                               options: UpdateOptions)
-    extends BulkOperation {
+      extends BulkOperation {
     override private[mongodb] def toModel =
-      new ReplaceOneModel[BsonDocument](BsonDocumentEncoder[F].encode(filter),
-        BsonDocumentEncoder[D].encode(document), options)
+      new ReplaceOneModel[BsonDocument](
+        BsonDocumentEncoder[F].encode(filter),
+        BsonDocumentEncoder[D].encode(document),
+        options
+      )
   }
 
-  final case class UpdateMany[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U,
+  final case class UpdateMany[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F,
+                                                                              update: U,
                                                                               options: UpdateOptions)
-    extends BulkOperation {
+      extends BulkOperation {
     override private[mongodb] def toModel =
-      new UpdateManyModel[BsonDocument](BsonDocumentEncoder[F].encode(filter),
-        BsonDocumentEncoder[U].encode(update), options)
+      new UpdateManyModel[BsonDocument](
+        BsonDocumentEncoder[F].encode(filter),
+        BsonDocumentEncoder[U].encode(update),
+        options
+      )
   }
 
-  final case class UpdateOne[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F, update: U,
+  final case class UpdateOne[F: BsonDocumentEncoder, U: BsonDocumentEncoder](filter: F,
+                                                                             update: U,
                                                                              options: UpdateOptions)
-    extends BulkOperation {
+      extends BulkOperation {
     override private[mongodb] def toModel =
-      new UpdateOneModel[BsonDocument](BsonDocumentEncoder[F].encode(filter),
-        BsonDocumentEncoder[U].encode(update), options)
+      new UpdateOneModel[BsonDocument](
+        BsonDocumentEncoder[F].encode(filter),
+        BsonDocumentEncoder[U].encode(update),
+        options
+      )
   }
 }

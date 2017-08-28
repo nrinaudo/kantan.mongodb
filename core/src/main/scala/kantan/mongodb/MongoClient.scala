@@ -24,6 +24,7 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 
 class MongoClient private (private val client: MClient) extends Closeable {
+
   /** Returns the database with the specified name. */
   def database(name: String): MongoDatabase = new MongoDatabase(client.getDatabase(name))
 
@@ -81,10 +82,15 @@ object MongoClient {
     *
     * Specify an empty list for anonymous login.
     */
-  def fromAddressWith(cluster: List[ServerAddress], creds: MongoCredential*)
-                     (options: MongoClientOptions): MongoClient =
-      new MongoClient(new MClient(cluster.map(_.legacy).asJava, creds.asJava,
-        com.mongodb.MongoClientOptions.builder(options).codecRegistry(kantan.mongodb.io.registry).build(), driverInfo))
+  def fromAddressWith(cluster: List[ServerAddress], creds: MongoCredential*)(options: MongoClientOptions): MongoClient =
+    new MongoClient(
+      new MClient(
+        cluster.map(_.legacy).asJava,
+        creds.asJava,
+        com.mongodb.MongoClientOptions.builder(options).codecRegistry(kantan.mongodb.io.registry).build(),
+        driverInfo
+      )
+    )
 
   /** Connects to the specified MongoDB cluster. */
   def fromUri(uri: String): Option[MongoClient] =
@@ -92,12 +98,12 @@ object MongoClient {
       .map(u ⇒ new MongoClient(new MClient(u, driverInfo)))
       .toOption
 
-
-  private val driverInfo: MongoDriverInformation = MongoDriverInformation.builder().driverName("kantan.mongodb")
+  private val driverInfo: MongoDriverInformation = MongoDriverInformation
+    .builder()
+    .driverName("kantan.mongodb")
     .driverVersion(BuildInfo.version)
-    .driverPlatform("Scala " + scala.util.Properties.scalaPropOrElse("version.number", "unknown")).build()
-
-
+    .driverPlatform("Scala " + scala.util.Properties.scalaPropOrElse("version.number", "unknown"))
+    .build()
 
   // - Database info ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
