@@ -22,8 +22,8 @@ final case class ServerAddress(host: String, port: Int) {
 
 object ServerAddress {
   val defaultHost: String = "127.0.0.1"
-  val defaultPort: Int = 27017
+  val defaultPort: Int    = 27017
 
-  def default: ServerAddress = ServerAddress(defaultHost, defaultPort)
+  def default: ServerAddress             = ServerAddress(defaultHost, defaultPort)
   def apply(host: String): ServerAddress = ServerAddress(host, defaultPort)
 }

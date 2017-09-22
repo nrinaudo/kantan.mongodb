@@ -22,11 +22,9 @@ import kantan.mongodb.options._
 import scala.collection.JavaConverters._
 
 class MongoDatabase private[mongodb] (private val underlying: MDatabase) {
-  def name: String = underlying.getName
+  def name: String      = underlying.getName
   override def toString = s"MongoDatabase($name)"
-  def drop(): Unit = underlying.drop()
-
-
+  def drop(): Unit      = underlying.drop()
 
   // - Collection creation ---------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
@@ -39,40 +37,46 @@ class MongoDatabase private[mongodb] (private val underlying: MDatabase) {
     collection(name)
   }
 
-
-
   // - View creation ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   def createView[I: BsonDocumentEncoder, A](name: String, on: String, pipeline: I*): MongoCollection[A] =
-    createViewWith(name, on, pipeline:_*)(CreateViewOpts.default)
+    createViewWith(name, on, pipeline: _*)(CreateViewOpts.default)
 
-  def createViewWith[I: BsonDocumentEncoder, A](name: String, on: String, pipeline: I*)
-                                               (options: CreateViewOpts): MongoCollection[A] = {
+  def createViewWith[I: BsonDocumentEncoder, A](name: String, on: String, pipeline: I*)(
+    options: CreateViewOpts
+  ): MongoCollection[A] = {
     val p = pipeline.map(BsonDocumentEncoder[I].encode).toList.asJava
     underlying.createView(name, on, p, options.legacy)
     collection(name)
   }
 
-
-
   // - Collection retrieval --------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def collections(): Iterator[CollectionInfo] = underlying.listCollections(classOf[BsonDocument]).iterator().asScala
-    .map(BsonDocumentDecoder[CollectionInfo].unsafeDecode)
+  def collections(): Iterator[CollectionInfo] =
+    underlying
+      .listCollections(classOf[BsonDocument])
+      .iterator()
+      .asScala
+      .map(BsonDocumentDecoder[CollectionInfo].unsafeDecode)
 
   def collectionNames(): Iterator[String] = collections().map(_.name)
 
   def collection[A](name: String): MongoCollection[A] =
     new MongoCollection(underlying.getCollection(name, classOf[BsonDocument]))
 
-
-
   // - Command execution -----------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  private def runCommand[I: BsonDocumentEncoder, O: BsonDocumentDecoder]
-  (command: I, pref: Option[ReadPreference]): DecodeResult[O] =
-  BsonDocumentDecoder[O].decode(underlying.runCommand(BsonDocumentEncoder[I].encode(command),
-    pref.getOrElse(com.mongodb.ReadPreference.primary()), classOf[BsonDocument]))
+  private def runCommand[I: BsonDocumentEncoder, O: BsonDocumentDecoder](
+    command: I,
+    pref: Option[ReadPreference]
+  ): DecodeResult[O] =
+    BsonDocumentDecoder[O].decode(
+      underlying.runCommand(
+        BsonDocumentEncoder[I].encode(command),
+        pref.getOrElse(com.mongodb.ReadPreference.primary()),
+        classOf[BsonDocument]
+      )
+    )
 
   def runCommand[I: BsonDocumentEncoder, O: BsonDocumentDecoder](command: I): DecodeResult[O] =
     runCommand(command, None)
@@ -80,13 +84,11 @@ class MongoDatabase private[mongodb] (private val underlying: MDatabase) {
   def runCommandWith[I: BsonDocumentEncoder, O: BsonDocumentDecoder](command: I)(p: ReadPreference): DecodeResult[O] =
     runCommand(command, Some(p))
 
-
-
   // - Configuration ---------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  def readConcern: ReadConcern = ReadConcern.fromLegacy(underlying.getReadConcern)
+  def readConcern: ReadConcern       = ReadConcern.fromLegacy(underlying.getReadConcern)
   def readPreference: ReadPreference = underlying.getReadPreference
-  def writeConcern: WriteConcern = WriteConcern.fromLegacy(underlying.getWriteConcern)
+  def writeConcern: WriteConcern     = WriteConcern.fromLegacy(underlying.getWriteConcern)
   def withReadConcern(concern: ReadConcern): MongoDatabase =
     new MongoDatabase(underlying.withReadConcern(concern.legacy))
   def withReadPreference(pref: ReadPreference): MongoDatabase = new MongoDatabase(underlying.withReadPreference(pref))

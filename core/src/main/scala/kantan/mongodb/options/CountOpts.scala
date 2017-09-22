@@ -21,13 +21,15 @@ import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 import scala.concurrent.duration.Duration
 
 /** Options for a [[https://docs.mongodb.com/manual/reference/method/db.collection.count/ count]] operation. */
-final case class CountOpts(hint: Option[Either[BsonDocument, String]], limit: Option[Int],
-                           maxTime: Option[Duration], skip: Option[Int]) {
+final case class CountOpts(hint: Option[Either[BsonDocument, String]],
+                           limit: Option[Int],
+                           maxTime: Option[Duration],
+                           skip: Option[Int]) {
   def hint[H: BsonDocumentEncoder](h: H): CountOpts = copy(hint = Some(Left(BsonDocumentEncoder[H].encode(h))))
-  def hint(string: String): CountOpts = copy(hint = Some(Right(string)))
-  def limit(i: Int): CountOpts = copy(limit = Some(i))
-  def maxTime(duration: Duration): CountOpts = copy(maxTime = Some(duration))
-  def skip(i: Int): CountOpts = copy(skip = Some(i))
+  def hint(string: String): CountOpts               = copy(hint = Some(Right(string)))
+  def limit(i: Int): CountOpts                      = copy(limit = Some(i))
+  def maxTime(duration: Duration): CountOpts        = copy(maxTime = Some(duration))
+  def skip(i: Int): CountOpts                       = copy(skip = Some(i))
 
   private[mongodb] lazy val legacy: CountOptions = {
     val opts = new CountOptions()

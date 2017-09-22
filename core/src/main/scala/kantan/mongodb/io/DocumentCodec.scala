@@ -31,8 +31,12 @@ class DocumentCodec(val registry: CodecRegistry) extends Codec[BsonDocument] {
         reader.readEndDocument()
         builder.result()
       }
-      else loop(builder += reader.readName → BsonValueCodecProvider.codecFor(registry, reader.getCurrentBsonType)
-        .decode(reader, context))
+      else
+        loop(
+          builder += reader.readName → BsonValueCodecProvider
+            .codecFor(registry, reader.getCurrentBsonType)
+            .decode(reader, context)
+        )
 
     reader.readStartDocument()
     BsonDocument(loop(Map.newBuilder[String, BsonValue]))
@@ -41,9 +45,10 @@ class DocumentCodec(val registry: CodecRegistry) extends Codec[BsonDocument] {
   override def encode(writer: BsonWriter, value: BsonDocument, context: EncoderContext) = {
     writer.writeStartDocument()
 
-    value.value.foreach { case (name, v) ⇒
-      writer.writeName(name)
-      context.encodeWithChildContext(BsonValueCodecProvider.codecFor(registry, v.getClass), writer, v)
+    value.value.foreach {
+      case (name, v) ⇒
+        writer.writeName(name)
+        context.encodeWithChildContext(BsonValueCodecProvider.codecFor(registry, v.getClass), writer, v)
     }
 
     writer.writeEndDocument()

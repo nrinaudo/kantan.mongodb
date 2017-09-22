@@ -16,6 +16,6 @@
 
 package kantan.mongodb.generic
 
-
-object arbitrary extends kantan.codecs.shapeless.laws.discipline.ArbitraryInstances
-                         with kantan.mongodb.laws.discipline.ArbitraryInstances
+object arbitrary
+    extends kantan.codecs.shapeless.laws.discipline.ArbitraryInstances
+    with kantan.mongodb.laws.discipline.ArbitraryInstances

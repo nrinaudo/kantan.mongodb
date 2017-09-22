@@ -25,20 +25,19 @@ object Md5Codec extends Codec[BsonMd5] {
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private def hexStringToByteArray(s: String): Array[Byte] = {
-    val len = s.length()
+    val len  = s.length()
     val data = new Array[Byte](len / 2)
 
     data.indices.foreach { i ⇒
       data(i) = ((Character.digit(s.charAt(i * 2), 16) << 4)
-                 + Character.digit(s.charAt(i * 2 +1), 16)).asInstanceOf[Byte]
+        + Character.digit(s.charAt(i * 2 + 1), 16)).asInstanceOf[Byte]
     }
 
     data
   }
 
-  override def encode(writer: BsonWriter, value: BsonMd5, e: EncoderContext) = {
+  override def encode(writer: BsonWriter, value: BsonMd5, e: EncoderContext) =
     writer.writeBinaryData(new org.bson.BsonBinary(BsonBinarySubType.MD5, hexStringToByteArray(value.value)))
-  }
 
   override def getEncoderClass = classOf[BsonMd5]
 }

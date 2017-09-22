@@ -19,10 +19,13 @@ package kantan.mongodb.options
 import com.mongodb.client.model.{CreateCollectionOptions, IndexOptionDefaults}
 import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 
-final case class CreateCollectionOpts(autoIndex: Boolean, collation: Collation, indexOptions: Option[BsonDocument],
-                                      cap: Option[CreateCollectionOpts.Cap], storageEngine: Option[BsonDocument],
+final case class CreateCollectionOpts(autoIndex: Boolean,
+                                      collation: Collation,
+                                      indexOptions: Option[BsonDocument],
+                                      cap: Option[CreateCollectionOpts.Cap],
+                                      storageEngine: Option[BsonDocument],
                                       validation: ValidationOpts) {
-  def autoIndex(b: Boolean): CreateCollectionOpts = copy(autoIndex = b)
+  def autoIndex(b: Boolean): CreateCollectionOpts   = copy(autoIndex = b)
   def collation(c: Collation): CreateCollectionOpts = copy(collation = c)
   def indexOptions[I: BsonDocumentEncoder](i: I): CreateCollectionOpts =
     copy(indexOptions = Some(BsonDocumentEncoder[I].encode(i)))
@@ -32,7 +35,9 @@ final case class CreateCollectionOpts(autoIndex: Boolean, collation: Collation, 
   def validation(v: ValidationOpts): CreateCollectionOpts = copy(validation = v)
 
   private[mongodb] lazy val legacy: CreateCollectionOptions = {
-    val opts = new CreateCollectionOptions().collation(collation.legacy).validationOptions(validation.legacy)
+    val opts = new CreateCollectionOptions()
+      .collation(collation.legacy)
+      .validationOptions(validation.legacy)
       .autoIndex(autoIndex)
 
     cap.foreach { c ⇒

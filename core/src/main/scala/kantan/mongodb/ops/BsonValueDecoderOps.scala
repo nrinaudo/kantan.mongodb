@@ -20,7 +20,7 @@ import kantan.mongodb.{BsonValue, BsonValueDecoder, DecodeResult}
 
 final class BsonValueDecoderOps(val value: BsonValue) extends AnyVal {
   def decodeBson[A: BsonValueDecoder]: DecodeResult[A] = BsonValueDecoder[A].decode(value)
-  def unsafeDecodeBson[A: BsonValueDecoder]: A = decodeBson[A].get
+  def unsafeDecodeBson[A: BsonValueDecoder]: A         = decodeBson[A].get
 }
 
 trait ToBsonValueDecoderOps {

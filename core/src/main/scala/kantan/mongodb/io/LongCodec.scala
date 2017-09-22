@@ -21,7 +21,7 @@ import org.bson.{BsonReader, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 
 object LongCodec extends Codec[BsonLong] {
-  override def decode(reader: BsonReader, d: DecoderContext) = BsonLong(reader.readInt64())
+  override def decode(reader: BsonReader, d: DecoderContext)                  = BsonLong(reader.readInt64())
   override def encode(writer: BsonWriter, value: BsonLong, e: EncoderContext) = writer.writeInt64(value.value)
-  override def getEncoderClass = classOf[BsonLong]
+  override def getEncoderClass                                                = classOf[BsonLong]
 }

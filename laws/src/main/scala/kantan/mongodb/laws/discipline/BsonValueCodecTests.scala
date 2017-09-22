@@ -23,6 +23,7 @@ import kantan.mongodb.laws.{BsonValueCodecLaws, LegalBsonValue}
 import org.scalacheck.{Arbitrary, Cogen}
 
 object BsonValueCodecTests {
-  def apply[A: BsonValueCodecLaws: Arbitrary: Cogen](implicit al: Arbitrary[LegalBsonValue[A]])
-  : BsonValueCodecTests[A] = CodecTests[BsonValue, A, MongoError.Decode, codecs.type]
+  def apply[A: BsonValueCodecLaws: Arbitrary: Cogen](
+    implicit al: Arbitrary[LegalBsonValue[A]]
+  ): BsonValueCodecTests[A] = CodecTests[BsonValue, A, MongoError.Decode, codecs.type]
 }

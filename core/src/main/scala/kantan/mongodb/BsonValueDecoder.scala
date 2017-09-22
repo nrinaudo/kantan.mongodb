@@ -30,11 +30,12 @@ object BsonValueDecoder extends DecoderCompanion[BsonValue, MongoError.Decode, c
 
 trait LowPriorityBsonValueDecoderInstances {
   implicit def decoderFromDocument[A: BsonDocumentDecoder]: BsonValueDecoder[A] = BsonValueDecoder.fromPartial {
-    case a@BsonDocument(_) ⇒ BsonDocumentDecoder[A].decode(a)
+    case a @ BsonDocument(_) ⇒ BsonDocumentDecoder[A].decode(a)
   }
 }
 
 trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
+
   /** Decodes instances of [[BsonInt]], [[BsonMaxKey]] and [[BsonMinKey]] as `Int`.
     *
     * For example:
@@ -146,7 +147,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * }}}
     */
   implicit val bsonUuidDecoder: BsonValueDecoder[UUID] = BsonValueDecoder.fromPartial {
-    case BsonUuid(uuid)  ⇒ DecodeResult.success(uuid)
+    case BsonUuid(uuid) ⇒ DecodeResult.success(uuid)
   }
 
   /** Decodes instances of `BsonArray` as `C[A]`, provided `C` as a `CanBuildFrom` and `A` a [[BsonValueDecoder]].
@@ -157,13 +158,18 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * res0> DecodeResult[List[Int]] = Success(List(1, 2, 3))
     * }}}
     */
-  implicit def bsonArrayDecoder[C[_], A: BsonValueDecoder]
-  (implicit cbf: CanBuildFrom[Nothing, A, C[A]]): BsonValueDecoder[C[A]] = BsonValueDecoder.fromPartial {
-    case BsonArray(values) ⇒ values.foldLeft(DecodeResult(cbf.apply())) { (racc, v) ⇒ for {
-      acc ← racc
-      a   ← BsonValueDecoder[A].decode(v)
-    } yield acc += a
-    }.map(_.result())
+  implicit def bsonArrayDecoder[C[_], A: BsonValueDecoder](
+    implicit cbf: CanBuildFrom[Nothing, A, C[A]]
+  ): BsonValueDecoder[C[A]] = BsonValueDecoder.fromPartial {
+    case BsonArray(values) ⇒
+      values
+        .foldLeft(DecodeResult(cbf.apply())) { (racc, v) ⇒
+          for {
+            acc ← racc
+            a   ← BsonValueDecoder[A].decode(v)
+          } yield acc += a
+        }
+        .map(_.result())
   }
 
   /** Decodes instances of [[BsonNull]] as `None` and [[BsonValue]] as `Some(A)`, provided there exists a
@@ -186,8 +192,6 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
   implicit val javaUtilDateDecoder: BsonValueDecoder[Date] = BsonValueDecoder.fromPartial {
     case BsonDateTime(i) ⇒ DecodeResult.success(new Date(i))
   }
-
-
 
   // - String-based decoders -------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------

@@ -24,11 +24,9 @@ object UpdateResult {
       Update(result.getMatchedCount, if(result.isModifiedCountAvailable) Some(result.getModifiedCount) else None)
     else Upsert(BsonValue.fromLegacy(result.getUpsertedId))
 
-
   final case class Upsert(rawId: BsonValue) extends UpdateResult {
     def id[A: BsonValueDecoder]: DecodeResult[A] = BsonValueDecoder[A].decode(rawId)
   }
 
   final case class Update(matched: Long, modified: Option[Long]) extends UpdateResult
 }
-

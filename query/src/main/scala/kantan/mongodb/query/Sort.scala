@@ -19,18 +19,18 @@ package kantan.mongodb.query
 import kantan.mongodb._
 
 sealed abstract class Sort extends Product with Serializable {
-  def asc(field: String): Sort = Sort.Compound(List(Sort.Ascending(field), this))
-  def desc(field: String): Sort = Sort.Compound(List(Sort.Descending(field), this))
+  def asc(field: String): Sort           = Sort.Compound(List(Sort.Ascending(field), this))
+  def desc(field: String): Sort          = Sort.Compound(List(Sort.Descending(field), this))
   def metaTextScore(field: String): Sort = Sort.Compound(List(Sort.MetaTextScore(field), this))
 }
 
 object Sort {
-  final case class Ascending(field: String) extends Sort
-  final case class Descending(field: String) extends Sort
+  final case class Ascending(field: String)     extends Sort
+  final case class Descending(field: String)    extends Sort
   final case class MetaTextScore(field: String) extends Sort
   final case class Compound(sorts: List[Sort]) extends Sort {
-    override def asc(field: String) = copy(sorts = Ascending(field) :: sorts)
-    override def desc(field: String) = copy(sorts = Descending(field) :: sorts)
+    override def asc(field: String)           = copy(sorts = Ascending(field) :: sorts)
+    override def desc(field: String)          = copy(sorts = Descending(field) :: sorts)
     override def metaTextScore(field: String) = copy(sorts = MetaTextScore(field) :: sorts)
   }
 
@@ -38,8 +38,9 @@ object Sort {
     case Ascending(field)     ⇒ BsonDocument(Map(field → BsonInt(1)))
     case Descending(field)    ⇒ BsonDocument(Map(field → BsonInt(-1)))
     case MetaTextScore(field) ⇒ BsonDocument(Map(field → BsonDocument(Map("$meta" → BsonString("textScore")))))
-    case Compound(sorts)      ⇒ BsonDocument(sorts.foldLeft(Map.empty[String, BsonValue]) { (m, s) ⇒
-      m ++ BsonDocumentEncoder[Sort].encode(s).value
-    })
+    case Compound(sorts) ⇒
+      BsonDocument(sorts.foldLeft(Map.empty[String, BsonValue]) { (m, s) ⇒
+        m ++ BsonDocumentEncoder[Sort].encode(s).value
+      })
   }
 }

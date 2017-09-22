@@ -27,12 +27,14 @@ import org.bson.types.ObjectId
 
 object BsonValueEncoder extends EncoderCompanion[BsonValue, codecs.type]
 trait LowPriorityBsonValueEncoderInstances {
+
   /** Turns any [[BsonDocumentEncoder]] instance into a [[BsonValueEncoder]] one. */
   implicit def encoderFromDocument[A: BsonDocumentEncoder]: BsonValueEncoder[A] =
     BsonValueEncoder.from(BsonDocumentEncoder[A].encode)
 }
 
 trait BsonValueEncoderInstances extends LowPriorityBsonValueEncoderInstances {
+
   /** Encodes `Int` values as [[BsonInt]].
     *
     * For example:
@@ -119,7 +121,13 @@ trait BsonValueEncoderInstances extends LowPriorityBsonValueEncoderInstances {
     */
   implicit def bsonArrayEncoder[C[X] <: Traversable[X], A: BsonValueEncoder]: BsonValueEncoder[C[A]] =
     BsonValueEncoder.from { values: C[A] ⇒
-      BsonArray(values.foldLeft(Seq.newBuilder[BsonValue]) { (acc, a) ⇒ acc += BsonValueEncoder[A].encode(a) }.result())
+      BsonArray(
+        values
+          .foldLeft(Seq.newBuilder[BsonValue]) { (acc, a) ⇒
+            acc += BsonValueEncoder[A].encode(a)
+          }
+          .result()
+      )
     }
 
   /** Encodes `Option[A]` values as [[BsonValue]], provided there exists a `BsonEncoder[A]` in implicit scope.
@@ -138,10 +146,7 @@ trait BsonValueEncoderInstances extends LowPriorityBsonValueEncoderInstances {
     case None    ⇒ BsonNull
   }
 
-
-
   implicit val javaUtilDateEncoder: BsonValueEncoder[Date] = BsonValueEncoder.from(i ⇒ BsonDateTime(i.getTime))
-
 
   // - String-based Encoders -------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------

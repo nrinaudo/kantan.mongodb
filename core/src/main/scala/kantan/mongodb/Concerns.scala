@@ -23,10 +23,10 @@ object ReadConcern {
   private[mongodb] def fromLegacy(legacy: RConcern): ReadConcern =
     values.find(_.legacy == legacy).getOrElse(sys.error(s"Unknown read concern: $legacy"))
 
-  case object Default extends ReadConcern(RConcern.DEFAULT)
+  case object Default      extends ReadConcern(RConcern.DEFAULT)
   case object Linearizable extends ReadConcern(RConcern.LINEARIZABLE)
-  case object Local extends ReadConcern(RConcern.LOCAL)
-  case object Majority extends ReadConcern(RConcern.MAJORITY)
+  case object Local        extends ReadConcern(RConcern.LOCAL)
+  case object Majority     extends ReadConcern(RConcern.MAJORITY)
 
   def values: List[ReadConcern] = List(Default, Linearizable, Local, Majority)
 }
@@ -36,13 +36,13 @@ object WriteConcern {
   private[mongodb] def fromLegacy(legacy: WConcern): WriteConcern =
     values.find(_.legacy == legacy).getOrElse(sys.error(s"Unknown write concern: $legacy"))
 
-  case object Acknowledged extends WriteConcern(WConcern.ACKNOWLEDGED)
-  case object Journaled extends WriteConcern(WConcern.JOURNALED)
-  case object Majority extends WriteConcern(WConcern.MAJORITY)
+  case object Acknowledged   extends WriteConcern(WConcern.ACKNOWLEDGED)
+  case object Journaled      extends WriteConcern(WConcern.JOURNALED)
+  case object Majority       extends WriteConcern(WConcern.MAJORITY)
   case object Unacknowledged extends WriteConcern(WConcern.UNACKNOWLEDGED)
-  case object W1 extends WriteConcern(WConcern.W1)
-  case object W2 extends WriteConcern(WConcern.W2)
-  case object W3 extends WriteConcern(WConcern.W3)
+  case object W1             extends WriteConcern(WConcern.W1)
+  case object W2             extends WriteConcern(WConcern.W2)
+  case object W3             extends WriteConcern(WConcern.W3)
 
   def values: List[WriteConcern] = List(Acknowledged, Journaled, Majority, Unacknowledged, W1, W2, W3)
 }

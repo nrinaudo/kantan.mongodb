@@ -16,19 +16,18 @@
 
 package kantan.mongodb.io
 
-import org.bson.{BsonBinarySubType, BsonReader, BsonWriter}
-import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
-import BsonBinarySubType._
 import kantan.mongodb._
+import org.bson.{BsonBinarySubType, BsonReader, BsonWriter}
+import org.bson.codecs.{Codec, DecoderContext, EncoderContext}, BsonBinarySubType._
 
 object BinaryDataCodec extends Codec[BsonBinaryData] {
   private def decoderFor(subtype: Byte) =
-    if(BsonBinaryData.isBinary(subtype))      BinaryCodec
-    else if(BsonBinaryData.isUuid(subtype))   UuidCodec
-    else if(subtype == MD5.getValue)          Md5Codec
+    if(BsonBinaryData.isBinary(subtype)) BinaryCodec
+    else if(BsonBinaryData.isUuid(subtype)) UuidCodec
+    else if(subtype == MD5.getValue) Md5Codec
     else if(subtype == USER_DEFINED.getValue) UserDefinedBinaryCodec
-    else if(subtype == FUNCTION.getValue)     FunctionCodec
-    else                                      sys.error(s"Unsupported binary subtype: $subtype")
+    else if(subtype == FUNCTION.getValue) FunctionCodec
+    else sys.error(s"Unsupported binary subtype: $subtype")
 
   override def decode(reader: BsonReader, decoderContext: DecoderContext) =
     decoderFor(reader.peekBinarySubType()).decode(reader, decoderContext)

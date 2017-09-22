@@ -22,9 +22,9 @@ import kantan.mongodb._
 package object discipline {
   type BsonValueDecoderTests[A] = DecoderTests[BsonValue, A, MongoError.Decode, codecs.type]
   type BsonValueEncoderTests[A] = EncoderTests[BsonValue, A, codecs.type]
-  type BsonValueCodecTests[A] = CodecTests[BsonValue, A, MongoError.Decode, codecs.type]
+  type BsonValueCodecTests[A]   = CodecTests[BsonValue, A, MongoError.Decode, codecs.type]
 
   type BsonDocumentDecoderTests[A] = DecoderTests[BsonDocument, A, MongoError.Decode, codecs.type]
   type BsonDocumentEncoderTests[A] = EncoderTests[BsonDocument, A, codecs.type]
-  type BsonDocumentCodecTests[A] = CodecTests[BsonDocument, A, MongoError.Decode, codecs.type]
+  type BsonDocumentCodecTests[A]   = CodecTests[BsonDocument, A, MongoError.Decode, codecs.type]
 }

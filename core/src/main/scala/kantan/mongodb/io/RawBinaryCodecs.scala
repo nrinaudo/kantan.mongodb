@@ -35,22 +35,22 @@ trait RawBinaryCodec[T <: BsonBinaryData] extends Codec[T] {
 }
 
 object BinaryCodec extends RawBinaryCodec[BsonBinary] {
-  override val subtype = BsonBinarySubType.BINARY
+  override val subtype                      = BsonBinarySubType.BINARY
   override def wrap(data: IndexedSeq[Byte]) = BsonBinary(data)
-  override def unwrap(t: BsonBinary) = t.value.toArray
-  override def getEncoderClass = classOf[BsonBinary]
+  override def unwrap(t: BsonBinary)        = t.value.toArray
+  override def getEncoderClass              = classOf[BsonBinary]
 }
 
 object UserDefinedBinaryCodec extends RawBinaryCodec[BsonUserDefinedBinary] {
-  override val subtype = BsonBinarySubType.USER_DEFINED
-  override def wrap(data: IndexedSeq[Byte]) = BsonUserDefinedBinary(data)
+  override val subtype                          = BsonBinarySubType.USER_DEFINED
+  override def wrap(data: IndexedSeq[Byte])     = BsonUserDefinedBinary(data)
   override def unwrap(t: BsonUserDefinedBinary) = t.value.toArray
-  override def getEncoderClass = classOf[BsonUserDefinedBinary]
+  override def getEncoderClass                  = classOf[BsonUserDefinedBinary]
 }
 
 object FunctionCodec extends RawBinaryCodec[BsonFunction] {
-  override val subtype = BsonBinarySubType.FUNCTION
+  override val subtype                      = BsonBinarySubType.FUNCTION
   override def wrap(data: IndexedSeq[Byte]) = BsonFunction(data)
-  override def unwrap(t: BsonFunction) = t.value.toArray
-  override def getEncoderClass = classOf[BsonFunction]
+  override def unwrap(t: BsonFunction)      = t.value.toArray
+  override def getEncoderClass              = classOf[BsonFunction]
 }

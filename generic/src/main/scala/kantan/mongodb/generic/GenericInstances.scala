@@ -24,10 +24,13 @@ import shapeless.labelled._
 trait GenericInstances extends ShapelessInstances {
   // - Product-type encoding -------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
-  implicit val bsonHnilEncoder: BsonDocumentEncoder[HNil] = BsonDocumentEncoder.from { _ ⇒ BsonDocument(Map.empty) }
+  implicit val bsonHnilEncoder: BsonDocumentEncoder[HNil] = BsonDocumentEncoder.from { _ ⇒
+    BsonDocument(Map.empty)
+  }
 
-  implicit def hlistBsonDocumentEncoder[K <: Symbol, H: BsonValueEncoder, T <: HList: BsonDocumentEncoder]
-  (implicit witness: Witness.Aux[K]): BsonDocumentEncoder[FieldType[K, H] :: T] = {
+  implicit def hlistBsonDocumentEncoder[K <: Symbol, H: BsonValueEncoder, T <: HList: BsonDocumentEncoder](
+    implicit witness: Witness.Aux[K]
+  ): BsonDocumentEncoder[FieldType[K, H] :: T] = {
     val name = witness.value.name
 
     BsonDocumentEncoder.from { hlist ⇒
@@ -40,15 +43,16 @@ trait GenericInstances extends ShapelessInstances {
   implicit def hlistBsonValueEncoder[H: BsonValueEncoder]: BsonValueEncoder[H :: HNil] =
     BsonValueEncoder[H].contramap { case (h :: _) ⇒ h }
 
-
-
   // - Product-type decoding -------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   implicit val bsonHnilDecoder: BsonDocumentDecoder[HNil] =
-  BsonDocumentDecoder.fromUnsafe { _ ⇒ HNil }
+    BsonDocumentDecoder.fromUnsafe { _ ⇒
+      HNil
+    }
 
-  implicit def bsonHlistDecoder[K <: Symbol, H: BsonValueDecoder, T <: HList: BsonDocumentDecoder]
-  (implicit witness: Witness.Aux[K]): BsonDocumentDecoder[FieldType[K, H] :: T] = {
+  implicit def bsonHlistDecoder[K <: Symbol, H: BsonValueDecoder, T <: HList: BsonDocumentDecoder](
+    implicit witness: Witness.Aux[K]
+  ): BsonDocumentDecoder[FieldType[K, H] :: T] = {
     val name = witness.value.name
 
     BsonDocumentDecoder.from { doc ⇒
@@ -62,12 +66,10 @@ trait GenericInstances extends ShapelessInstances {
   implicit def hlistBsonValueDecoder[H: BsonValueDecoder]: BsonValueDecoder[H :: HNil] =
     BsonValueDecoder[H].map(h ⇒ h :: HNil)
 
-
-
   // - Sum-type codec --------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------
   implicit val bsonDocumentCnilDecoder: BsonDocumentDecoder[CNil] =
-  cnilDecoder(c ⇒ MongoError.Decode(s"Not a legal BSON document: $c"))
+    cnilDecoder(c ⇒ MongoError.Decode(s"Not a legal BSON document: $c"))
 
   implicit val bsonValueCnilDecoder: BsonValueDecoder[CNil] =
     cnilDecoder(c ⇒ MongoError.Decode(s"Not a legal BSON value: $c"))

@@ -19,18 +19,23 @@ package kantan.mongodb.options
 import com.mongodb.client.model.{CollationAlternate, CollationCaseFirst, CollationMaxVariable, CollationStrength}
 import java.io.Serializable
 
-final case class Collation(normalisation: Boolean, caseLevel: Boolean, numericOrdering: Boolean,
-                          locale: String, backwards: Boolean, alternate: Collation.Alternate,
-                          caseFirst: Collation.CaseFirst, strength: Collation.Strength,
-                          maxVariable: Collation.MaxVariable) {
-  def normalisation(n: Boolean): Collation = copy(normalisation = n)
-  def caseLevel(c: Boolean): Collation = copy(caseLevel = c)
-  def numericOrdering(n: Boolean): Collation = copy(numericOrdering = n)
-  def locale(l: String): Collation = copy(locale = l)
-  def backwards(b: Boolean): Collation = copy(backwards = b)
-  def alternate(a: Collation.Alternate): Collation = copy(alternate = a)
-  def caseFirst(c: Collation.CaseFirst): Collation = copy(caseFirst =  c)
-  def strength(s: Collation.Strength): Collation = copy(strength = s)
+final case class Collation(normalisation: Boolean,
+                           caseLevel: Boolean,
+                           numericOrdering: Boolean,
+                           locale: String,
+                           backwards: Boolean,
+                           alternate: Collation.Alternate,
+                           caseFirst: Collation.CaseFirst,
+                           strength: Collation.Strength,
+                           maxVariable: Collation.MaxVariable) {
+  def normalisation(n: Boolean): Collation             = copy(normalisation = n)
+  def caseLevel(c: Boolean): Collation                 = copy(caseLevel = c)
+  def numericOrdering(n: Boolean): Collation           = copy(numericOrdering = n)
+  def locale(l: String): Collation                     = copy(locale = l)
+  def backwards(b: Boolean): Collation                 = copy(backwards = b)
+  def alternate(a: Collation.Alternate): Collation     = copy(alternate = a)
+  def caseFirst(c: Collation.CaseFirst): Collation     = copy(caseFirst = c)
+  def strength(s: Collation.Strength): Collation       = copy(strength = s)
   def maxVariable(m: Collation.MaxVariable): Collation = copy(maxVariable = m)
 
   private[mongodb] lazy val legacy: com.mongodb.client.model.Collation = {
@@ -51,31 +56,40 @@ final case class Collation(normalisation: Boolean, caseLevel: Boolean, numericOr
 }
 
 object Collation {
-  val default: Collation = Collation(false, false, false, "simple", false, Alternate.default, CaseFirst.default,
-    Strength.default, MaxVariable.default)
+  val default: Collation = Collation(
+    false,
+    false,
+    false,
+    "simple",
+    false,
+    Alternate.default,
+    CaseFirst.default,
+    Strength.default,
+    MaxVariable.default
+  )
 
-  sealed abstract class Alternate (private[mongodb] val legacy: CollationAlternate) extends Product with Serializable
+  sealed abstract class Alternate(private[mongodb] val legacy: CollationAlternate) extends Product with Serializable
   object Alternate {
     case object NonIgnorable extends Alternate(CollationAlternate.NON_IGNORABLE)
-    case object Shifted extends Alternate(CollationAlternate.SHIFTED)
+    case object Shifted      extends Alternate(CollationAlternate.SHIFTED)
     val default: Alternate = NonIgnorable
   }
 
   sealed abstract class CaseFirst(private[mongodb] val legacy: CollationCaseFirst) extends Product with Serializable
   object CaseFirst {
     case object Lower extends CaseFirst(CollationCaseFirst.LOWER)
-    case object Off extends CaseFirst(CollationCaseFirst.OFF)
+    case object Off   extends CaseFirst(CollationCaseFirst.OFF)
     case object Upper extends CaseFirst(CollationCaseFirst.UPPER)
     val default: CaseFirst = Off
   }
 
   sealed abstract class Strength(private[mongodb] val legacy: CollationStrength) extends Product with Serializable
   object Strength {
-    case object Identical extends Strength(CollationStrength.IDENTICAL)
-    case object Primary extends Strength(CollationStrength.PRIMARY)
+    case object Identical  extends Strength(CollationStrength.IDENTICAL)
+    case object Primary    extends Strength(CollationStrength.PRIMARY)
     case object Quaternary extends Strength(CollationStrength.QUATERNARY)
-    case object Secondary extends Strength(CollationStrength.SECONDARY)
-    case object Tertiary extends Strength(CollationStrength.TERTIARY)
+    case object Secondary  extends Strength(CollationStrength.SECONDARY)
+    case object Tertiary   extends Strength(CollationStrength.TERTIARY)
     val default: Strength = Tertiary
   }
 

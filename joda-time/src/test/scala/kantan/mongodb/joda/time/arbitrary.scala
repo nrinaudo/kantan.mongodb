@@ -18,5 +18,4 @@ package kantan.mongodb.joda.time
 
 import kantan.mongodb.laws.discipline.ArbitraryInstances
 
-object arbitrary extends kantan.codecs.strings.joda.time.laws.discipline.ArbitraryInstances
-                         with ArbitraryInstances
+object arbitrary extends kantan.codecs.strings.joda.time.laws.discipline.ArbitraryInstances with ArbitraryInstances

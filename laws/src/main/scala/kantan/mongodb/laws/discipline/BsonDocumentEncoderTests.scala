@@ -23,7 +23,7 @@ import kantan.mongodb.laws.{BsonDocumentEncoderLaws, LegalBsonDocument}
 import org.scalacheck.Arbitrary
 
 object BsonDocumentEncoderTests {
-  def apply[A: BsonDocumentEncoderLaws: Arbitrary](implicit al: Arbitrary[LegalBsonDocument[A]])
-  : BsonDocumentEncoderTests[A] = EncoderTests[BsonDocument, A, codecs.type]
+  def apply[A: BsonDocumentEncoderLaws: Arbitrary](
+    implicit al: Arbitrary[LegalBsonDocument[A]]
+  ): BsonDocumentEncoderTests[A] = EncoderTests[BsonDocument, A, codecs.type]
 }
-

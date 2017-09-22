@@ -22,7 +22,7 @@ sealed abstract class BitOp extends Product with Serializable
 
 object BitOp {
   final case class And(mask: Int) extends BitOp
-  final case class Or(mask: Int) extends BitOp
+  final case class Or(mask: Int)  extends BitOp
   final case class Xor(mask: Int) extends BitOp
 
   implicit val bitEncoder: BsonDocumentEncoder[BitOp] = {

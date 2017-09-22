@@ -22,16 +22,12 @@ import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 import org.bson.codecs.configuration.CodecRegistry
 
 class JavaScriptWithScopeCodec(registry: CodecRegistry) extends Codec[BsonJavaScriptWithScope] {
-  override def decode(reader: BsonReader, context: DecoderContext) = {
-    BsonJavaScriptWithScope(reader.readJavaScriptWithScope(),
-      new DocumentCodec(registry).decode(reader, context).value
-    )
-  }
+  override def decode(reader: BsonReader, context: DecoderContext) =
+    BsonJavaScriptWithScope(reader.readJavaScriptWithScope(), new DocumentCodec(registry).decode(reader, context).value)
   override def encode(writer: BsonWriter, value: BsonJavaScriptWithScope, context: EncoderContext) = {
     writer.writeJavaScriptWithScope(value.value)
     new DocumentCodec(registry).encode(writer, BsonDocument(value.scope), context)
   }
-
 
   override def getEncoderClass = classOf[BsonJavaScriptWithScope]
 }

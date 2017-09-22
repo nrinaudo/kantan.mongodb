@@ -20,10 +20,11 @@ import com.mongodb.client.model.{ValidationAction, ValidationLevel, ValidationOp
 import java.io.Serializable
 import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 
-final case class ValidationOpts(action: ValidationOpts.Action, level: ValidationOpts.Level,
+final case class ValidationOpts(action: ValidationOpts.Action,
+                                level: ValidationOpts.Level,
                                 validator: Option[BsonDocument]) {
-  def action(a: ValidationOpts.Action): ValidationOpts = copy(action = a)
-  def level(l: ValidationOpts.Level): ValidationOpts = copy(level = l)
+  def action(a: ValidationOpts.Action): ValidationOpts        = copy(action = a)
+  def level(l: ValidationOpts.Level): ValidationOpts          = copy(level = l)
   def validator[V: BsonDocumentEncoder](v: V): ValidationOpts = copy(validator = Some(BsonDocumentEncoder[V].encode(v)))
 
   private[mongodb] lazy val legacy: ValidationOptions = {
@@ -34,20 +35,20 @@ final case class ValidationOpts(action: ValidationOpts.Action, level: Validation
 }
 
 object ValidationOpts {
-  sealed abstract class Action (private[mongodb] val legacy: ValidationAction) extends Product with Serializable
+  sealed abstract class Action(private[mongodb] val legacy: ValidationAction) extends Product with Serializable
 
   object Action {
     case object Error extends Action(ValidationAction.ERROR)
-    case object Warn extends Action(ValidationAction.WARN)
+    case object Warn  extends Action(ValidationAction.WARN)
     val default: Action = Error
   }
 
-  sealed abstract class Level (private[mongodb] val legacy: ValidationLevel) extends Product with Serializable
+  sealed abstract class Level(private[mongodb] val legacy: ValidationLevel) extends Product with Serializable
 
   object Level {
     case object Moderate extends Level(ValidationLevel.MODERATE)
-    case object Off extends Level(ValidationLevel.OFF)
-    case object Strict extends Level(ValidationLevel.STRICT)
+    case object Off      extends Level(ValidationLevel.OFF)
+    case object Strict   extends Level(ValidationLevel.STRICT)
     val defaut: Level = Strict
   }
 

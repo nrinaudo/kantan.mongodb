@@ -18,5 +18,4 @@ package kantan.mongodb.java8
 
 import kantan.mongodb.laws.discipline.ArbitraryInstances
 
-object arbitrary extends kantan.codecs.strings.java8.laws.discipline.ArbitraryInstances
-                         with ArbitraryInstances
+object arbitrary extends kantan.codecs.strings.java8.laws.discipline.ArbitraryInstances with ArbitraryInstances

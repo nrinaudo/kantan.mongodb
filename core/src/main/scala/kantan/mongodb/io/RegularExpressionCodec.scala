@@ -27,6 +27,5 @@ object RegularExpressionCodec extends Codec[BsonRegularExpression] {
   override def encode(writer: BsonWriter, value: BsonRegularExpression, e: EncoderContext) =
     writer.writeRegularExpression(BsonRegularExpression.toLegacy(value))
 
-
   override def getEncoderClass = classOf[BsonRegularExpression]
 }

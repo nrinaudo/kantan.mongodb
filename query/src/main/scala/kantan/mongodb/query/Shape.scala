@@ -31,18 +31,42 @@ object Shape {
 
   implicit val shapeValueEncoder: BsonValueEncoder[Shape] = BsonValueEncoder.from {
     case Box(lx, ly, rx, ry) ⇒
-      BsonDocument(Map("$box" → BsonArray(List(BsonArray(List(BsonDouble(lx), BsonDouble(ly))),
-        BsonArray(List(BsonDouble(rx), BsonDouble(ry)))))))
-    case Center(x, y, r) ⇒ BsonDocument(Map("$center" → BsonArray(List(
-      BsonArray(List(BsonDouble(x), BsonDouble(y))),
-      BsonDouble(r)
-    ))))
-    case CenterSphere(x, y, r) ⇒ BsonDocument(Map("$centerSphere" → BsonArray(List(
-      BsonArray(List(BsonDouble(x), BsonDouble(y))),
-      BsonDouble(r)
-    ))))
-    case Polygon(points) ⇒ BsonDocument(Map("$polygon" → BsonArray(
-      points.map { case (x, y) ⇒ BsonArray(List(BsonDouble(x), BsonDouble(y))) }
-    )))
+      BsonDocument(
+        Map(
+          "$box" → BsonArray(
+            List(BsonArray(List(BsonDouble(lx), BsonDouble(ly))), BsonArray(List(BsonDouble(rx), BsonDouble(ry))))
+          )
+        )
+      )
+    case Center(x, y, r) ⇒
+      BsonDocument(
+        Map(
+          "$center" → BsonArray(
+            List(
+              BsonArray(List(BsonDouble(x), BsonDouble(y))),
+              BsonDouble(r)
+            )
+          )
+        )
+      )
+    case CenterSphere(x, y, r) ⇒
+      BsonDocument(
+        Map(
+          "$centerSphere" → BsonArray(
+            List(
+              BsonArray(List(BsonDouble(x), BsonDouble(y))),
+              BsonDouble(r)
+            )
+          )
+        )
+      )
+    case Polygon(points) ⇒
+      BsonDocument(
+        Map(
+          "$polygon" → BsonArray(
+            points.map { case (x, y) ⇒ BsonArray(List(BsonDouble(x), BsonDouble(y))) }
+          )
+        )
+      )
   }
 }

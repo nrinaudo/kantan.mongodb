@@ -24,19 +24,19 @@ sealed abstract class QueryOperator[A](val operator: String, val operand: A) ext
 object QueryOperator {
   def unapply[A](op: QueryOperator[A]): Option[(String, A)] = Some((op.operator, op.operand))
 
-  final case class Eq[A](value: A) extends QueryOperator("$eq", value)
-  final case class Gt[A](value: A) extends QueryOperator("$gt", value)
-  final case class Gte[A](value: A) extends QueryOperator("$gte", value)
-  final case class Lt[A](value: A) extends QueryOperator("$lt", value)
-  final case class Lte[A](value: A) extends QueryOperator("$lte", value)
-  final case class In[A](values: Seq[A]) extends QueryOperator("$in", values)
-  final case class All[A](values: Seq[A]) extends QueryOperator("$all", values)
+  final case class Eq[A](value: A)         extends QueryOperator("$eq", value)
+  final case class Gt[A](value: A)         extends QueryOperator("$gt", value)
+  final case class Gte[A](value: A)        extends QueryOperator("$gte", value)
+  final case class Lt[A](value: A)         extends QueryOperator("$lt", value)
+  final case class Lte[A](value: A)        extends QueryOperator("$lte", value)
+  final case class In[A](values: Seq[A])   extends QueryOperator("$in", values)
+  final case class All[A](values: Seq[A])  extends QueryOperator("$all", values)
   final case class ElemMatch[A](filter: A) extends QueryOperator("$elemMatch", filter)
-  final case class Exists(flag: Boolean) extends QueryOperator("$exists", flag)
-  final case class Regex(value: Pattern) extends QueryOperator("$regex", value)
-  final case class Size(value: Int) extends QueryOperator("$size", value)
-  final case class Where(value: String) extends QueryOperator("$where", value)
-  final case class Mod(value: Mod.Value) extends QueryOperator("$mod", value)
+  final case class Exists(flag: Boolean)   extends QueryOperator("$exists", flag)
+  final case class Regex(value: Pattern)   extends QueryOperator("$regex", value)
+  final case class Size(value: Int)        extends QueryOperator("$size", value)
+  final case class Where(value: String)    extends QueryOperator("$where", value)
+  final case class Mod(value: Mod.Value)   extends QueryOperator("$mod", value)
   object Mod {
     final case class Value(divisor: Long, remainder: Long)
     implicit val valueEncoder: BsonValueEncoder[Value] =
@@ -47,15 +47,15 @@ object QueryOperator {
   object Bits {
     def unapply(op: Bits): Option[(String, Long)] = Some((op.operator, op.operand))
     final case class AllClear(mask: Long) extends Bits("$bitsAllClear", mask)
-    final case class AllSet(mask: Long) extends Bits("$bitsAllSet", mask)
+    final case class AllSet(mask: Long)   extends Bits("$bitsAllSet", mask)
     final case class AnyClear(mask: Long) extends Bits("$bitsAnyClear", mask)
-    final case class AnySet(mask: Long) extends Bits("$bitsAnySet", mask)
+    final case class AnySet(mask: Long)   extends Bits("$bitsAnySet", mask)
   }
 
   sealed trait Geo
   object Geo {
     final case class Intersects[A](value: A) extends QueryOperator("$geoIntersects", value) with Geo
-    final case class Within[A](value: A) extends QueryOperator("$geoWithin", value) with Geo
+    final case class Within[A](value: A)     extends QueryOperator("$geoWithin", value) with Geo
   }
 
   // TODO: type, near, text

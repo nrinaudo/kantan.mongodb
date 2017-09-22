@@ -21,12 +21,12 @@ import kantan.codecs.resource.{ResourceIterable, ResourceIterator}
 import kantan.mongodb.IndexQuery.Config
 import scala.concurrent.duration.Duration
 
-final class IndexQuery[A] private(val config: Config, eval: Config ⇒ ResourceIterator[A]) extends ResourceIterable[A] {
+final class IndexQuery[A] private (val config: Config, eval: Config ⇒ ResourceIterator[A]) extends ResourceIterable[A] {
   override type Repr[X] = IndexQuery[X]
 
   def withConfig(conf: Config): IndexQuery[A] = new IndexQuery[A](conf, eval)
 
-  def batchSize(i: Int): IndexQuery[A] = withConfig(config.copy(batchSize = Some(i)))
+  def batchSize(i: Int): IndexQuery[A]           = withConfig(config.copy(batchSize = Some(i)))
   def maxTime(duration: Duration): IndexQuery[A] = withConfig(config.copy(maxTime = Some(duration)))
 
   override def iterator = eval(config)
@@ -42,14 +42,18 @@ object IndexQuery {
     val empty: Config = Config(None, None)
   }
 
+  private[mongodb] def from[R: BsonDocumentDecoder](
+    f: ⇒ ListIndexesIterable[BsonDocument]
+  ): IndexQuery[MongoResult[R]] =
+    new IndexQuery[MongoResult[R]](
+      Config.empty,
+      conf ⇒ {
+        val iterable = f
 
-  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ ListIndexesIterable[BsonDocument])
-  : IndexQuery[MongoResult[R]] = new IndexQuery[MongoResult[R]](Config.empty, conf ⇒ {
-    val iterable = f
+        conf.batchSize.foreach(i ⇒ iterable.batchSize(i))
+        conf.maxTime.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
 
-    conf.batchSize.foreach(i ⇒ iterable.batchSize(i))
-    conf.maxTime.foreach(d ⇒ iterable.maxTime(d.length, d.unit))
-
-    MongoIterator(iterable)
-  })
+        MongoIterator(iterable)
+      }
+    )
 }

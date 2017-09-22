@@ -19,13 +19,23 @@ package kantan.mongodb
 import com.mongodb.bulk.BulkWriteResult
 import scala.collection.JavaConverters._
 
-final case class BulkResult(inserted: Int, matched: Int, deleted: Int, modified: Option[Int],
-                            acknowledged: Boolean, upserts: Seq[BulkResult.Upsert])
+final case class BulkResult(inserted: Int,
+                            matched: Int,
+                            deleted: Int,
+                            modified: Option[Int],
+                            acknowledged: Boolean,
+                            upserts: Seq[BulkResult.Upsert])
 
 object BulkResult {
   private[mongodb] def apply(res: BulkWriteResult): BulkResult =
-    BulkResult(res.getInsertedCount, res.getMatchedCount, res.getDeletedCount, Option(res.getModifiedCount),
-      res.wasAcknowledged(), res.getUpserts.asScala.map(u ⇒ Upsert(u.getIndex, BsonValue.fromLegacy(u.getId))))
+    BulkResult(
+      res.getInsertedCount,
+      res.getMatchedCount,
+      res.getDeletedCount,
+      Option(res.getModifiedCount),
+      res.wasAcknowledged(),
+      res.getUpserts.asScala.map(u ⇒ Upsert(u.getIndex, BsonValue.fromLegacy(u.getId)))
+    )
 
   final case class Upsert(index: Int, rawId: BsonValue) {
     def id[A: BsonValueDecoder]: DecodeResult[A] = BsonValueDecoder[A].decode(rawId)

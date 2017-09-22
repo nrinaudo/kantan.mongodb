@@ -23,36 +23,36 @@ import org.bson.codecs.configuration.{CodecProvider, CodecRegistry}
 
 object BsonValueCodecProvider extends CodecProvider {
   private val (bsonTypes, bsonClasses) = {
-    val typeBuilder = Map.newBuilder[BsonType, Class[_]]
+    val typeBuilder  = Map.newBuilder[BsonType, Class[_]]
     val classBuilder = Map.newBuilder[Class[_], CodecRegistry ⇒ Codec[_]]
 
     def add(c: Class[_], bsonType: BsonType, codec: CodecRegistry ⇒ Codec[_]): Unit = {
       typeBuilder  += bsonType → c
-      classBuilder += c → codec
+      classBuilder += c        → codec
       ()
     }
 
-    add(classOf[BsonArray],               BsonType.ARRAY,                 r ⇒ new ArrayCodec(r))
-    add(classOf[BsonBinaryData],          BsonType.BINARY,                _ ⇒ BinaryDataCodec)
-    add(classOf[BsonBoolean],             BsonType.BOOLEAN,               _ ⇒ BooleanCodec)
-    add(classOf[BsonDateTime],            BsonType.DATE_TIME,             _ ⇒ DateTimeCodec)
-    add(classOf[BsonDbPointer],           BsonType.DB_POINTER,            _ ⇒ DbPointerCodec)
-    add(classOf[BsonDocument],            BsonType.DOCUMENT,              r ⇒ new DocumentCodec(r))
-    add(classOf[BsonDouble],              BsonType.DOUBLE,                _ ⇒ DoubleCodec)
-    add(classOf[BsonDecimal128],          BsonType.DECIMAL128,            _ ⇒ Decimal128Codec)
-    add(classOf[BsonInt],                 BsonType.INT32,                 _ ⇒ IntCodec)
-    add(classOf[BsonJavaScript],          BsonType.JAVASCRIPT,            _ ⇒ JavaScriptCodec)
+    add(classOf[BsonArray], BsonType.ARRAY, r ⇒ new ArrayCodec(r))
+    add(classOf[BsonBinaryData], BsonType.BINARY, _ ⇒ BinaryDataCodec)
+    add(classOf[BsonBoolean], BsonType.BOOLEAN, _ ⇒ BooleanCodec)
+    add(classOf[BsonDateTime], BsonType.DATE_TIME, _ ⇒ DateTimeCodec)
+    add(classOf[BsonDbPointer], BsonType.DB_POINTER, _ ⇒ DbPointerCodec)
+    add(classOf[BsonDocument], BsonType.DOCUMENT, r ⇒ new DocumentCodec(r))
+    add(classOf[BsonDouble], BsonType.DOUBLE, _ ⇒ DoubleCodec)
+    add(classOf[BsonDecimal128], BsonType.DECIMAL128, _ ⇒ Decimal128Codec)
+    add(classOf[BsonInt], BsonType.INT32, _ ⇒ IntCodec)
+    add(classOf[BsonJavaScript], BsonType.JAVASCRIPT, _ ⇒ JavaScriptCodec)
     add(classOf[BsonJavaScriptWithScope], BsonType.JAVASCRIPT_WITH_SCOPE, r ⇒ new JavaScriptWithScopeCodec(r))
-    add(classOf[BsonLong],                BsonType.INT64,                 _ ⇒ LongCodec)
-    add(BsonMaxKey.getClass,              BsonType.MAX_KEY,               _ ⇒ MaxKeyCodec)
-    add(BsonMinKey.getClass,              BsonType.MIN_KEY,               _ ⇒ MinKeyCodec)
-    add(BsonNull.getClass,                BsonType.NULL,                  _ ⇒ NullCodec)
-    add(classOf[BsonObjectId],            BsonType.OBJECT_ID,             _ ⇒ ObjectIdCodec)
-    add(classOf[BsonRegularExpression],   BsonType.REGULAR_EXPRESSION,    _ ⇒ RegularExpressionCodec)
-    add(classOf[BsonString],              BsonType.STRING,                _ ⇒ StringCodec)
-    add(classOf[BsonSymbol],              BsonType.SYMBOL,                _ ⇒ SymbolCodec)
-    add(classOf[BsonTimestamp],           BsonType.TIMESTAMP,             _ ⇒ TimestampCodec)
-    add(BsonUndefined.getClass,           BsonType.UNDEFINED,             _ ⇒ UndefinedCodec)
+    add(classOf[BsonLong], BsonType.INT64, _ ⇒ LongCodec)
+    add(BsonMaxKey.getClass, BsonType.MAX_KEY, _ ⇒ MaxKeyCodec)
+    add(BsonMinKey.getClass, BsonType.MIN_KEY, _ ⇒ MinKeyCodec)
+    add(BsonNull.getClass, BsonType.NULL, _ ⇒ NullCodec)
+    add(classOf[BsonObjectId], BsonType.OBJECT_ID, _ ⇒ ObjectIdCodec)
+    add(classOf[BsonRegularExpression], BsonType.REGULAR_EXPRESSION, _ ⇒ RegularExpressionCodec)
+    add(classOf[BsonString], BsonType.STRING, _ ⇒ StringCodec)
+    add(classOf[BsonSymbol], BsonType.SYMBOL, _ ⇒ SymbolCodec)
+    add(classOf[BsonTimestamp], BsonType.TIMESTAMP, _ ⇒ TimestampCodec)
+    add(BsonUndefined.getClass, BsonType.UNDEFINED, _ ⇒ UndefinedCodec)
 
     classBuilder += classOf[BsonValue]             → (r ⇒ new ValueCodec(r))
     classBuilder += classOf[BsonBinary]            → (_ ⇒ BinaryCodec)

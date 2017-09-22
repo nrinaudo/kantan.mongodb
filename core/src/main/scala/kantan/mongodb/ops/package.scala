@@ -16,5 +16,4 @@
 
 package kantan.mongodb
 
-package object ops extends ToBsonValueDecoderOps with
-                           ToBsonValueEncoderOps
+package object ops extends ToBsonValueDecoderOps with ToBsonValueEncoderOps

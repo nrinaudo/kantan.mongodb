@@ -33,6 +33,8 @@ class CodecTests extends FunSuite with GeneratorDrivenPropertyChecks {
   }
 
   test("Encoding and decoding BSON documents should leave them unchanged") {
-    forAll { doc: BsonDocument ⇒ assert(doc == roundTrip(doc)) }
+    forAll { doc: BsonDocument ⇒
+      assert(doc == roundTrip(doc))
+    }
   }
 }

@@ -26,15 +26,13 @@ final class DatabaseQuery[A](config: Config, eval: Config ⇒ ResourceIterator[A
 
   def withConfig(conf: Config): DatabaseQuery[A] = new DatabaseQuery[A](conf, eval)
 
-  def batchSize(i: Int): DatabaseQuery[A] = withConfig(config.copy(batchSize = Some(i)))
+  def batchSize(i: Int): DatabaseQuery[A]           = withConfig(config.copy(batchSize = Some(i)))
   def maxTime(duration: Duration): DatabaseQuery[A] = withConfig(config.copy(maxTime = Some(duration)))
 
   override def iterator = eval(config)
 
   override protected def onIterator[B](f: ResourceIterator[A] ⇒ ResourceIterator[B]) =
     new DatabaseQuery[B](config, eval andThen f)
-
-  override def toString: String = super.toString
 }
 
 object DatabaseQuery {
@@ -44,12 +42,14 @@ object DatabaseQuery {
     val empty: Config = Config(None, None)
   }
 
-  private[mongodb] def from[R: BsonDocumentDecoder](f: ⇒ ListDatabasesIterable[BsonDocument])
-  : DatabaseQuery[MongoResult[R]] = new DatabaseQuery[MongoResult[R]](Config.empty, conf ⇒ {
-    val iterable = f
+  private[mongodb] def from[R: BsonDocumentDecoder](
+    f: ⇒ ListDatabasesIterable[BsonDocument]
+  ): DatabaseQuery[MongoResult[R]] =
+    new DatabaseQuery[MongoResult[R]](Config.empty, conf ⇒ {
+      val iterable = f
 
-    conf.batchSize.foreach(iterable.batchSize)
+      conf.batchSize.foreach(iterable.batchSize)
 
-    MongoIterator(iterable)
-  })
+      MongoIterator(iterable)
+    })
 }
