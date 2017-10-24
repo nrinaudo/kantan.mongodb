@@ -12,12 +12,13 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
       |import kantan.mongodb._
       |import kantan.mongodb.ops._
       |import kantan.mongodb.query._
+      |import kantan.mongodb.refined._
     """.stripMargin
     //import kantan.mongodb.generic._
   )
-  .aggregate(core, generic, jodaTime, laws, query)
+  .aggregate(core, generic, jodaTime, laws, query, refined)
   .aggregateIf(java8Supported)(java8)
-  .dependsOn(core, generic, query)
+  .dependsOn(core, generic, query, refined)
 
 lazy val docs = project
   .enablePlugins(DocumentationPlugin)
@@ -25,7 +26,7 @@ lazy val docs = project
     unidocProjectFilter in (ScalaUnidoc, unidoc) :=
       inAnyProject -- inProjectsIf(!java8Supported)(java8)
   )
-  .dependsOn(core, jodaTime, query, generic)
+  .dependsOn(core, jodaTime, query, generic, refined)
   .dependsOnIf(java8Supported)(java8)
 
 lazy val core = project
@@ -113,5 +114,20 @@ lazy val java8 = project
       "com.nrinaudo"  %% "kantan.codecs-java8"      % Versions.kantanCodecs,
       "com.nrinaudo"  %% "kantan.codecs-java8-laws" % Versions.kantanCodecs % "test",
       "org.scalatest" %% "scalatest"                % Versions.scalatest % "test"
+    )
+  )
+
+lazy val refined = project
+  .settings(
+    moduleName := "kantan.xpath-refined",
+    name       := "refined"
+  )
+  .enablePlugins(PublishedPlugin)
+  .dependsOn(core, laws % "test")
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.nrinaudo" %% "kantan.codecs-refined"      % Versions.kantanCodecs,
+      "com.nrinaudo" %% "kantan.codecs-refined-laws" % Versions.kantanCodecs % "test",
+      "com.nrinaudo" %% "kantan.codecs-scalatest"    % Versions.kantanCodecs % "test"
     )
   )
