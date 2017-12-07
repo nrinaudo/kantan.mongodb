@@ -26,7 +26,7 @@ final class AggregateQuery[A] private (val config: Config, private val eval: Con
     extends ResourceIterable[A] {
   type Repr[X] = AggregateQuery[X]
 
-  def withConfig(conf: Config): AggregateQuery[A] = new AggregateQuery[A](config, eval)
+  def withConfig(conf: Config): AggregateQuery[A] = new AggregateQuery[A](conf, eval)
 
   def allowDiskUse(b: Boolean): AggregateQuery[A]    = withConfig(config.copy(allowDiskUse = Some(b)))
   def batchSize(i: Int): AggregateQuery[A]           = withConfig(config.copy(batchSize = Some(i)))
