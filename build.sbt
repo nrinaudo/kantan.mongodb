@@ -16,7 +16,7 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
     """.stripMargin
     //import kantan.mongodb.generic._
   )
-  .aggregate(core, generic, jodaTime, laws, query, refined)
+  .aggregate(core, enumeratum, generic, jodaTime, laws, query, refined)
   .aggregateIf(java8Supported)(java8)
   .dependsOn(core, generic, query, refined)
 
@@ -26,7 +26,7 @@ lazy val docs = project
     unidocProjectFilter in (ScalaUnidoc, unidoc) :=
       inAnyProject -- inProjectsIf(!java8Supported)(java8)
   )
-  .dependsOn(core, jodaTime, query, generic, refined)
+  .dependsOn(core, enumeratum, jodaTime, query, generic, refined)
   .dependsOnIf(java8Supported)(java8)
 
 lazy val core = project
@@ -129,5 +129,20 @@ lazy val refined = project
       "com.nrinaudo" %% "kantan.codecs-refined"      % Versions.kantanCodecs,
       "com.nrinaudo" %% "kantan.codecs-refined-laws" % Versions.kantanCodecs % "test",
       "com.nrinaudo" %% "kantan.codecs-scalatest"    % Versions.kantanCodecs % "test"
+    )
+  )
+
+lazy val enumeratum = project
+  .settings(
+    moduleName := "kantan.mongodb-enumeratum",
+    name       := "enumeratum"
+  )
+  .enablePlugins(PublishedPlugin)
+  .dependsOn(core, laws % "test")
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.nrinaudo" %% "kantan.codecs-enumeratum"      % Versions.kantanCodecs,
+      "com.nrinaudo" %% "kantan.codecs-enumeratum-laws" % Versions.kantanCodecs % "test",
+      "com.nrinaudo" %% "kantan.codecs-scalatest"       % Versions.kantanCodecs % "test"
     )
   )
