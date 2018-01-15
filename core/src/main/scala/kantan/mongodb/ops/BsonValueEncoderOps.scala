@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.ops
-
-import kantan.mongodb.{BsonValue, BsonValueEncoder}
+package kantan.mongodb
+package ops
 
 final class BsonValueEncoderOps[A: BsonValueEncoder](value: A) {
   def encodeBson: BsonValue = BsonValueEncoder[A].encode(value)

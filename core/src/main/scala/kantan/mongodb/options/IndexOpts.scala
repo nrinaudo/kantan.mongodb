@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.options
+package kantan.mongodb
+package options
 
+import IndexOpts.SpecialisedOpts
 import com.mongodb.client.model.IndexOptions
-import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
-import kantan.mongodb.options.IndexOpts.SpecialisedOpts
 import scala.concurrent.duration.Duration
 
 final case class IndexOpts(collation: Option[Collation],

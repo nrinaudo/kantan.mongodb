@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.laws
+package kantan.mongodb
+package laws
 
-import kantan.codecs.laws.discipline.{CodecTests, DecoderTests, EncoderTests}
-import kantan.mongodb._
+import kantan.codecs.laws.discipline._
 
-package object discipline {
+package object discipline extends DisciplinePackage {
   type BsonValueDecoderTests[A] = DecoderTests[BsonValue, A, MongoError.Decode, codecs.type]
   type BsonValueEncoderTests[A] = EncoderTests[BsonValue, A, codecs.type]
   type BsonValueCodecTests[A]   = CodecTests[BsonValue, A, MongoError.Decode, codecs.type]

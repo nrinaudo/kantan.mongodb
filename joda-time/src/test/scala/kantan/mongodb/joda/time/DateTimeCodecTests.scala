@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.joda.time
+package kantan.mongodb
+package joda.time
 
-import arbitrary._
-import kantan.mongodb.laws.discipline.BsonValueCodecTests
+import laws.discipline._, arbitrary._
 import org.joda.time.DateTime
-import org.scalatest.FunSuite
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.typelevel.discipline.scalatest.Discipline
 
-class DateTimeCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+class DateTimeCodecTests extends DisciplineSuite {
   checkAll("BsonValueCodec[DateTime]", BsonValueCodecTests[DateTime].codec[String, Float])
 }

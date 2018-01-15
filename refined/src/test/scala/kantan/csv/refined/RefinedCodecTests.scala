@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.refined
+package kantan.mongodb
+package refined
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.numeric.Positive
 import kantan.codecs.laws.discipline.SerializableTests
-import kantan.mongodb._
-import kantan.mongodb.laws.discipline.BsonValueCodecTests
-import kantan.mongodb.refined.arbitrary._
-import org.scalatest.FunSuite
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.typelevel.discipline.scalatest.Discipline
+import laws.discipline._, arbitrary._
 
-class RefinedCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+class RefinedCodecTests extends DisciplineSuite {
   checkAll("BsonValueCodec[Int Refined Positive]", BsonValueCodecTests[Int Refined Positive].codec[String, Float])
 
   checkAll(

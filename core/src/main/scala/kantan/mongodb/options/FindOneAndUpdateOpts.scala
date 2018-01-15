@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.options
+package kantan.mongodb
+package options
 
 import com.mongodb.client.model.{FindOneAndUpdateOptions, ReturnDocument}
-import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 import scala.concurrent.duration.Duration
 
 final case class FindOneAndUpdateOpts(collation: Option[Collation],

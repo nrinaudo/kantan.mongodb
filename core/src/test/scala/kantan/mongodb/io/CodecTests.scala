@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.io
+package kantan.mongodb
+package io
 
 import java.nio.ByteBuffer
-import kantan.mongodb._
-import kantan.mongodb.laws.discipline.arbitrary._
+import laws.discipline.arbitrary._
 import org.bson.{BsonBinaryReader, BsonBinaryWriter}
 import org.bson.codecs.{DecoderContext, EncoderContext}
 import org.bson.io.BasicOutputBuffer

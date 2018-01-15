@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.io
+package kantan.mongodb
+package io
 
-import kantan.mongodb.{BsonArray, BsonValue}
 import org.bson.{BsonReader, BsonType, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 import org.bson.codecs.configuration.CodecRegistry

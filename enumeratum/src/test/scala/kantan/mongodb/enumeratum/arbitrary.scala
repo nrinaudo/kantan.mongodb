@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.enumeratum
+package kantan.mongodb
+package enumeratum
 
 import kantan.codecs.enumeratum.laws.discipline._
 import kantan.codecs.laws.CodecValue.IllegalValue
-import kantan.mongodb._
 import org.scalacheck.Arbitrary, Arbitrary.{arbitrary ⇒ arb}
 
 object arbitrary

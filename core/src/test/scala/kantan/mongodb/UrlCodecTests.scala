@@ -17,12 +17,8 @@
 package kantan.mongodb
 
 import java.net.URL
-import kantan.mongodb.laws.discipline.BsonValueCodecTests
-import kantan.mongodb.laws.discipline.arbitrary._
-import org.scalatest.FunSuite
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.typelevel.discipline.scalatest.Discipline
+import laws.discipline._, arbitrary._
 
-class UrlCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+class UrlCodecTests extends DisciplineSuite {
   checkAll("BsonValueCodec[URL]", BsonValueCodecTests[URL].codec[String, Float])
 }

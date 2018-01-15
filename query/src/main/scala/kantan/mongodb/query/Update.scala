@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.query
-
-import kantan.mongodb.{BsonDocument, BsonDocumentEncoder, BsonValue, BsonValueEncoder}
+package kantan.mongodb
+package query
 
 sealed trait Update extends Product with Serializable
 

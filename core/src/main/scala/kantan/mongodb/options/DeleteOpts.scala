@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.options
+package kantan.mongodb
+package options
 
 import com.mongodb.client.model.DeleteOptions
 

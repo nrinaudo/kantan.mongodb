@@ -16,10 +16,8 @@
 
 package kantan.mongodb
 
-import org.scalatest.FunSuite
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.typelevel.discipline.scalatest.Discipline
+import laws.discipline._
 
-class PatternCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline
+class PatternCodecTests extends DisciplineSuite
 // TODO: this is unfortunately currently disabled because of Java's messed up Pattern.equals implementation.
 //checkAll("BsonValueCodec[Pattern]", BsonValueCodecTests[Pattern].codec[String, Float])

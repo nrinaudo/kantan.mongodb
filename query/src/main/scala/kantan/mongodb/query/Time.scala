@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.query
-
-import kantan.mongodb.{BsonDocument, BsonDocumentEncoder, BsonValueEncoder}
+package kantan.mongodb
+package query
 
 sealed abstract class Time extends Product with Serializable
 object Time {

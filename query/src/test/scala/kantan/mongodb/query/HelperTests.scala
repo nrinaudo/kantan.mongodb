@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.query
+package kantan.mongodb
+package query
 
-import kantan.mongodb.ops._
+import ops._
 import org.scalatest.FunSuite
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 

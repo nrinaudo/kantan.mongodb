@@ -16,12 +16,8 @@
 
 package kantan.mongodb
 
-import kantan.mongodb.laws.discipline.BsonValueCodecTests
-import kantan.mongodb.laws.discipline.arbitrary._
-import org.scalatest.FunSuite
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.typelevel.discipline.scalatest.Discipline
+import laws.discipline._, arbitrary._
 
-class OptionCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+class OptionCodecTests extends DisciplineSuite {
   checkAll("BsonValueCodec[Option[Int]]", BsonValueCodecTests[Option[Int]].codec[String, Float])
 }

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.query
+package kantan.mongodb
+package query
 
-import kantan.mongodb._
-import kantan.mongodb.query.Query.Compound.Or
-import kantan.mongodb.query.QueryOperator._
-import sun.invoke.empty.Empty
+import Query.Compound.Or
+import QueryOperator._
 
 sealed trait Query extends Product with Serializable
 
@@ -32,7 +31,7 @@ object Query {
     def unary_!(): Empty.type   = Empty
   }
 
-  implicit val emptyDocumentEncoder: BsonDocumentEncoder[Empty] = BsonDocumentEncoder.from(_ ⇒ BsonDocument.empty)
+  implicit val emptyDocumentEncoder: BsonDocumentEncoder[Empty.type] = BsonDocumentEncoder.from(_ ⇒ BsonDocument.empty)
 
   // - Not -------------------------------------------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------------------------------

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.query
-
-import kantan.mongodb.{BsonArray, BsonDocument, BsonDouble, BsonValueEncoder}
+package kantan.mongodb
+package query
 
 sealed abstract class Shape extends Product with Serializable
 object Shape {
