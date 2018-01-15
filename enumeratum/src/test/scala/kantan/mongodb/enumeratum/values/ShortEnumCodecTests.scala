@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.enumeratum.values
+package kantan.mongodb
+package enumeratum.values
 
-import kantan.codecs.enumeratum.laws.discipline._
-import kantan.codecs.laws.discipline.SerializableTests
-import kantan.mongodb.{BsonValueDecoder, BsonValueEncoder}
-import kantan.mongodb.enumeratum.arbitrary._
-import kantan.mongodb.laws.discipline.BsonValueCodecTests
-import org.scalatest.FunSuite
-import org.typelevel.discipline.scalatest.Discipline
+import laws.discipline._
 
-class ShortEnumCodecTests extends FunSuite with Discipline
+class ShortEnumCodecTests extends DisciplineSuite
 
 // These aren't supported, because we don't have encoders and decoders for Short
 // See https://github.com/nrinaudo/kantan.mongodb/issues/26

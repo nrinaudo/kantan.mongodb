@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.ops
-
-import kantan.mongodb.{BsonValue, BsonValueDecoder, DecodeResult}
+package kantan.mongodb
+package ops
 
 final class BsonValueDecoderOps(val value: BsonValue) extends AnyVal {
   def decodeBson[A: BsonValueDecoder]: DecodeResult[A] = BsonValueDecoder[A].decode(value)

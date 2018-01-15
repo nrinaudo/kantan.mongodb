@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.generic
+package kantan.mongodb
+package generic
 
 object arbitrary
     extends kantan.codecs.shapeless.laws.discipline.ArbitraryInstances

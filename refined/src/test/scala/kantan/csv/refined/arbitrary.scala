@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.refined
+package kantan.mongodb
+package refined
 
 object arbitrary
     extends kantan.mongodb.laws.discipline.ArbitraryInstances

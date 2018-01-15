@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.java8
+package kantan.mongodb
+package java8
 
-import arbitrary._
 import java.time.Instant
-import kantan.mongodb.laws.discipline.BsonValueCodecTests
-import org.scalatest.FunSuite
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.typelevel.discipline.scalatest.Discipline
+import laws.discipline._, arbitrary._
 
-class InstantCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+class InstantCodecTests extends DisciplineSuite {
   checkAll("BsonValueCodec[Instant]", BsonValueCodecTests[Instant].codec[String, Float])
 }

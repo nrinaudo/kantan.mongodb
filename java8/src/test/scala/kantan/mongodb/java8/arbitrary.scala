@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.java8
+package kantan.mongodb
+package java8
 
-import kantan.mongodb.laws.discipline.ArbitraryInstances
+import laws.discipline.ArbitraryInstances
 
 object arbitrary extends kantan.codecs.strings.java8.laws.discipline.ArbitraryInstances with ArbitraryInstances

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.options
+package kantan.mongodb
+package options
 
 import com.mongodb.client.model.{CreateCollectionOptions, IndexOptionDefaults}
-import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 
 final case class CreateCollectionOpts(autoIndex: Boolean,
                                       collation: Collation,

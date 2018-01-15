@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.query
+package kantan.mongodb
+package query
 
 import java.util.regex.Pattern
-import kantan.mongodb.{BsonDocument, BsonValueEncoder}
 
 sealed abstract class QueryOperator[A](val operator: String, val operand: A) extends Product with Serializable
 

@@ -17,12 +17,8 @@
 package kantan.mongodb
 
 import java.util.UUID
-import kantan.mongodb.laws.discipline.BsonValueCodecTests
-import kantan.mongodb.laws.discipline.arbitrary._
-import org.scalatest.FunSuite
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.typelevel.discipline.scalatest.Discipline
+import laws.discipline._, arbitrary._
 
-class UuidCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+class UuidCodecTests extends DisciplineSuite {
   checkAll("BsonValueCodec[UUID]", BsonValueCodecTests[UUID].codec[String, Float])
 }

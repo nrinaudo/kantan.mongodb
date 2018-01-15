@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.enumeratum.values
+package kantan.mongodb
+package enumeratum.values
 
-import kantan.codecs.enumeratum.laws.discipline._
-import kantan.codecs.laws.discipline.SerializableTests
-import kantan.mongodb.{BsonValueDecoder, BsonValueEncoder}
-import kantan.mongodb.enumeratum.arbitrary._
-import kantan.mongodb.laws.discipline.BsonValueCodecTests
-import org.scalatest.FunSuite
-import org.typelevel.discipline.scalatest.Discipline
+import enumeratum.arbitrary._
+import kantan.codecs.enumeratum.laws.discipline.EnumeratedInt
+import laws.discipline._
 
-class IntEnumCodecTests extends FunSuite with Discipline {
+class IntEnumCodecTests extends DisciplineSuite {
 
   checkAll("BsonValueDecoder[EnumeratedInt]", SerializableTests[BsonValueDecoder[EnumeratedInt]].serializable)
   checkAll("BsonValueEncoder[EnumeratedInt]", SerializableTests[BsonValueEncoder[EnumeratedInt]].serializable)

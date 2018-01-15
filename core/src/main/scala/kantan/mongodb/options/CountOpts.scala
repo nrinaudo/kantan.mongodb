@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.options
+package kantan.mongodb
+package options
 
 import com.mongodb.client.model.CountOptions
-import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 import scala.concurrent.duration.Duration
 
 /** Options for a [[https://docs.mongodb.com/manual/reference/method/db.collection.count/ count]] operation. */

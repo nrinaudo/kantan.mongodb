@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.options
+package kantan.mongodb
+package options
 
 import com.mongodb.client.model.{ValidationAction, ValidationLevel, ValidationOptions}
 import java.io.Serializable
-import kantan.mongodb.{BsonDocument, BsonDocumentEncoder}
 
 final case class ValidationOpts(action: ValidationOpts.Action,
                                 level: ValidationOpts.Level,

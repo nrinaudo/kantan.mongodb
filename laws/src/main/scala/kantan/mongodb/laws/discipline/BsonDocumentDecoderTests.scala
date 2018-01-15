@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.laws.discipline
+package kantan.mongodb
+package laws
+package discipline
 
-import kantan.codecs.laws.discipline.CodecTests
-import kantan.mongodb._
-import kantan.mongodb.laws.{BsonDocumentCodecLaws, LegalBsonDocument}
-import kantan.mongodb.laws.discipline.arbitrary._
+import arbitrary._
 import org.scalacheck.{Arbitrary, Cogen}
 
 object BsonDocumentDecoderTests {

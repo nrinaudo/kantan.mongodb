@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.joda.time
+package kantan.mongodb
+package joda.time
 
-import kantan.mongodb.laws.discipline.ArbitraryInstances
+import laws.discipline.ArbitraryInstances
 
 object arbitrary extends kantan.codecs.strings.joda.time.laws.discipline.ArbitraryInstances with ArbitraryInstances

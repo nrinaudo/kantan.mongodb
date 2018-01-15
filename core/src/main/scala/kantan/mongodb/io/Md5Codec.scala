@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.io
+package kantan.mongodb
+package io
 
-import kantan.mongodb.BsonMd5
 import org.bson.{BsonBinarySubType, BsonReader, BsonWriter}
 import org.bson.codecs.{Codec, DecoderContext, EncoderContext}
 

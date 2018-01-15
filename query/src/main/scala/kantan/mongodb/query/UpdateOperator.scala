@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.query
-
-import kantan.mongodb._
+package kantan.mongodb
+package query
 
 sealed abstract class UpdateOperator[A](val operator: String, val operand: A) extends Product with Serializable
 

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.query
-
-import kantan.mongodb._
+package kantan.mongodb
+package query
 
 sealed abstract class Sort extends Product with Serializable {
   def asc(field: String): Sort           = Sort.Compound(List(Sort.Ascending(field), this))

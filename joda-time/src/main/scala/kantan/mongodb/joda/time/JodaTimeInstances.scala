@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.joda.time
+package kantan.mongodb
+package joda.time
 
-import kantan.mongodb._
 import org.joda.time._
 
 trait JodaTimeInstances {

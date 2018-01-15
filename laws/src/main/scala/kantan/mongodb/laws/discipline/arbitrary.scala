@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.laws.discipline
+package kantan.mongodb
+package laws
+package discipline
 
 import imp.imp
 import java.security.MessageDigest
 import java.util.UUID
 import java.util.regex.Pattern
-import kantan.mongodb._
 import org.bson.types.{Decimal128, ObjectId}
 import org.scalacheck._, Arbitrary.{arbitrary ⇒ arb}, Gen._
 import org.scalacheck.rng.Seed

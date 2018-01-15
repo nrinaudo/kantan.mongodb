@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.generic
+package kantan.mongodb
+package generic
 
 import kantan.codecs.shapeless.ShapelessInstances
-import kantan.mongodb._
 import shapeless._
 import shapeless.labelled._
 

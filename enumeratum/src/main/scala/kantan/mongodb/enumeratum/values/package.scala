@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.enumeratum
+package kantan.mongodb
+package enumeratum
 
 import kantan.codecs.enumeratum.values.{DecoderInstances, EncoderInstances}
 

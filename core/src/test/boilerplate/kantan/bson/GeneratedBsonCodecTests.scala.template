@@ -16,16 +16,12 @@
 
 package kantan.mongodb
 
-import kantan.mongodb.laws.discipline.arbitrary._
-import kantan.mongodb.laws.IllegalBsonDocument
-import kantan.mongodb.laws.discipline.BsonValueCodecTests
+import laws.discipline._, arbitrary._
+import laws.IllegalBsonDocument
 import org.scalacheck.{Arbitrary, Cogen}
 import org.scalacheck.Arbitrary.{arbitrary => arb}
-import org.scalatest.FunSuite
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.typelevel.discipline.scalatest.Discipline
 
-class GeneratedBsonDocumentDecoderTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+class GeneratedBsonDocumentDecoderTests extends DisciplineSuite {
   [#case class TestCase1([#i1: Int#])
   implicit val arbTestCase1: Arbitrary[TestCase1] = Arbitrary(arb[Tuple1[[#Int#]]].map { case Tuple1([#i1#]) ⇒ TestCase1([#i1#]) })
   implicit val cogenTestCase1: Cogen[TestCase1] = Cogen.cogenList[Int].contramap(f ⇒ List([#f.i1#]))

@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.generic
+package kantan.mongodb
+package generic
 
-import arbitrary._
 import kantan.codecs.shapeless.laws._
-import kantan.mongodb.laws.discipline.BsonValueCodecTests
-import org.scalatest.FunSuite
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.typelevel.discipline.scalatest.Discipline
+import laws.discipline._, arbitrary._
 
 // Shapeless' Lazy generates code with Null that we need to ignore.
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
-class DerivedBsonValueCodecTests extends FunSuite with GeneratorDrivenPropertyChecks with Discipline {
+class DerivedBsonValueCodecTests extends DisciplineSuite {
   checkAll("DerivedBsonValueCodec[Or[Int, Boolean]]", BsonValueCodecTests[Int Or Boolean].codec[Byte, String])
 }

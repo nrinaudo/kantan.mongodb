@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-package kantan.mongodb.joda
+package kantan.mongodb
+package joda
 
 package object time extends JodaTimeInstances
