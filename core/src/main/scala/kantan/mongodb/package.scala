@@ -19,23 +19,18 @@ package kantan
 import kantan.codecs._
 
 package object mongodb {
-  type Success[A] = Result.Success[A]
-  val Success: Result.Success.type = Result.Success
-
-  type Failure[A] = Result.Failure[A]
-  val Failure: Result.Failure.type = Result.Failure
 
   /** Represents the result of any mongo operation.
     *
     * @documentable
     */
-  type MongoResult[A] = Result[MongoError, A]
+  type MongoResult[A] = Either[MongoError, A]
 
   /** Represents the result of any decoding operation.
     *
     * @documentable
     */
-  type DecodeResult[A] = Result[MongoError.Decode, A]
+  type DecodeResult[A] = Either[MongoError.Decode, A]
 
   type BsonValueDecoder[A] = Decoder[BsonValue, A, MongoError.Decode, codecs.type]
   type BsonValueEncoder[A] = Encoder[BsonValue, A, codecs.type]

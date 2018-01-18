@@ -19,7 +19,9 @@ package ops
 
 final class BsonValueDecoderOps(val value: BsonValue) extends AnyVal {
   def decodeBson[A: BsonValueDecoder]: DecodeResult[A] = BsonValueDecoder[A].decode(value)
-  def unsafeDecodeBson[A: BsonValueDecoder]: A         = decodeBson[A].get
+
+  @SuppressWarnings(Array("org.wartremover.warts.EitherProjectionPartial"))
+  def unsafeDecodeBson[A: BsonValueDecoder]: A = decodeBson[A].right.get
 }
 
 trait ToBsonValueDecoderOps {

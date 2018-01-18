@@ -57,8 +57,8 @@ trait GenericInstances extends ShapelessInstances {
 
     BsonDocumentDecoder.from { doc ⇒
       for {
-        head ← BsonValueDecoder[H].decode(doc.value.getOrElse(name, BsonNull))
-        tail ← BsonDocumentDecoder[T].decode(doc)
+        head ← BsonValueDecoder[H].decode(doc.value.getOrElse(name, BsonNull)).right
+        tail ← BsonDocumentDecoder[T].decode(doc).right
       } yield field[K](head) :: tail
     }
   }
