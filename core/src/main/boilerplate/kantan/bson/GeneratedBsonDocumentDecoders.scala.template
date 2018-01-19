@@ -19,7 +19,7 @@ package kantan.mongodb
 trait GeneratedBsonDocumentDecoders {
   [#def decoder[[#A1: BsonValueDecoder#], B]([#n1: String#])(f: ([#A1#]) ⇒ B): BsonDocumentDecoder[B] = BsonDocumentDecoder.from { d: BsonDocument ⇒
     for {
-      [#a1 ← BsonValueDecoder[A1].decode(d.value.getOrElse(n1, BsonNull))#
+      [#a1 ← BsonValueDecoder[A1].decode(d.value.getOrElse(n1, BsonNull)).right#
       ]
     } yield f([#a1#])
   }#

@@ -41,13 +41,13 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * @example
     * {{{
     * scala> BsonValueDecoder[Int].decode(BsonInt(1))
-    * res0: DecodeResult[Int] = Success(1)
+    * res0: DecodeResult[Int] = Right(1)
     *
     * scala> BsonValueDecoder[Int].decode(BsonMinKey)
-    * res1: DecodeResult[Int] = Success(-2147483648)
+    * res1: DecodeResult[Int] = Right(-2147483648)
     *
     * scala> BsonValueDecoder[Int].decode(BsonMaxKey)
-    * res2: DecodeResult[Int] = Success(2147483647)
+    * res2: DecodeResult[Int] = Right(2147483647)
     * }}}
     */
   implicit val bsonIntDecoder: BsonValueDecoder[Int] = BsonValueDecoder.fromPartial {
@@ -61,13 +61,13 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * @example
     * {{{
     * scala> BsonValueDecoder[Long].decode(BsonLong(1L))
-    * res0: DecodeResult[Long] = Success(1)
+    * res0: DecodeResult[Long] = Right(1)
     *
     * scala> BsonValueDecoder[Long].decode(BsonMinKey)
-    * res1: DecodeResult[Long] = Success(-9223372036854775808)
+    * res1: DecodeResult[Long] = Right(-9223372036854775808)
     *
     * scala> BsonValueDecoder[Long].decode(BsonMaxKey)
-    * res2: DecodeResult[Long] = Success(9223372036854775807)
+    * res2: DecodeResult[Long] = Right(9223372036854775807)
     * }}}
     */
   implicit val bsonLongDecoder: BsonValueDecoder[Long] = BsonValueDecoder.fromPartial {
@@ -81,13 +81,13 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * @example
     * {{{
     * scala> BsonValueDecoder[Double].decode(BsonDouble(0.5))
-    * res0: DecodeResult[Double] = Success(0.5)
+    * res0: DecodeResult[Double] = Right(0.5)
     *
     * scala> BsonValueDecoder[Double].decode(BsonMinKey)
-    * res1: DecodeResult[Double] = Success(-1.7976931348623157E308)
+    * res1: DecodeResult[Double] = Right(-1.7976931348623157E308)
     *
     * scala> BsonValueDecoder[Double].decode(BsonMaxKey)
-    * res2: DecodeResult[Double] = Success(1.7976931348623157E308)
+    * res2: DecodeResult[Double] = Right(1.7976931348623157E308)
     * }}}
     */
   implicit val bsonDoubleDecoder: BsonValueDecoder[Double] = BsonValueDecoder.fromPartial {
@@ -103,7 +103,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * scala> import org.bson.types._
     *
     * scala> BsonValueDecoder[ObjectId].decode(BsonObjectId(new ObjectId("58c64e6a54757ec4c09c525e")))
-    * res0: DecodeResult[ObjectId] = Success(58c64e6a54757ec4c09c525e)
+    * res0: DecodeResult[ObjectId] = Right(58c64e6a54757ec4c09c525e)
     * }}}
     */
   implicit val bsonObjectIdDecoder: BsonValueDecoder[ObjectId] = BsonValueDecoder.fromPartial {
@@ -115,7 +115,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * @example
     * {{{
     * scala> BsonValueDecoder[Boolean].decode(BsonBoolean(true))
-    * res0: DecodeResult[Boolean] = Success(true)
+    * res0: DecodeResult[Boolean] = Right(true)
     * }}}
     */
   implicit val bsonBooleanDecoder: BsonValueDecoder[Boolean] = BsonValueDecoder.fromPartial {
@@ -129,7 +129,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * scala> import java.util.regex._
     *
     * scala> BsonValueDecoder[Pattern].decode(BsonRegularExpression(Pattern.compile("[a-zA-Z]*")))
-    * res0: DecodeResult[Pattern] = Success([a-zA-Z]*)
+    * res0: DecodeResult[Pattern] = Right([a-zA-Z]*)
     * }}}
     */
   implicit val bsonRegularExpressionDecoder: BsonValueDecoder[Pattern] = BsonValueDecoder.fromPartial {
@@ -143,7 +143,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * scala> import java.util._
     *
     * scala> BsonValueDecoder[UUID].decode(BsonUuid(UUID.fromString("123e4567-e89b-12d3-a456-426655440000")))
-    * res0: DecodeResult[UUID] = Success(123e4567-e89b-12d3-a456-426655440000)
+    * res0: DecodeResult[UUID] = Right(123e4567-e89b-12d3-a456-426655440000)
     * }}}
     */
   implicit val bsonUuidDecoder: BsonValueDecoder[UUID] = BsonValueDecoder.fromPartial {
@@ -155,7 +155,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * @example
     * {{{
     * scala> BsonValueDecoder[List[Int]].decode(BsonArray(Seq(BsonInt(1), BsonInt(2), BsonInt(3))))
-    * res0> DecodeResult[List[Int]] = Success(List(1, 2, 3))
+    * res0> DecodeResult[List[Int]] = Right(List(1, 2, 3))
     * }}}
     */
   implicit def bsonArrayDecoder[C[_], A: BsonValueDecoder](
@@ -165,10 +165,11 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
       values
         .foldLeft(DecodeResult(cbf.apply())) { (racc, v) ⇒
           for {
-            acc ← racc
-            a   ← BsonValueDecoder[A].decode(v)
+            acc ← racc.right
+            a   ← BsonValueDecoder[A].decode(v).right
           } yield acc += a
         }
+        .right
         .map(_.result())
   }
 
@@ -186,7 +187,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     */
   implicit def bsonOptionDecoder[A: BsonValueDecoder]: BsonValueDecoder[Option[A]] = BsonValueDecoder.from {
     case BsonNull ⇒ DecodeResult.success(None)
-    case value    ⇒ BsonValueDecoder[A].decode(value).map(Some.apply)
+    case value    ⇒ BsonValueDecoder[A].decode(value).right.map(Some.apply)
   }
 
   implicit val javaUtilDateDecoder: BsonValueDecoder[Date] = BsonValueDecoder.fromPartial {
@@ -200,7 +201,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * @example
     * {{{
     * scala> BsonValueDecoder[String].decode(BsonString("foobar"))
-    * res0: DecodeResult[String] = Success(foobar)
+    * res0: DecodeResult[String] = Right(foobar)
     * }}}
     */
   implicit val bsonStringDecoder: BsonValueDecoder[String] = BsonValueDecoder.fromPartial {
@@ -212,7 +213,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * Note that the resulting decoder will only work on values of type [[BsonString]].
     */
   def fromStringDecoder[A: StringDecoder]: BsonValueDecoder[A] =
-    BsonValueDecoder[String].emap(s ⇒ StringDecoder[A].decode(s).leftMap(e ⇒ MongoError.Decode(e.message)))
+    BsonValueDecoder[String].emap(s ⇒ StringDecoder[A].decode(s).left.map(e ⇒ MongoError.Decode(e.message)))
 
   /** Decodes instances of [[BsonString]] as `URI`.
     *
@@ -221,7 +222,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * scala> import java.net._
     *
     * scala> BsonValueDecoder[URI].decode(BsonString("http://localhost"))
-    * res0: DecodeResult[URI] = Success(http://localhost)
+    * res0: DecodeResult[URI] = Right(http://localhost)
     * }}}
     */
   implicit val bsonUriDecoder: BsonValueDecoder[URI] = fromStringDecoder[URI]
@@ -233,7 +234,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * scala> import java.net._
     *
     * scala> BsonValueDecoder[URL].decode(BsonString("http://localhost"))
-    * res0: DecodeResult[URL] = Success(http://localhost)
+    * res0: DecodeResult[URL] = Right(http://localhost)
     * }}}
     */
   implicit val bsonUrlDecoder: BsonValueDecoder[URL] = fromStringDecoder[URL]
@@ -245,7 +246,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * scala> import java.io._
     *
     * scala> BsonValueDecoder[File].decode(BsonString("/var/log"))
-    * res0: DecodeResult[File] = Success(/var/log)
+    * res0: DecodeResult[File] = Right(/var/log)
     * }}}
     */
   implicit val bsonFileDecoder: BsonValueDecoder[File] = fromStringDecoder[File]
@@ -257,7 +258,7 @@ trait BsonValueDecoderInstances extends LowPriorityBsonValueDecoderInstances {
     * scala> import java.nio.file._
     *
     * scala> BsonValueDecoder[Path].decode(BsonString("/var/log"))
-    * res0: DecodeResult[Path] = Success(/var/log)
+    * res0: DecodeResult[Path] = Right(/var/log)
     * }}}
     */
   implicit val bsonPathDecoder: BsonValueDecoder[Path] = fromStringDecoder[Path]
