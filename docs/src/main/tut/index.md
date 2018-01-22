@@ -29,6 +29,12 @@ libraryDependencies += "com.nrinaudo" %% "kantan.mongodb-generic" % "@VERSION@"
 
 // Provides instances for joda time types.
 libraryDependencies += "com.nrinaudo" %% "kantan.mongodb-joda-time" % "@VERSION@"
+
+// Provides instances for refined types.
+libraryDependencies += "com.nrinaudo" %% "kantan.mongodb-refined" % "@VERSION@"
+
+// Provides instances for enumeratum types.
+libraryDependencies += "com.nrinaudo" %% "kantan.mongodb-enumeratum" % "@VERSION@"
 ```
 
 ## Motivation
