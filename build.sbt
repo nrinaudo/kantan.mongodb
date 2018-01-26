@@ -16,9 +16,9 @@ lazy val root = Project(id = "kantan-mongodb", base = file("."))
     """.stripMargin
     //import kantan.mongodb.generic._
   )
-  .aggregate(core, enumeratum, generic, jodaTime, laws, query, refined)
+  .aggregate(core, enumeratum, generic, jodaTime, laws, libra, query, refined)
   .aggregateIf(java8Supported)(java8)
-  .dependsOn(core, generic, query, refined)
+  .dependsOn(core, generic, libra, query, refined)
 
 lazy val docs = project
   .enablePlugins(DocumentationPlugin)
@@ -144,5 +144,20 @@ lazy val enumeratum = project
       "com.nrinaudo"  %% "kantan.codecs-enumeratum"      % Versions.kantanCodecs,
       "com.nrinaudo"  %% "kantan.codecs-enumeratum-laws" % Versions.kantanCodecs % "test",
       "org.scalatest" %% "scalatest"                     % Versions.scalatest % "test"
+    )
+  )
+
+lazy val libra = project
+  .settings(
+    moduleName := "kantan.mongodb-libra",
+    name       := "libra"
+  )
+  .enablePlugins(PublishedPlugin)
+  .dependsOn(core, laws % "test")
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.nrinaudo"  %% "kantan.codecs-libra"      % Versions.kantanCodecs,
+      "com.nrinaudo"  %% "kantan.codecs-libra-laws" % Versions.kantanCodecs % "test",
+      "org.scalatest" %% "scalatest"                % Versions.scalatest % "test"
     )
   )
