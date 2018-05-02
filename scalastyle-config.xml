@@ -61,20 +61,16 @@
   <check class="org.scalastyle.scalariform.NoCloneChecker"                   level="error"   enabled="true"/>
   <check class="org.scalastyle.scalariform.NoFinalizeChecker"                level="error"   enabled="true"/>
   <check class="org.scalastyle.scalariform.NotImplementedErrorUsage"         level="error"   enabled="true"/>
-  <check class="org.scalastyle.scalariform.NullChecker"                      level="warning" enabled="true"/>
   <check class="org.scalastyle.scalariform.OverrideJavaChecker"              level="error"   enabled="true"/>
-  <check class="org.scalastyle.scalariform.ProcedureDeclarationChecker"      level="error"   enabled="true"/>
   <check class="org.scalastyle.scalariform.PublicMethodsHaveTypeChecker"     level="error"   enabled="true">
     <parameters>
       <parameter name="ignoreOverride">true</parameter>
     </parameters>
   </check>
   <check class="org.scalastyle.scalariform.RedundantIfChecker"               level="warning" enabled="true"/>
-  <check class="org.scalastyle.scalariform.ReturnChecker"                    level="error"   enabled="true"/>
   <check class="org.scalastyle.scalariform.SimplifyBooleanExpressionChecker" level="error"   enabled="true"/>
   <check class="org.scalastyle.scalariform.StructuralTypeChecker"            level="warning" enabled="true"/>
   <check class="org.scalastyle.scalariform.UppercaseLChecker"                level="error"   enabled="true"/>
-  <check class="org.scalastyle.scalariform.VarFieldChecker"                  level="warning" enabled="true"/>
   <check class="org.scalastyle.file.RegexChecker"                            level="warning" enabled="true">
     <parameters>
       <parameter name="regex">println</parameter>
